@@ -17,7 +17,7 @@ async function connect_to_db() {
     await client.db("admin").command({ ping: 1 });
     console.log("Connected successfully to server");
     let test_db = client.db('epdc_sys_db').collection('test');
-    let res = await test_db.find({'u_acct': '954827899@qq.com'}).toArray();
+    let res = await test_db.find({'u_acct': '954827899@qq.com'}, {'_id': 0, 'u_pwd':1}).toArray();
     console.log(res);
   } finally {
     await client.close();
