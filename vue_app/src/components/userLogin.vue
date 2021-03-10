@@ -95,6 +95,7 @@ export default {
         //清空Cookie
         self.clearCookie();
       }
+
       console.log(self.u_login);
     },
 
@@ -129,6 +130,12 @@ export default {
     },
     clearCookie: function() {
       this.setCookie("", -1); //修改2值都为空，天数为负1天就好了
+    },
+
+    postToBack: function(email, pwd) {
+      this.$http({
+        // TODO
+      })
     }
   },
   mounted: function(){
