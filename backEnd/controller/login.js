@@ -13,19 +13,21 @@ function makeToken() {
 }
 
 // 测试用登录方法
-function login(arr) {
-    const user = JSON.parse(arr[0]);
-
-    for (let i=0; i<usersList.length; i++){
-        if (usersList[i].uemail == user.uemail){
-            if (usersList[i].upwd == user.upwd){
-                arr[0] = true;
-                arr[1] = makeToken();
+function login(data) {
+    console.log(data);
+    let arr = [];
+    for (let i=0; i<data.length; i++){
+        if (usersList[i].uemail == data[0].uemail){
+            if (usersList[i].upwd == data[0].upwd){
+                arr[0] = { "ifPass": true};
+                arr[1] = { "token" : makeToken()};
+                console.log(arr);
                 return arr;
             }
         }
     }
-    arr[0] = false;
+    arr[0] = { "ifPass": false};
+    console.log(arr);
     return arr;
 }
 
