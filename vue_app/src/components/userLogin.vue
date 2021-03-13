@@ -95,7 +95,8 @@ export default {
         //清空Cookie
         self.clearCookie();
       }
-
+      // TODO axios请求
+      this.postLogin(self.u_login.uemail, self.u_login.upwd);
       console.log(self.u_login);
     },
 
@@ -132,10 +133,22 @@ export default {
       this.setCookie("", -1); //修改2值都为空，天数为负1天就好了
     },
 
-    postToBack: function(email, pwd) {
-      this.$http({
-        // TODO
+    // 发送login信息到后端
+    postLogin: function(email, pwd) {
+      this.axios({
+        method: "POST",
+        url: "http://localhost:3000/user/login",
+        data: {
+          "uemail": email,
+          "upwd": pwd
+        }
       })
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
     }
   },
   mounted: function(){

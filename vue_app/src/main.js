@@ -1,7 +1,9 @@
 import { createApp } from 'vue'
-import axios from 'axios'
 import App from './App.vue'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 
+// import Vue from 'vue';
+// Vue.use(VueAxios, axios);
 
-Vue.prototype.$http = axios
-createApp(App).mount('#app')
+createApp(App).use(VueAxios, axios).mount('#app')
