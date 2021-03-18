@@ -3,7 +3,7 @@
 // 调用封装JWT工具
 const JWT = require('../certify/theJWT');
 const jwtutil = new JWT();
-const userlist = require('./db_users');
+const users = require('./db_users');
 
 
 // 测试数据
@@ -21,14 +21,22 @@ async function login(data) {
     let token = '';
     let targetUser;
     // 查询用户
-    try{
-        targetUser = await userlist.findUser(data.uemail);
-        targetUser = targetUser[0];
-    }catch(e){
+    try {
+        targetUser = await users.findUser(data.uemail);
+        if (targetUser.length != 0) {
+            targetUser = targetUser[0];
+            console.log(res1);
+        } else {
+            console.log("=== ! need to sign up");
+            arr.token = undefined;
+            arr.err = "need to sign up";
+            return arr;
+        }
+    } catch (e) {
         throw e;
     }
-    if(targetUser._id == data.uemail){
-        if(targetUser.pwd == data.upwd){
+    if (targetUser.pass == true) {
+        if (targetUser.upwd == data.upwd) {
             // 验证通过, 生成token
             token = jwtutil.generateToken(data);
             arr.ifPass = true;
@@ -36,15 +44,18 @@ async function login(data) {
             // console.log(arr);
             return arr;
         }
-        else{
-            console.log("=== ! error password ! ===");
+        else {
+            console.log("=== ! error password");
+            arr.token = undefined;
+            arr.err = "error password";
             return arr;
         }
-    }else{
-        console.log("=== ! error user email ! ===");
+    } else {
+        console.log("=== ! waiting for review");
+        arr.token = undefined;
+        arr.err = "waiting for review";
         return arr;
     }
-        
 }
 
 module.exports = login;

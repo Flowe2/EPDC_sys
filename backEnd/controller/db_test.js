@@ -26,13 +26,24 @@
 // connect_to_db().catch(console.dir);
 
 
+
+const users = require('./db_users');
 // test for 登录查询
-const userlist = require('./db_users');
+let test1 = {"uemail": "11abc@123.com", "upwd": "123123"};
+let res1;
+users.findUser(test1.uemail).catch(console.dir)
+    .then((res)=>{
+        if (res.length != 0){
+            res1 = res[0];
+            console.log(res1);
+        } else {
+            console.log("no result");
+        }
+    });
 
-let test = {"uemail": "abc@123.com", "upwd": "123123"};
 
-let user;
-userlist.findUser(test.uemail)
-    .catch(console.dir)
-    .then((res)=>{ user = res;console.log(user);});
-
+// test for 注册插入
+// let test2 = {"uemail": "abc@123.com", "uname": "Alice",  "upwd": "123123", "postscript": "zxmnmbvadzpioyewqhkjdbznbvlkadmzxlv"};
+// let res2;
+// users.insertUser(test2).catch(console.dir)
+//     .then((res)=>{ res2 = res.insertedCount;console.log(res2);});

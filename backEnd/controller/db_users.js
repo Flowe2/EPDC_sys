@@ -11,15 +11,16 @@ const db_uri =`mongodb://${db_usr}:${db_pwd}@${db_url}`;
 // 增加 options 解决 node 20360 warning
 const client = new MongoClient(db_uri, {useUnifiedTopology: true});
 
-// 查询用户
-// usage: findUser().catch(console.dir);
-async function findUser (target_user_email) {
+// 查询用户 - 登录用
+exports.findUser = async function (target_user_email) {
     let res;
+    // 预处理查询语句 查询数据
     const query = { '_id': target_user_email };
-    const options = {projection: {'_id':1, 'pwd': 1}};
+    const options = {projection: {'_id':1, 'upwd': 1, 'pass': 1}};
     
     try {
         // 连接到数据库
+        
         await client.connect();
         // 验证
         await client.db("admin").command({ ping: 1 });
@@ -32,4 +33,28 @@ async function findUser (target_user_email) {
     }
 };
 
-exports.findUser = findUser;
+
+// 添加用户 - 注册用
+exports.insertUser = async function (target_user){
+    // 预处理查询语句 插入数据
+    let res;
+    const doc = {
+        '_id' : target_user.uemail,
+        'uname' : target_user.uname,
+        'upwd' : target_user.upwd,
+        'postscript' : target_user.postscript
+    }
+    
+    try {
+        // 连接到数据库
+        await client.connect();
+        // 验证
+        await client.db("admin").command({ ping: 1 });
+        console.log("=== ~ connected successfully");
+        const newusers = client.db('epdc_sys_db').collection('newusers');
+        res = await newusers.insertOne(doc);
+        return res;
+    } finally{
+        await client.close();
+    }
+}
