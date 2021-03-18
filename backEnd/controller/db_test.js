@@ -25,10 +25,14 @@
 // }
 // connect_to_db().catch(console.dir);
 
+
+// test for 登录查询
 const userlist = require('./db_users');
 
 let test = {"uemail": "abc@123.com", "upwd": "123123"};
 
-let res = userlist.findUser(test);
+let user;
+userlist.findUser(test.uemail)
+    .catch(console.dir)
+    .then((res)=>{ user = res;console.log(user);});
 
-console.log(res);

@@ -3,11 +3,11 @@ const router = express.Router();
 
 // 登录接口
 const login = require("../controller/login");
-router.post('/login', (req, res, next) => {
+router.post('/login', async (req, res, next) => {
   let data = req.body;
-  console.log('user: ' + data.uemail);
-  let arr = [data, {"token": ""} ]
-  arr = login(arr);
+  console.log("=== ~ receive POST : @ user " + data.uemail + " @ login");
+  let arr = await login(data);
+  console.log("=== ~ ready to send");
   res.json(arr);
 })
 

@@ -5,26 +5,25 @@ const jwt = require('jsonwebtoken');
 function JWT() {
     this.judge = function (data) {
         if (data.amail == undefined) {
-            console.log("this is a user");
+            console.log("=== ~ request role : user");
             data.role = false;
         }
         else {
-            console.log("this is a admin");
+            console.log("=== ~ request role : admin");
             data.role = true;
         }
     }
 
     // 生成token
     this.generateToken = function (data) {
-        let nowTime = Math.floor( Date.now() / 1000 );
-        // 6h 后过期
+        this.judge(data);
         let payLoad = {
             "type": "JWT",
             "user": data.uemail,
             "role": data.role,
-            "iat": nowTime,
         };
         // 秘钥
+        console.log("=== ~ payLoad ready");
         let pri_key = fs.readFileSync(__dirname + '\\rsa_private_key.pem');
         // 调用jwt包
         let token = jwt.sign(payLoad, pri_key, { algorithm: 'RS256', expiresIn: '1h' });
@@ -40,7 +39,7 @@ function JWT() {
                 // 验证出错: token过期 / token不正确
                 res = { "err" : err.message, "pass": false };
             } else {
-                console.log(payLoad);
+                console.log('=== ~ payload parsing successfully');
                 res = { "err" : null, "pass": true }
             }
         });
