@@ -9,7 +9,11 @@ const db_uri =`mongodb://${db_usr}:${db_pwd}@${db_url}`;
 // console.log(db_uri);
 
 // 增加 options 解决 node 20360 warning
-const client = new MongoClient(db_uri, {useUnifiedTopology: true});
+const client = new MongoClient(db_uri,
+    {   useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true
+    });
 
 // 查询用户 - 登录用
 exports.findUser = async function (target_user_email) {
@@ -29,10 +33,10 @@ exports.findUser = async function (target_user_email) {
         res = await userlist.find(query, options).toArray();
         return res;
     } finally{
-        await client.close();
+        console.log("=== ~ DONE. connection keeping");
+        // await client.close();
     }
 };
-
 
 // 添加用户 - 注册用
 exports.insertUser = async function (target_user){
@@ -42,7 +46,10 @@ exports.insertUser = async function (target_user){
         '_id' : target_user.uemail,
         'uname' : target_user.uname,
         'upwd' : target_user.upwd,
-        'postscript' : target_user.postscript
+        'pass' : false,
+        'postscript' : target_user.postscript,
+        'signup' : '',
+        'lastlog' : ''
     }
     
     try {
@@ -51,10 +58,11 @@ exports.insertUser = async function (target_user){
         // 验证
         await client.db("admin").command({ ping: 1 });
         console.log("=== ~ connected successfully");
-        const newusers = client.db('epdc_sys_db').collection('newusers');
-        res = await newusers.insertOne(doc);
+        const userlist = client.db('epdc_sys_db').collection('userlist');
+        res = await userlist.insertOne(doc);
         return res;
-    } finally{
-        await client.close();
+    } finally {
+        console.log("=== ~ DONE. connection keeping");
+        // await client.close();
     }
 }

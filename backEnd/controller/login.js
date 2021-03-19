@@ -3,8 +3,8 @@
 // 调用封装JWT工具
 const JWT = require('../certify/theJWT');
 const jwtutil = new JWT();
+// 
 const users = require('./db_users');
-
 
 // 测试数据
 // const usersList = [
@@ -25,7 +25,7 @@ async function login(data) {
         targetUser = await users.findUser(data.uemail);
         if (targetUser.length != 0) {
             targetUser = targetUser[0];
-            console.log(res1);
+            console.log('=== ~ res: ' + targetUser);
         } else {
             console.log("=== ! need to sign up");
             arr.token = undefined;

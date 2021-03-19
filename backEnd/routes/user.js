@@ -5,6 +5,7 @@ const router = express.Router();
 const login = require("../controller/login");
 router.post('/login', async (req, res, next) => {
   let data = req.body;
+  console.log(data);
   console.log("=== ~ receive POST : @ user " + data.uemail + " @ login");
   let arr = await login(data);
   console.log("=== ~ ready to send");

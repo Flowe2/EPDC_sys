@@ -1,7 +1,11 @@
 <template>
   <div>
     <div id="header" class="header">
-  
+      
+        <button class="button">
+          <router-link to="/adminLogin"></router-link>
+        </button>
+
     </div>
 
     <div id="form_box" class="form_box">
