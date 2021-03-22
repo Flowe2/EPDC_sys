@@ -1,4 +1,4 @@
-const users = require('./theMongoDB');
+const theDB = require('./theMongoDB');
 
 // 测试用户数据
 // const usersList = [
@@ -10,46 +10,70 @@ const users = require('./theMongoDB');
 
 // 测试管理员数据
 // const adminList = [
-//     { "account": "abc@123.com", "apwd": "123123" },
-//     { "account": "aaa@111.com", "apwd": "111111" },
-//     { "account": "bbb@222.com", "apwd": "222222" },
-//     { "account": "ccc@333.com", "apwd": "333333" }
+//     { "account": "admin", "apwd": "666666" },
+//     { "account": "flowe2", "apwd": "666666" }
 // ];
 
-// // test for 登录查询
+
+// ==========================================================
+// test for 用户登录查询    [OK]
 // let test1 = { "uemail": "abc@123.com", "upwd": "123123" };
 // let res1;
+// theDB.initDb().then(()=>{
+//     theDB.findUser(test1.uemail)
+//         .catch(console.dir)
+//         .then((res) => {
+//             if (res.length != 0) {
+//                 res1 = res[0];
+//                 console.log(res1);
+//             } else {
+//                 console.log("no result");
+//             }
+//             theDB.closeDb();
+//         });
+// });
 
-// users.findUser(test1.uemail)
-//     .catch(console.dir)
-//     .then((res) => {
-//         if (res.length != 0) {
-//             res1 = res[0];
-//             console.log(res1);
-//         } else {
-//             console.log("no result");
-//         }
-//         users.closeDb();
-//     });
 
-// test for 注册插入
-let test2 = {
-    "uemail": "954827899@qq.com",
-    "uname": "Flowe2",
-    "upwd": "123456",
-    "postscript": "注册插入测试"
-};
-let res2;
-users.insertUser(test2)
+// ==========================================================
+// test for 注册插入    [OK]
+// let test2 = {
+//     "uemail": "954827899@qq.com",
+//     "uname": "Flowe2",
+//     "upwd": "123456",
+//     "postscript": "注册插入测试"
+// };
+// let res2;
+// theDB.initDb().then(()=>{
+//     theDB.insertUser(test2)
+//         .catch(console.dir)
+//         .then((res) => {
+//             if (res != undefined) {
+//                 res2 = res;
+//                 console.log(res2);
+//                 console.log(`${res.insertedCount} documents were inserted with the _id: ${res.insertedId}`);
+//             } else {
+//                 res2 = "err";
+//                 console.log(res2);
+//             }
+//             theDB.closeDb();
+//         });
+// });
+
+
+// ==========================================================
+// test for 管理员登陆查询  [OK]
+let test3 = { "account": "admin", "apwd": "666666" };
+let res3;
+theDB.initDb().then(()=>{
+    theDB.findAdmin(test3.account)
     .catch(console.dir)
     .then((res) => {
-        if (res != undefined) {
-            res2 = res;
-            console.log(res2);
-            console.log(`${res.insertedCount} documents were inserted with the _id: ${res.insertedId}`);
+        if (res.length != 0) {
+            res3 = res[0];
+            console.log(res3);
         } else {
-            res2 = "err";
-            console.log(res2);
+            console.log("no result");
         }
-        users.closeDb();
+        theDB.closeDb();
     });
+});

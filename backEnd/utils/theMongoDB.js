@@ -31,8 +31,6 @@ exports.closeDb = async function () {
 
 // 查询用户 - 登录用
 exports.findUser = async function (target_user_email) {
-    await connectDb();
-    
     let res;
     // 预处理查询语句 查询数据
     const query = { '_id': target_user_email };
@@ -49,8 +47,6 @@ exports.findUser = async function (target_user_email) {
 
 // 添加用户 - 注册用
 exports.insertUser = async function (target_user){
-    await connectDb();
-    
     // 预处理查询语句 插入数据
     let res;
     const doc = {
@@ -73,13 +69,11 @@ exports.insertUser = async function (target_user){
 }
 
 // 查询管理员 - 登录用
-exports.findAdmin = async function (target_user_email) {
-    await connectDb();
-    
+exports.findAdmin = async function (target_admin_email) {
     let res;
     // 预处理查询语句 查询数据
-    const query = { '_id': target_user_email };
-    const options = {projection: {'_id':1, 'apwd': 1, 'lastlog': 0}};
+    const query = { '_id': target_admin_email };
+    const options = {projection: {'_id':1, 'apwd': 1}};
     
     try {
         const adminlist = client.db('epdc_sys_db').collection('adminlist');

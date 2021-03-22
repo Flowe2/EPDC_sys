@@ -30,7 +30,7 @@ async function login(data) {
     if (targetUser.pass == true) {
         if (targetUser.upwd == data.upwd) {
             // 验证通过, 生成token
-            // 预处理data给JWT
+            // 预处理给JWT的data
             data = { 'acount': data.uemail, 'role': false };
             token = jwtutil.generateToken(data);
             arr.ifPass = true;

@@ -29,6 +29,8 @@ async function adminlogin(data) {
     }
     if (targetAdmin.apwd == data.apwd) {
         // 验证通过, 生成token
+        // 预处理给JWT的data
+        data = { 'acount': data.account, 'role': true };
         token = jwtutil.generateToken(data);
         arr.ifPass = true;
         arr.token = token;
@@ -43,4 +45,4 @@ async function adminlogin(data) {
     }
 }
 
-module.exports = login;
+module.exports = adminlogin;
