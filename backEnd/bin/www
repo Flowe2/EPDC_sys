@@ -7,7 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('backend:server');
 var http = require('http');
-
+const theDB = require('../utils/theMongoDB');
 /**
  * Get port from environment and store in Express.
  */
@@ -25,7 +25,9 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, ()=>{
+  theDB.initDb();
+});
 server.on('error', onError, ()=>{
   theDB.closeDb();
 });
@@ -89,11 +91,34 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
+  console.log('=== ~ listening on ' + bind);
   debug('Listening on ' + bind);
 }
 
-async function onClose() {
-  await theDB.closeDb();
-  console.log('=== ! Now close node server');
+function onClose() {
+  theDB.closeDb();
+  console.log('=== ! CLOSED node server');
   process.exit(0);
 }
+
+// this function is called when you want the server to die gracefully
+// i.e. wait for existing connections
+var gracefulShutdown = function() {
+  console.log("=== ~ received kill signal, shutting down gracefully.");
+  server.close(function() {
+    console.log("=== ~ closed out remaining connections.");
+    process.exit()
+  });
+  
+   // if after 
+   setTimeout(function() {
+       console.error("=== ~ could not close connections in time, shutting down forcefully.");
+       process.exit()
+  }, 10*1000);
+}
+
+// listen for TERM signal .e.g. kill 
+process.on ('SIGTERM', gracefulShutdown);
+
+// listen for INT signal e.g. Ctrl-C
+process.on ('SIGINT', gracefulShutdown);

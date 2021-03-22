@@ -3,16 +3,8 @@
 // 调用封装JWT工具
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
-// 
-const users = require('../utils/theMongoDB');
-
-// 测试数据
-// const usersList = [
-//     { "uemail": "abc@123.com", "upwd": "123123" },
-//     { "uemail": "aaa@111.com", "upwd": "111111" },
-//     { "uemail": "bbb@222.com", "upwd": "222222" },
-//     { "uemail": "ccc@333.com", "upwd": "333333" }
-// ];
+// 数据库操作工具
+const thDB = require('../utils/theMongoDB');
 
 // 用户登录接口
 async function login(data) {
@@ -22,10 +14,10 @@ async function login(data) {
     let targetUser;
     // 查询用户
     try {
-        targetUser = await users.findUser(data.uemail);
+        targetUser = await thDB.findUser(data.uemail);
         if (targetUser.length != 0) {
             targetUser = targetUser[0];
-            console.log('=== ~ res: ' + targetUser);
+            console.log('=== ~ res: user exist');
         } else {
             console.log("=== ! need to sign up");
             arr.token = undefined;
@@ -38,6 +30,8 @@ async function login(data) {
     if (targetUser.pass == true) {
         if (targetUser.upwd == data.upwd) {
             // 验证通过, 生成token
+            // 预处理data给JWT
+            data = { 'acount': data.uemail, 'role': false };
             token = jwtutil.generateToken(data);
             arr.ifPass = true;
             arr.token = token;

@@ -3,23 +3,11 @@ const jwt = require('jsonwebtoken');
 
 // JWT 类
 function JWT() {
-    this.judge = function (data) {
-        if (data.amail == undefined) {
-            console.log("=== ~ request role : user");
-            data.role = false;
-        }
-        else {
-            console.log("=== ~ request role : admin");
-            data.role = true;
-        }
-    }
-
     // 生成token
     this.generateToken = function (data) {
-        this.judge(data);
         let payLoad = {
             "type": "JWT",
-            "user": data.uemail,
+            "user": data.account,
             "role": data.role,
         };
         // 秘钥

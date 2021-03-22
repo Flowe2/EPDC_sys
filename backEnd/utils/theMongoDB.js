@@ -11,12 +11,11 @@ const db_uri =`mongodb://${db_usr}:${db_pwd}@${db_url}`;
 // 增加 options 解决 node 20360 warning
 const client = new MongoClient(db_uri,
     {   useNewUrlParser: true,
-        useCreateIndex: true,
         useUnifiedTopology: true
     });
 
 // 初始化连接
-async function connectDb () {
+exports.initDb = async function () {
     // 连接数据库
     await client.connect();
     // 验证
@@ -25,9 +24,9 @@ async function connectDb () {
 }
 
 // 退出断开数据库连接
-exports.closeDb = function () { 
-    console.log("=== ~ closed connection with DB");
-    client.close();
+exports.closeDb = async function () { 
+    console.log("=== ! CLOSED connection with DB");
+    await client.close();
 }
 
 // 查询用户 - 登录用
@@ -69,6 +68,24 @@ exports.insertUser = async function (target_user){
         res = await userlist.insertOne(doc);
         return res;
     } finally {
-        console.log("=== ~ DONE. connection keeping");
+        console.log("=== ~ connection keeping");
     }
 }
+
+// 查询管理员 - 登录用
+exports.findAdmin = async function (target_user_email) {
+    await connectDb();
+    
+    let res;
+    // 预处理查询语句 查询数据
+    const query = { '_id': target_user_email };
+    const options = {projection: {'_id':1, 'apwd': 1, 'lastlog': 0}};
+    
+    try {
+        const adminlist = client.db('epdc_sys_db').collection('adminlist');
+        res = await adminlist.find(query, options).toArray();
+        return res;
+    } finally{
+        console.log("=== ~ connection keeping");
+    }
+};
