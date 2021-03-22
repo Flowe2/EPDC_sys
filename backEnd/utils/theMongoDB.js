@@ -15,31 +15,43 @@ const client = new MongoClient(db_uri,
         useUnifiedTopology: true
     });
 
+// 初始化连接
+async function connectDb () {
+    // 连接数据库
+    await client.connect();
+    // 验证
+    await client.db("admin").command({ ping: 1 });
+    console.log("=== ~ connected to DB successfully");
+}
+
+// 退出断开数据库连接
+exports.closeDb = function () { 
+    console.log("=== ~ closed connection with DB");
+    client.close();
+}
+
 // 查询用户 - 登录用
 exports.findUser = async function (target_user_email) {
+    await connectDb();
+    
     let res;
     // 预处理查询语句 查询数据
     const query = { '_id': target_user_email };
     const options = {projection: {'_id':1, 'upwd': 1, 'pass': 1}};
     
     try {
-        // 连接到数据库
-        
-        await client.connect();
-        // 验证
-        await client.db("admin").command({ ping: 1 });
-        console.log("=== ~ connected successfully");
         const userlist = client.db('epdc_sys_db').collection('userlist');
         res = await userlist.find(query, options).toArray();
         return res;
     } finally{
         console.log("=== ~ DONE. connection keeping");
-        // await client.close();
     }
 };
 
 // 添加用户 - 注册用
 exports.insertUser = async function (target_user){
+    await connectDb();
+    
     // 预处理查询语句 插入数据
     let res;
     const doc = {
@@ -53,16 +65,10 @@ exports.insertUser = async function (target_user){
     }
     
     try {
-        // 连接到数据库
-        await client.connect();
-        // 验证
-        await client.db("admin").command({ ping: 1 });
-        console.log("=== ~ connected successfully");
         const userlist = client.db('epdc_sys_db').collection('userlist');
         res = await userlist.insertOne(doc);
         return res;
     } finally {
         console.log("=== ~ DONE. connection keeping");
-        // await client.close();
     }
 }

@@ -1,8 +1,11 @@
-const users = require('./db_users');
+const users = require('./theMongoDB');
+
+
 
 // test for 登录查询
 let test1 = { "uemail": "11abc@123.com", "upwd": "123123" };
 let res1;
+
 users.findUser(test1.uemail)
     .catch(console.dir)
     .then((res) => {
@@ -12,7 +15,9 @@ users.findUser(test1.uemail)
         } else {
             console.log("no result");
         }
+        users.closeDb();
     });
+
 
 
 // // test for 注册插入

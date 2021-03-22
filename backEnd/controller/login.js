@@ -1,10 +1,10 @@
 // 用户登录验证controller
 
 // 调用封装JWT工具
-const JWT = require('../certify/theJWT');
+const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 
-const users = require('./db_users');
+const users = require('../utils/theMongoDB');
 
 // 测试数据
 // const usersList = [
