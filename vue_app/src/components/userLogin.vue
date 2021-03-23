@@ -1,13 +1,5 @@
 <template>
   <div>
-    <div id="header" class="header">
-      
-        <button class="button">
-          <router-link to="/adminLogin"></router-link>
-        </button>
-
-    </div>
-
     <div id="form_box" class="form_box">
       <div class="login-html">
         <input id="tab-1" type="radio" name="tab" class="sign-in" checked />
@@ -71,7 +63,7 @@
 
 <script>
 export default {
-  name: "userLogin",
+  name: "UserLogin",
   data () {
     return {
       u_login: {
@@ -184,12 +176,7 @@ button {
   border: none;
   font-size: 15px;
 }
-.header {
-  height: 80px;
-  width: 100%;
-  margin-bottom: 5px;
-  background: rgba(40, 57, 101, 0.9);
-}
+
 .form_box {
   width: 100%;
   margin: auto;
