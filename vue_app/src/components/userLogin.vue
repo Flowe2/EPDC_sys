@@ -92,8 +92,8 @@ export default {
         self.clearCookie();
       }
       // TODO axios请求
-      this.postLogin(self.u_login.uemail, self.u_login.upwd);
       console.log(self.u_login);
+      this.postLogin(self.u_login.uemail, self.u_login.upwd);
     },
 
     // 注册
@@ -114,13 +114,13 @@ export default {
     getCookie: function() {
       if (document.cookie.length > 0) {
         let arr = document.cookie.split("; ");
-        console.log(arr.toString());
+        // console.log(arr.toString());
         for (let i = 0; i < arr.length; i++) {
           let arr2 = arr[i].split("="); //再次切割
           //判断查找相对应的值
           if (arr2[0] == "userName") {
             this.u_login.uemail = arr2[1];
-            console.log(arr2[1]);
+            // console.log(arr2[1]);
           }
         }
       }
@@ -129,7 +129,7 @@ export default {
       this.setCookie("", -1); //修改2值都为空，天数为负1天就好了
     },
 
-    // 发送login信息到后端
+    // 发送login信息到后端, 并处理返回信息
     postLogin: function(email, pwd) {
       this.axios({
         method: "POST",
@@ -140,7 +140,22 @@ export default {
         }
       })
       .then(response => {
-        console.log(response.data);
+        // 处理登录结果
+        // 成功: { ifPass: true, token: '***' }
+        // 失败: { ifPass: false, err: '***' }
+        let res = JSON.stringify(response.data);
+        res = JSON.parse(res)
+        console.log(res);
+        if (res.ifPass == true) {
+          // 登录成功, 储存token, 跳转至quBank界面
+          localStorage.setItem("token", res.token);
+          alert("☺ 登录成功");
+          this.$router.push('/user/quBank');
+        } else {
+          // 登录失败
+          alert("登录失败: " + res.err);
+          this.$router.reslove('/user/login');
+        }
       })
       .catch(err => {
         console.log(err);

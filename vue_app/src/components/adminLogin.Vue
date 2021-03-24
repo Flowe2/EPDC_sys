@@ -1,5 +1,5 @@
 <template>
-  <body>
+  <div>
     <form class="form" method="get" action="/login" autocomplete="off">
       <div class="form-inner">
         <h2>管理员登录</h2>
@@ -45,12 +45,17 @@
         </div>
       </div>
     </form>
-  </body>
+  </div>
 </template>
 
 <script>
 export default {
-  
+  name: 'AdminLogin',
+  data () {
+    return {
+      
+    }
+  }
 };
 </script>
 
@@ -93,7 +98,7 @@ body {
   background: var(--color-tertiary);
 }
 
-a {
+/* a {
   color: var(--color-primary);
 }
 a:focus {
@@ -103,7 +108,7 @@ a:focus {
 h2 {
   font-weight: 700;
   font-size: calc(var(--font-size) * 1.5);
-}
+} */
 
 .form {
   position: relative;
