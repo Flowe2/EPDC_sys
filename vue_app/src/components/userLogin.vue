@@ -1,82 +1,155 @@
 <template>
-  <div id="loginBody">
+  <div class="loginBody">
+    <img class="login_bkg" :src="pic_list[pic_num]" >
+    
     <div id="form_box" class="form_box">
-      <div class="login-html">
-        <input id="tab-1" type="radio" name="tab" class="sign-in" checked />
+      <div class="content-box">
+        <input
+          id="tab-1"
+          type="radio"
+          name="tab"
+          class="base_input sign-in"
+          checked
+        />
         <label for="tab-1" class="tab">登 录</label>
-        <input id="tab-2" type="radio" name="tab" class="sign-up" />
+        <input id="tab-2" type="radio" name="tab" class="base_input sign-up" />
         <label for="tab-2" class="tab">注 册</label>
         <div class="login-form">
           <div class="sign-in-htm">
             <div class="group">
               <label for="email" class="label">邮 箱</label>
-              <input id="email" type="text" class="input" v-model="u_login.uemail"/>
+              <input
+                id="email"
+                type="text"
+                class="base_input input"
+                v-model="u_login.uemail"
+              />
             </div>
             <div class="group">
               <label for="pass" class="label">密 码</label>
-              <input id="pass" type="password" class="input" data-type="password" v-model="u_login.upwd"/>
+              <input
+                id="pass"
+                type="password"
+                class="base_input input"
+                data-type="password"
+                v-model="u_login.upwd"
+              />
             </div>
             <div class="group">
-              <input id="check" type="checkbox" class="check" v-model="u_login.remb"/>
-              <label for="check"><span class="icon">
-                </span> 记住我? </label>
+              <input
+                id="check"
+                type="checkbox"
+                class="base_input check"
+                v-model="u_login.remb"
+              />
+              <label for="check"><span class="icon"> </span> 记住我? </label>
             </div>
             <div class="group">
-              <input type="submit" class="button" value="登 录" @click="to_log_in"/>
+              <input
+                type="submit"
+                class="base_input button"
+                value="登 录"
+                @click="to_log_in"
+              />
             </div>
             <div class="hr"></div>
             <div class="foot-lnk">
-              <a href="#forgot"> 忘记密码? </a>
+              <a
+                class="forget"
+                href="mailto:954827899@qq.com?subject=[help]Forget/my/password"
+              >
+                忘记密码?
+              </a>
             </div>
           </div>
           <div class="sign-up-htm">
             <div class="group">
               <label for="email" class="label">邮 箱</label>
-              <input id="email" type="text" class="input" v-model="u_signup.uemail"/>
+              <input
+                id="email"
+                type="text"
+                class="base_input input"
+                v-model="u_signup.uemail"
+              />
             </div>
             <div class="group">
               <label for="name" class="label">用 户 名</label>
-              <input id="name" type="text" class="input" v-model="u_signup.uname"/>
+              <input
+                id="name"
+                type="text"
+                class="base_input input"
+                v-model="u_signup.uname"
+              />
             </div>
             <div class="group">
               <label for="pass" class="label">密 码</label>
-              <input id="pass" type="password" class="input" data-type="password" v-model="u_signup.upwd"/>
+              <input
+                id="pass"
+                type="password"
+                class="base_input input"
+                data-type="password"
+                v-model="u_signup.upwd"
+              />
             </div>
             <div class="group">
               <label for="pass" class="label">请 重 复 密 码</label>
-              <input id="pass" type="password" class="input" data-type="password" v-model="u_signup.upwd"/>
+              <input
+                id="pass"
+                type="password"
+                class="base_input input"
+                data-type="password"
+                v-model="u_signup.upwd"
+              />
             </div>
             <div class="group">
-              <input type="submit" class="button" value="注 册" @click="to_sign_up"/>
+              <input
+                type="submit"
+                class="base_input button"
+                value="注 册"
+                @click="to_sign_up"
+              />
             </div>
             <div class="hr"></div>
             <div class="foot-lnk">
-							<label for="tab-1">已有注册帐号?</label>
-						</div>
+              <label for="tab-1">已有注册帐号?</label>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="bkg_btn" @click="changePic(0)">Last</div>
+    <div class="bkg_btn" style="left: 75px" @click="changePic(1)">Next</div>
+
   </div>
 </template>
 
 
 <script>
+// 导入背景图片
+import pic0 from '@/assets/login_bkg/01.jpg';
+import pic1 from '@/assets/login_bkg/02.jpg';
+import pic2 from '@/assets/login_bkg/03.jpg';
+import pic3 from '@/assets/login_bkg/04.jpg';
+import pic4 from '@/assets/login_bkg/05.jpg';
+
 export default {
   name: "UserLogin",
-  data () {
+  data() {
     return {
       u_login: {
-        uemail: '',
-        upwd: '',
-        remb: false
+        uemail: "",
+        upwd: "",
+        remb: false,
       },
       u_signup: {
-        uemail: '',
-        uname: '',
-        upwd: ''
-      }
-    }
+        uemail: "",
+        uname: "",
+        upwd: "",
+      },
+      pic_list: [ pic0, pic1, pic2, pic3, pic4 ],
+      pic_num: 0,
+    };
   },
   methods: {
     // 登录
@@ -101,17 +174,17 @@ export default {
       console.log(this.u_singup);
     },
 
-
     // cookie 操作
     // 设置cookie
     setCookie(uemial, days) {
       let exdate = new Date(); //获取时间
       exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * days); //保存的天数
       //字符串拼接cookie
-      window.document.cookie = "userName=" + uemial + ";path=/;expires=" + exdate.toGMTString();
+      window.document.cookie =
+        "userName=" + uemial + ";path=/;expires=" + exdate.toGMTString();
     },
     // 读取cookie
-    getCookie: function() {
+    getCookie: function () {
       if (document.cookie.length > 0) {
         let arr = document.cookie.split("; ");
         // console.log(arr.toString());
@@ -125,72 +198,96 @@ export default {
         }
       }
     },
-    clearCookie: function() {
+    clearCookie: function () {
       this.setCookie("", -1); //修改2值都为空，天数为负1天就好了
     },
 
     // 发送login信息到后端, 并处理返回信息
-    postLogin: function(email, pwd) {
+    postLogin: function (email, pwd) {
       this.axios({
         method: "POST",
         url: "http://localhost:3000/user/login",
         data: {
-          "uemail": email,
-          "upwd": pwd
-        }
+          uemail: email,
+          upwd: pwd,
+        },
       })
-      .then(response => {
-        // 处理登录结果
-        // 成功: { ifPass: true, token: '***' }
-        // 失败: { ifPass: false, err: '***' }
-        let res = JSON.stringify(response.data);
-        res = JSON.parse(res)
-        console.log(res);
-        if (res.ifPass == true) {
-          // 登录成功, 储存token, 跳转至quBank界面
-          localStorage.setItem("timeStamp", res.timeStamp);
-          localStorage.setItem("token", res.token);
-          alert("☺ 登录成功");
-          this.$router.push('/user/quBank');
-        } else {
-          // 登录失败
-          alert("登录失败: " + res.err);
-          this.$router.reslove('/user/login');
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
+        .then((response) => {
+          // 处理登录结果
+          // 成功: { ifPass: true, token: '***' }
+          // 失败: { ifPass: false, err: '***' }
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          console.log(res);
+          if (res.ifPass == true) {
+            // 登录成功, 储存token, 跳转至quBank界面
+            localStorage.setItem("timeStamp", res.timeStamp);
+            localStorage.setItem("token", res.token);
+            alert("☺ 登录成功");
+            this.$router.push("/user/quBank");
+          } else {
+            // 登录失败
+            alert("登录失败: " + res.err);
+            this.$router.reslove("/user/login");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    // 图片切换
+    changePic: function (fob) {
+      if (fob == 1) {
+        this.pic_num = (this.pic_num + 1) % 5;
+        console.log("next");
+      }
+      else {
+        this.pic_num = (this.pic_num - 1) % 5;
+        console.log("last");
+      }
     }
   },
-  mounted: function(){
+  mounted: function () {
+    // 获取缓存, 记住用户
     this.getCookie();
-  }
+  },
 };
 </script>
 
 
 <style scoped>
-#loginBody {
+.loginBody {
+  width: 100%;
+  height: calc(100% - 85px);
   margin: 0;
+  position: absolute;
   color: #6a6f8c;
-  background: #c8c8c8;
-  font: 600 16px/18px "Open Sans", sans-serif;
+  background-size: 100%;
+  background-color: #c8c8c8;
 }
-*,
-:after,
-:before {
-  box-sizing: border-box;
+
+.login_bkg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 0;
 }
-a {
-  color: inherit;
-  text-decoration: none;
-}
-input,
-button {
-  outline: none;
-  border: none;
-  font-size: 15px;
+
+.bkg_btn {
+  width: 50px;
+  height: 30px;
+  margin: 15px;
+  display:inline;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  color: white;
+  background: #6a6f8c;
+  border-radius: 15%;
+  text-align: center;
+  font-size: 20px;
+  box-shadow: -5px 18px 15px 5px rgb(0 0 0 / 24%), 0 17px 50px 0 rgb(0 0 0 / 19%);
 }
 
 .form_box {
@@ -203,15 +300,20 @@ button {
   box-shadow: -5px 18px 15px 5px rgba(0, 0, 0, 0.24),
     0 17px 50px 0 rgba(0, 0, 0, 0.19);
 }
-.login-html {
+.content-box {
   width: 100%;
   height: 100%;
   position: absolute;
   padding: 90px 70px 50px 70px;
   background: rgba(40, 57, 101, 0.9);
 }
-.login-html .sign-in-htm,
-.login-html .sign-up-htm {
+.base_input {
+  outline: none;
+  border: none;
+  font-size: 15px;
+}
+.content-box .sign-in-htm,
+.content-box .sign-up-htm {
   top: 0;
   left: 0;
   right: 0;
@@ -224,12 +326,12 @@ button {
   -webkit-transition: all 0.4s linear;
   transition: all 0.4s linear;
 }
-.login-html .sign-in,
-.login-html .sign-up,
+.content-box .sign-in,
+.content-box .sign-up,
 .login-form .group .check {
   display: none;
 }
-.login-html .tab {
+.content-box .tab {
   font-size: 22px;
   margin-right: 15px;
   padding-bottom: 5px;
@@ -237,8 +339,8 @@ button {
   display: inline-block;
   border-bottom: 2px solid transparent;
 }
-.login-html .sign-in:checked + .tab,
-.login-html .sign-up:checked + .tab {
+.content-box .sign-in:checked + .tab,
+.content-box .sign-up:checked + .tab {
   color: #fff;
   border-color: #1161ee;
 }
@@ -327,7 +429,7 @@ button {
   -ms-transform: scale(1) rotate(-45deg);
   transform: scale(1) rotate(-45deg);
 }
-.login-html
+.content-box
   .sign-in:checked
   + .tab
   + .sign-up
@@ -338,7 +440,7 @@ button {
   -ms-transform: rotate(0);
   transform: rotate(0);
 }
-.login-html .sign-up:checked + .tab + .login-form .sign-up-htm {
+.content-box .sign-up:checked + .tab + .login-form .sign-up-htm {
   -webkit-transform: rotate(0);
   -ms-transform: rotate(0);
   transform: rotate(0);
@@ -350,5 +452,9 @@ button {
 }
 .foot-lnk {
   text-align: center;
+}
+.forget {
+  color: inherit;
+  text-decoration: none;
 }
 </style>

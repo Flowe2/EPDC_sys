@@ -5,7 +5,8 @@
     <nav class="shelf">
       <a class="book home-page" @click="toUser">User Home</a>
       <a class="book about-us" @click="toAdmin">Admin Home</a>
-      <a class="book contact" href="mailto:test@abc.com?subject=测试发邮件&body=就是一个测试邮件">Contact</a>
+      <!-- 管理员邮箱 -->
+      <a class="book contact" href="mailto:954827899@qq.com?subject=Contact Us">Contact</a>
       <a class="book faq" @click="toAbout">F.A.Q.</a>
 
       <span class="book not-found"></span>
