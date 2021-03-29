@@ -1,26 +1,39 @@
 <template>
-  <div id="header">
-    
-  </div>
+  <div>
+    <div id="headbar">
+      <UserHeadBar :logged=userLogged :role=role></UserHeadBar>
+    </div>
 
-  <div id="display">
-    <router-view/>
+    <!-- 分界线 -->
+    <div id="divider"></div>
+
+    <div id="display">
+      <router-view></router-view>
+    </div>
   </div>
-  
 </template>
 
 <script>
+import UserHeadBar from '@/components/UserHeadBar.vue';
+
 export default {
-  name: 'Admin',
-  data () {
+  name: "Admin",
+  data() {
     return {
-      
-    }
+      role: true,
+
+    };
   },
-  beforeCreate: {
-    initLogin: function () {
-      this.$router.push('/login');
-    }
+  components: {
+    UserHeadBar
+  },
+  beforeCreate () {
+    this.$router.push('/admin/login');
   }
-}
+};
 </script>
+
+<style>
+
+
+</style>

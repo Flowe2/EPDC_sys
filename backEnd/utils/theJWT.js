@@ -14,6 +14,7 @@ function JWT() {
         console.log("=== ~ payLoad ready");
         let pri_key = fs.readFileSync(__dirname + '\\rsa_private_key.pem');
         // 调用jwt包
+        // 1h 后过期
         let token = jwt.sign(payLoad, pri_key, { algorithm: 'RS256', expiresIn: '1h' });
         return token;
     };

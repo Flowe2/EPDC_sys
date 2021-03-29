@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="loginBody">
     <div id="form_box" class="form_box">
       <div class="login-html">
         <input id="tab-1" type="radio" name="tab" class="sign-in" checked />
@@ -148,6 +148,7 @@ export default {
         console.log(res);
         if (res.ifPass == true) {
           // 登录成功, 储存token, 跳转至quBank界面
+          localStorage.setItem("timeStamp", res.timeStamp);
           localStorage.setItem("token", res.token);
           alert("☺ 登录成功");
           this.$router.push('/user/quBank');
@@ -170,7 +171,7 @@ export default {
 
 
 <style scoped>
-body {
+#loginBody {
   margin: 0;
   color: #6a6f8c;
   background: #c8c8c8;

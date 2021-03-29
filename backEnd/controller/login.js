@@ -10,7 +10,6 @@ const thDB = require('../utils/theMongoDB');
 async function login(data) {
     // console.log("=== ~ " + data);
     let arr = { "ifPass": false, "token": '' };
-    let token = '';
     let targetUser;
     // 查询用户
     try {
@@ -32,9 +31,9 @@ async function login(data) {
             // 验证通过, 生成token
             // 预处理给JWT的data
             data = { 'acount': data.uemail, 'role': false };
-            token = jwtutil.generateToken(data);
             arr.ifPass = true;
-            arr.token = token;
+            arr.token = jwtutil.generateToken(data);
+            arr.timeStamp = Math.floor( Date.now() /1000 );
             // console.log(arr);
             return arr;
         }

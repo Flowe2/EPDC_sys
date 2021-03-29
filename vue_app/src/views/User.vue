@@ -1,80 +1,42 @@
 <template>
-  <!-- head bar -->
-  <div id="header">
-    <!-- 登录后显示头像区域 -->
-    <UserHead :logged='userLogged'></UserHead>
-
-    <!-- 登录前显示管理员跳转区域 -->
-    <div id="admin" v-if="!userLogged">
-      <button id="headerButton">
-        <router-link style="text-decoration: none;" to="/admin/login">管理员登陆</router-link>
-      </button>
+  <div>
+    <!-- head bar -->
+    <div id="headbar">
+      <UserHeadBar :logged=userLogged :role=role></UserHeadBar>
     </div>
-  </div>
 
-  <!--  -->
-  <div id="display">
-    <router-view></router-view>
+    <!-- 分界线 -->
+    <div id="divider"></div>
+
+    <!-- router result -->
+    <div id="display">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
 <script>
-import UserHead from '@/components/UserHead.vue';
+import UserHeadBar from '@/components/UserHeadBar.vue';
 
 export default {
   name: "User",
   data() {
     return {
+        role: false,
         userLogged: false,
     };
   },
   methods: {},
   components: {
-    UserHead
+    UserHeadBar
   },
+  beforeCreate () {
+    this.$router.push('/user/login');
+  }
 };
 </script>
 
 <style>
-#header {
-  height: 80px;
-  width: 100%;
-  margin-bottom: 5px;
-  background: rgba(40, 57, 101, 0.9);
-}
 
-#display {
-}
 
-#header #user {
-    margin: 10px 10px;
-    width: 50px;
-    height: 50px;
-    float: left;
-    border-radius: 50%;
-}
-
-#userface {
-    padding: 2.5px;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: #1161ee;
-}
-
-#userface:hover {
-    width: 55px;
-    height: 55px;
-}
-
-#header #headerButton {
-  margin: 25px;
-  padding: 10px 15px;
-  float: right;
-  text-decoration: none;
-  outline: none;
-  border: none;
-  border-radius: 25px;
-  background: #1161ee;
-}
 </style>

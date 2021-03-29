@@ -1,8 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import User from '@/views/User.vue';
+import Admin from '@/views/Admin.vue';
 
-import User from '../views/User.vue';
-import Admin from '../views/Admin.vue';
+import UserLogin from '@/components/UserLogin.vue';
+import AdminLogin from '@/components/AdminLogin.vue';
+
+import QuBank from '@/components/QuBank.vue';
+import Manage from '@/components/Manage.vue';
+
+import About from '@/views/About.vue';
+import NotFound from '@/views/NotFound.vue';
 
 const routes = [
   {
@@ -11,22 +19,21 @@ const routes = [
     component: User,
     children: [
       {
-        path: '/',
-        redirect: '/user/QuBank'
-      },
-      {
-        path: '/user/quBank',
+        path: 'qubank',
         name: 'QuBank',
-        component: () => import('../components/QuBank.vue'),
+        component: QuBank,
         meta: {
           // token验证
           ifPass: true
         }
       },
       {
-        path: '/user/login',
-        name: 'UserLogin',
-        component: () => import('../components/UserLogin.vue')
+        path: '/',
+        redirect: '/user'
+      },
+      {
+        path: 'login',
+        component: UserLogin
       }
     ]
   },
@@ -36,21 +43,29 @@ const routes = [
     component: Admin,
     children: [
       {
-        path: '/admin/manage',
-        name: "Manage",
-        // component: () => (),
+        path: 'manage',
+        component: Manage,
         meta: {
           // token验证
           ifAPass: true
         }
       },
       {
-        path: '/admin/login',
-        name: 'AdminLogin',
-        component: () => import('../components/AdminLogin.vue'),
+        path: 'login',
+        component: AdminLogin,
       }
     ]
   },
+  {
+    path: '/about',
+    name: 'About',
+    component: About
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: NotFound
+  }
 ]
 
 const router = createRouter({
@@ -58,29 +73,10 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(function (to, from, next) {
-  if (to.meta.ifPass) {
-    //页面是否用户登录
-    if (localStorage.getItem("token")) {
-      // 已登录, 继续跳转
-      next();
-    } else {
-      // 未登录, 跳转至用户登录页面
-      next({ name: "UserLogin" });
-    }
-  } else if (to.meta.ifAPass) {
-    //页面是否管理员登录
-    if (localStorage.getItem("token")) {
-      // 已登录, 继续跳转
-      next();
-    } else {
-      // 未登录, 跳转至管理员登录页面
-      next({ name: "AdminLogin" });
-    }
-  } else {
-    //表示不需要登录
-    next(); //继续往后走
-  }
-});
+// good example:
+router.resolve({
+  name: 'not-found',
+  params: { pathMatch: ['not', 'found'] },
+}).href // '/not/found'
 
 export default router

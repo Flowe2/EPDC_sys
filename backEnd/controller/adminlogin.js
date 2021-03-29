@@ -9,8 +9,7 @@ const thDB = require('../utils/theMongoDB');
 // 用户登录接口
 async function adminlogin(data) {
     // console.log("=== ~ " + data);
-    let arr = { "ifPass": false, "token": '' };
-    let token = '';
+    let arr = { "ifAPass": false, "token": ''};
     let targetAdmin;
     // 查询用户
     try {
@@ -31,9 +30,9 @@ async function adminlogin(data) {
         // 验证通过, 生成token
         // 预处理给JWT的data
         data = { 'acount': data.account, 'role': true };
-        token = jwtutil.generateToken(data);
-        arr.ifPass = true;
-        arr.token = token;
+        arr.ifAPass = true;
+        arr.token = jwtutil.generateToken(data);
+        arr.timeStamp = Math.floor( Date.now() /1000 );
         // console.log(arr);
         return arr;
     }
