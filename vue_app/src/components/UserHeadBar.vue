@@ -47,7 +47,7 @@ export default {
   float: left;
 }
 #admin {
-  float: right;
+  float: left;
 }
 
 .face {

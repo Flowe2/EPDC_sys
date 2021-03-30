@@ -17,6 +17,10 @@ const routes = [
     path: '/user',
     name: 'User',
     component: User,
+    meta: {
+      // token验证
+      ifPass: true
+    },
     children: [
       {
         path: 'qubank',
@@ -41,6 +45,10 @@ const routes = [
     path: '/admin',
     name: 'Admin',
     component: Admin,
+    meta: {
+      // token验证
+      ifAPass: true
+    },
     children: [
       {
         path: 'manage',
@@ -64,7 +72,8 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    component: NotFound
+    component: NotFound,
+    props: true
   }
 ]
 
@@ -73,7 +82,7 @@ const router = createRouter({
   routes
 })
 
-// good example:
+// 404 match
 router.resolve({
   name: 'not-found',
   params: { pathMatch: ['not', 'found'] },

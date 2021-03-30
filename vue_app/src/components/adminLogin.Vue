@@ -13,7 +13,6 @@
                 </path>
               </svg>
             </span>
-            <!-- 方便测试, 写入, 记得删 -->
             <input class="al-input" type="text" id="account" v-model="a_login.account" />
           </div>
         </div>
@@ -27,7 +26,6 @@
                 </path>
               </svg>
             </span>
-            <!-- 方便测试, 写入, 记得删 -->
             <input class="al-input" type="password" id="apwd" v-model="a_login.apwd" />
           </div>
         </div>
@@ -46,8 +44,8 @@ export default {
   data () {
     return {
       a_login: {
-        account: '',
-        apwd: ''
+        account: 'admin',
+        apwd: '666666'
       }
     }
   },
@@ -56,13 +54,13 @@ export default {
     to_log_in: function () {
       const self = this;
       console.log(self.a_login);
-      // this.postLogin(self.a_login.account, self.a_login.apwd);
+      this.postLogin(self.a_login.account, self.a_login.apwd);
     },
     // 发送login信息到后端, 并处理返回信息
     postLogin: function(account, pwd) {
       this.axios({
         method: "POST",
-        url: "http://localhost:3000/user/login",
+        url: "http://localhost:3000/admin/login",
         data: {
           "account": account,
           "apwd": pwd
@@ -75,16 +73,16 @@ export default {
         let res = JSON.stringify(response.data);
         res = JSON.parse(res)
         console.log(res);
-        if (res.ifPass == true) {
+        if (res.ifAPass == true) {
           // 登录成功, 储存token, 跳转至quBank界面
           localStorage.setItem("timeStamp", res.timeStamp);
-          localStorage.setItem("token", res.token);
+          localStorage.setItem("token", res.atoken);
           alert("☺ 登录成功");
-          this.$router.push('/user/quBank');
+          this.$router.push('/admin/manage');
         } else {
           // 登录失败
           alert("登录失败: " + res.err);
-          this.$router.reslove('/user/login');
+          this.$router.reslove('/admin/login');
         }
       })
       .catch(err => {
@@ -114,7 +112,8 @@ export default {
   place-items: center;
   margin: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 85px);
+  position: absolute;
   padding: var(--space-m);
   font-size: var(--font-size);
   font-family: var(--font-family);

@@ -2,6 +2,8 @@
   <div class="notFound">
     <h1 class="errH1">Error 404</h1>
 
+    <h3 class="errH3">target address not found, please check again...</h3>
+
     <nav class="shelf">
       <a class="book home-page" @click="toUser">User Home</a>
       <a class="book about-us" @click="toAdmin">Admin Home</a>
@@ -9,7 +11,7 @@
       <a class="book contact" href="mailto:954827899@qq.com?subject=Contact Us">Contact</a>
       <a class="book faq" @click="toAbout">F.A.Q.</a>
 
-      <span class="book not-found"></span>
+      <span class="book not-found">{{ err_path }}</span>
 
       <span class="door left"></span>
       <span class="door right"></span>
@@ -23,7 +25,9 @@
 export default {
   name: "NotFound",
   data() {
-    return {};
+    return {
+      err_path: ''
+    };
   },
   methods: {
     toUser () {
@@ -42,6 +46,11 @@ export default {
       });
     },
   },
+  beforeRouteEnter(to, from, next) {
+    next( NotFound => {
+      NotFound.err_path = to.path;
+    })
+  }
 };
 </script>
 
@@ -86,13 +95,17 @@ export default {
   margin-top: 30px;
 }
 
+.errH3 {
+  font-size: 40px;
+}
+
 .errP {
   font-family: "Microsoft YaHei", "Segoe UI", "Lucida Grande", Helvetica, Arial,
     sans-serif;
 }
 
 .shelf {
-  margin-top: 150px;
+  margin-top: 100px;
   position: relative;
   width: 30rem;
   height: 14rem;
