@@ -76,7 +76,7 @@ export default {
         if (res.ifAPass == true) {
           // 登录成功, 储存token, 跳转至quBank界面
           localStorage.setItem("timeStamp", res.timeStamp);
-          localStorage.setItem("token", res.atoken);
+          localStorage.setItem("atoken", res.atoken);
           alert("☺ 登录成功");
           this.$router.push('/admin/manage');
         } else {

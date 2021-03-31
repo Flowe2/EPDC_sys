@@ -29,7 +29,7 @@ export default {
   },
   beforeCreate() {
     // this.$router.push('/admin/login');
-    if (localStorage.getItem("token") != null) {
+    if (localStorage.getItem("atoken") != null) {
       // token是否过期
       let validTime = Math.floor(Date.now() / 1000) - 60 * 60;
       if (localStorage.getItem("timeStamp") > validTime) {
