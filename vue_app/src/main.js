@@ -1,10 +1,13 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import axios from 'axios'
-import VueAxios from 'vue-axios'
-import router from './router/index'
+import { createApp } from 'vue';
+import ElementPlus  from 'element-plus';
+import 'element-plus/lib/theme-chalk/index.css' // 主题样式需要单独引入
+import App from './App.vue';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+import router from './router/index';
 
 createApp(App)
+    .use(ElementPlus)
     .use(router)            // Vue-router
     .use(VueAxios, axios)   // VueAxios中间件
     .mount('#app');
