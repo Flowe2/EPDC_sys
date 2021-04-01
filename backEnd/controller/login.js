@@ -6,7 +6,7 @@ const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
 
-// 用户登录接口
+// 用户登录处理
 async function login(data) {
     // console.log("=== ~ " + data);
     let arr = { "ifPass": false, "token": '' };

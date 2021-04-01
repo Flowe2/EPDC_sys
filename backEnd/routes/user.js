@@ -1,8 +1,9 @@
+// addr: ip:port/user
 const express = require('express');
 const router = express.Router();
 
 // 登录接口
-const login = require("../controller/login");
+const login = require('../controller/login');
 router.post('/login', async (req, res, next) => {
   let data = req.body;
   // console.log(data);

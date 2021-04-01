@@ -16,7 +16,7 @@ const theDB = require('./theMongoDB');
 
 
 // ==========================================================
-// test for 用户登录查询    [OK]
+// test #1 for 用户登录查询    [OK]
 // let test1 = { "uemail": "abc@123.com", "upwd": "123123" };
 // let res1;
 // theDB.initDb().then(()=>{
@@ -35,7 +35,7 @@ const theDB = require('./theMongoDB');
 
 
 // ==========================================================
-// test for 注册插入    [OK]
+// test #2 for 注册插入    [OK]
 // let test2 = {
 //     "uemail": "954827899@qq.com",
 //     "uname": "Flowe2",
@@ -61,19 +61,54 @@ const theDB = require('./theMongoDB');
 
 
 // ==========================================================
-// test for 管理员登陆查询  [OK]
-let test3 = { "account": "admin", "apwd": "666666" };
-let res3;
+// test #3 for 管理员登陆查询  [OK]
+// let test3 = { "account": "admin", "apwd": "666666" };
+// let res3;
+// theDB.initDb().then(()=>{
+//     theDB.findAdmin(test3.account)
+//     .catch(console.dir)
+//     .then((res) => {
+//         if (res.length != 0) {
+//             res3 = res[0];
+//             console.log(res3);
+//         } else {
+//             console.log("no result");
+//         }
+//         theDB.closeDb();
+//     });
+// });
+
+
+// ==========================================================
+// test #4 for 账号维护查询    [OK]
+// let res4;
+// theDB.initDb().then(()=>{
+//     theDB.findCheckedUser()
+//         .catch(console.dir)
+//         .then((res) => {
+//             if (res.length != 0) {
+//                 res4 = res;
+//                 console.log(res4);
+//             } else {
+//                 console.log("no result");
+//             }
+//             theDB.closeDb();
+//         });
+// });
+
+// ==========================================================
+// test #5 for 注册管理查询    [OK]
+let res5;
 theDB.initDb().then(()=>{
-    theDB.findAdmin(test3.account)
-    .catch(console.dir)
-    .then((res) => {
-        if (res.length != 0) {
-            res3 = res[0];
-            console.log(res3);
-        } else {
-            console.log("no result");
-        }
-        theDB.closeDb();
-    });
+    theDB.findCheckingUser()
+        .catch(console.dir)
+        .then((res) => {
+            if (res.length != 0) {
+                res5 = res;
+                console.log(res5);
+            } else {
+                console.log("no result");
+            }
+            theDB.closeDb();
+        });
 });

@@ -29,6 +29,8 @@ exports.closeDb = async function () {
     await client.close();
 }
 
+/* ================================== for users ================================== */
+
 // 查询用户 - 登录用
 exports.findUser = async function (target_user_email) {
     let res;
@@ -68,6 +70,8 @@ exports.insertUser = async function (target_user){
     }
 }
 
+/* ================================== for admin ================================== */
+
 // 查询管理员 - 登录用
 exports.findAdmin = async function (target_admin_email) {
     let res;
@@ -81,5 +85,37 @@ exports.findAdmin = async function (target_admin_email) {
         return res;
     } finally{
         console.log("=== ~ connection keeping");
+    }
+};
+
+// 查询通过注册的用户 - 用户管理用
+exports.findCheckedUser = async function () {
+    let res;
+    // 预处理查询语句 查询数据
+    const query = { 'pass': true };
+    const options = {projection: {'_id':1, 'uname': 1, 'lastlog': 1}};
+    
+    try {
+        const userlist = client.db('epdc_sys_db').collection('userlist');
+        res = await userlist.find(query, options).toArray();
+        return res;
+    } finally{
+        console.log("=== ~ DONE. connection keeping");
+    }
+};
+
+// 查询通过注册的用户 - 用户管理用
+exports.findCheckingUser = async function () {
+    let res;
+    // 预处理查询语句 查询数据
+    const query = { 'pass': false };
+    const options = {projection: {'_id':1, 'uname': 1, 'postscript': 1, 'signup': 1}};
+    
+    try {
+        const userlist = client.db('epdc_sys_db').collection('userlist');
+        res = await userlist.find(query, options).toArray();
+        return res;
+    } finally{
+        console.log("=== ~ DONE. connection keeping");
     }
 };

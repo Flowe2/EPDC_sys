@@ -6,10 +6,10 @@ const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
 
-// 用户登录接口
+// 管理员登录处理
 async function adminlogin(data) {
     // console.log("=== ~ " + data);
-    let arr = { "ifAPass": false, "token": ''};
+    let arr = { "ifAPass": false, "atoken": ''};
     let targetAdmin;
     // 查询用户
     try {
@@ -19,7 +19,7 @@ async function adminlogin(data) {
             console.log('=== ~ res: admin exist');
         } else {
             console.log("=== ! no such a administrator");
-            arr.token = undefined;
+            arr.atoken = undefined;
             arr.err = "no such a administrator";
             return arr;
         }
@@ -31,14 +31,14 @@ async function adminlogin(data) {
         // 预处理给JWT的data
         data = { 'acount': data.account, 'role': true };
         arr.ifAPass = true;
-        arr.token = jwtutil.generateToken(data);
+        arr.atoken = jwtutil.generateToken(data);
         arr.timeStamp = Math.floor( Date.now() /1000 );
         // console.log(arr);
         return arr;
     }
     else {
         console.log("=== ! error password");
-        arr.token = undefined;
+        arr.atoken = undefined;
         arr.err = "error password";
         return arr;
     }
