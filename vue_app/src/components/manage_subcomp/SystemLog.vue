@@ -1,18 +1,17 @@
 <template>
   <div>
-      SignupCheck page test
+      SystemLog page test
   </div>
 </template>
 
 <script>
 export default {
-    name: 'SignupCheck',
+    name: 'SystemLog',
     data () {
         return {
             
         }
-    },
-    
+    }
 }
 </script>
 

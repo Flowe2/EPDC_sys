@@ -3,39 +3,39 @@
     <!-- 左侧边栏 -->
     <el-aside class="mAside" width="auto">
       <!-- 导航栏内容 -->
-      <el-menu default-active="1-1" class="mAsideMenu" :collapse="isCollapse">
+      <el-menu :default-active="indexList[0].path" class="mAsideMenu" :collapse="isCollapse" router="true">
         <!-- 切换按钮 -->
         <button class="mAsideCollapBtn" @click="isCollapse = !isCollapse">
           <i class="el-icon-s-unfold"></i>
         </button>
-        <el-submenu index="1">
+        <el-submenu class="mAsideMenuFont">
           <template #title>
             <i class="el-icon-user-solid"></i>
-            <span>用 户 管 理</span>
+            <span>用户管理</span>
           </template>
-          <el-menu-item index="1-1">
+          <el-menu-item class="mAsideSubMenuFont" :index="indexList[0].path">
             <i class="el-icon-edit"></i>
-            <template #title>帐号维护</template>
+            <template #title>{{ indexList[0].name }}</template>
           </el-menu-item>
-          <el-menu-item index="1-2">
+          <el-menu-item class="mAsideSubMenuFont" :index="indexList[1].path" widt='20px'>
             <i class="el-icon-document-checked"></i>
-            <template #title>注册管理</template>
+            <template #title>{{ indexList[1].name }}</template>
           </el-menu-item>
         </el-submenu>
-        <el-menu-item index="2">
+        <el-menu-item class="mAsideMenuFont" :index="indexList[2].path">
           <i class="el-icon-menu"></i>
-          <template #title>系 统 日 志</template>
+          <template #title>{{ indexList[2].name }}</template>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item class="mAsideMenuFont" :index="indexList[3].path">
           <i class="el-icon-setting"></i>
-          <template #title>设 置</template>
+          <template #title>{{ indexList[3].name }}</template>
         </el-menu-item>
       </el-menu>
     </el-aside>
 
     <!-- display area -->
     <el-main>
-      test
+      <router-view></router-view>
     </el-main>
   </el-container>
 </template>
@@ -46,9 +46,35 @@ export default {
   data() {
     return {
       isCollapse: true,
+      indexList: [
+        {
+          path: '/admin/manage/usermaintain',
+          name: '账号维护'
+        },
+        {
+          path: '/admin/manage/signupcheck',
+          name: '注册管理'
+        },
+        {
+          path: '/admin/manage/systemlog',
+          name: '系统日志'
+        },
+        {
+          path: '/admin/manage/adminsetting',
+          name: '设置'
+        },
+      ],
+      viewName: '',
     };
   },
-  methods: {},
+  methods: {
+    test: function () {
+      console.log();
+    }
+  },
+  beforeMount () {
+    this.$router.push(this.indexList[0].path);
+  }
 };
 </script>
 
@@ -82,6 +108,14 @@ export default {
 
 .mAsideMenu:not(.el-menu--collapse) {
   min-width: 175px;
+}
+
+.mAsideMenuFont {
+
+}
+
+.mAsideSubMenuFont {
+
 }
 
 .mMainBody {

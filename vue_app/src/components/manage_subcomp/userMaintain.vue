@@ -1,10 +1,12 @@
 <template>
-  
+  <div>
+      UserMaintain page test
+  </div>
 </template>
 
 <script>
 export default {
-    name: 'userMaintain',
+    name: 'UserMaintain',
     data () {
         return {
             test: [

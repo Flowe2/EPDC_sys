@@ -1,18 +1,17 @@
 <template>
   <div>
-      SignupCheck page test
+      AdminSetting page test
   </div>
 </template>
 
 <script>
 export default {
-    name: 'SignupCheck',
+    name: 'AdminSetting',
     data () {
         return {
             
         }
-    },
-    
+    }
 }
 </script>
 

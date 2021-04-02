@@ -7,7 +7,12 @@ import UserLogin from '@/components/UserLogin.vue';
 import AdminLogin from '@/components/AdminLogin.vue';
 
 import QuBank from '@/components/QuBank.vue';
+
 import Manage from '@/components/Manage.vue';
+import UserMaintain from '@/components/manage_subcomp/UserMaintain.vue';
+import SignupCheck from '@/components/manage_subcomp/SignupCheck.vue';
+import SystemLog from '@/components/manage_subcomp/SystemLog.vue';
+import AdminSetting from '@/components/manage_subcomp/AdminSetting.vue';
 
 import About from '@/views/About.vue';
 import NotFound from '@/views/NotFound.vue';
@@ -23,17 +28,17 @@ const routes = [
     },
     children: [
       {
+        path: '/',
+        redirect: '/user'
+      },
+      {
         path: 'qubank',
         name: 'QuBank',
         component: QuBank,
-        meta: {
-          // token验证
-          ifPass: true
-        }
-      },
-      {
-        path: '/',
-        redirect: '/user'
+        // meta: {
+        //   // token验证
+        //   ifPass: true
+        // }
       },
       {
         path: 'login',
@@ -46,17 +51,31 @@ const routes = [
     name: 'Admin',
     component: Admin,
     meta: {
-      // token验证
+      // token验证, 也会自动拦截子路由
       ifAPass: true
     },
     children: [
       {
         path: 'manage',
         component: Manage,
-        meta: {
-          // token验证
-          ifAPass: true
-        }
+        children: [
+          {
+            path: 'usermaintain',
+            component: UserMaintain,
+          },
+          {
+            path: 'signupcheck',
+            component: SignupCheck,
+          },
+          {
+            path: 'systemlog',
+            component: SystemLog,
+          },
+          {
+            path: 'adminsetting',
+            component: AdminSetting,
+          },
+        ]
       },
       {
         path: 'login',
