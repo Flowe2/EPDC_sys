@@ -18,6 +18,11 @@ exports.checkedUserlist = async function (data) {
     }
     try {
         userlist = await thDB.findCheckedUser();
+        userlist.forEach(element => {
+            let temp = element._id;
+            element._id = undefined;
+            element.uemail = temp;
+        });
         return userlist;
     } catch (e) {
         throw (e);

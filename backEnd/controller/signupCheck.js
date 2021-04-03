@@ -11,13 +11,18 @@ exports.checkingList = async function (data) {
     // console.log("=== ~ " + data);
     let userlist;
     let verifyRes = jwtutil.verifyToken(data.atoken);
-    if ( verifyRes.pass == true ) {
+    if (verifyRes.pass == true) {
         console.log('=== ~ token verify pass');
     } else {
         console.log('=== ! token verify failed, err: ', verifyRes.err);
     }
     try {
-        userlist = await thDB.findCheckingUser();
+        let userlist = await thDB.findCheckingUser();
+        userlist.forEach(element => {
+            let temp = element._id;
+            element._id = undefined;
+            element.uemail = temp;
+        });
         return userlist;
     } catch (e) {
         throw (e);

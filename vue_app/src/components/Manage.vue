@@ -72,9 +72,6 @@ export default {
       console.log();
     }
   },
-  beforeMount () {
-    this.$router.push(this.indexList[0].path);
-  }
 };
 </script>
 

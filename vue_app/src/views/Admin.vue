@@ -35,7 +35,7 @@ export default {
       if (localStorage.getItem("timeStamp") > validTime) {
         // 已登录, 继续跳转
         console.log("u-l-check pass");
-        this.$router.push("/admin/manage");
+        this.$router.push("/admin/manage/usermaintain");
         this.$nextTick(()=>{
           this.logged = true;
         })
