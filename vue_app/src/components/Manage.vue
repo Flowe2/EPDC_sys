@@ -3,12 +3,12 @@
     <!-- 左侧边栏 -->
     <el-aside class="mAside" width="auto">
       <!-- 导航栏内容 -->
-      <el-menu :default-active="indexList[0].path" class="mAsideMenu" :collapse="isCollapse" router="true">
+      <el-menu :default-active="indexList[0].path" class="mAsideMenu" :collapse="isCollapse" :router="enableRouter">
         <!-- 切换按钮 -->
         <button class="mAsideCollapBtn" @click="isCollapse = !isCollapse">
           <i class="el-icon-s-unfold"></i>
         </button>
-        <el-submenu class="mAsideMenuFont">
+        <el-submenu index="1" class="mAsideMenuFont">
           <template #title>
             <i class="el-icon-user-solid"></i>
             <span>用户管理</span>
@@ -46,6 +46,7 @@ export default {
   data() {
     return {
       isCollapse: true,
+      enableRouter: true,
       indexList: [
         {
           path: '/admin/manage/usermaintain',
@@ -71,7 +72,7 @@ export default {
     test: function () {
       console.log();
     }
-  },
+  }
 };
 </script>
 

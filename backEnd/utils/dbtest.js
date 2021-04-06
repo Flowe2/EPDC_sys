@@ -98,14 +98,45 @@ const theDB = require('./theMongoDB');
 
 // ==========================================================
 // test #5 for 注册管理查询    [OK]
-let res5;
-theDB.initDb().then(()=>{
-    theDB.findCheckingUser()
+// let res5;
+// theDB.initDb().then(()=>{
+//     theDB.findCheckingUser()
+//         .catch(console.dir)
+//         .then((res) => {
+//             if (res.length != 0) {
+//                 res5 = res;
+//                 console.log(res5);
+//             } else {
+//                 console.log("no result");
+//             }
+//             theDB.closeDb();
+//         });
+// });
+
+// ==========================================================
+// test #6 for 修改密码    [OK]
+// let res6;
+// theDB.initDb().then(()=>{
+//     theDB.modifyUPwd("test@c88.com", "123456")
+//         .catch(console.dir)
+//         .then((res) => {
+//             if (res == 1) {
+//                 console.log("modified success.");
+//             } else {
+//                 console.log("no result");
+//             }
+//             theDB.closeDb();
+//         });
+// });
+
+// ==========================================================
+// test #7 for 注册管理查询    [OK]
+theDB.initDb().then(() => {
+    theDB.deleteUser("delete@test.com")
         .catch(console.dir)
         .then((res) => {
-            if (res.length != 0) {
-                res5 = res;
-                console.log(res5);
+            if (res == 1) {
+                console.log("delete success.");
             } else {
                 console.log("no result");
             }

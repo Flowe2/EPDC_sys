@@ -5,12 +5,13 @@ const { MongoClient } = require("mongodb");
 const db_url = 'localhost:27017';
 const db_usr = encodeURIComponent("root");
 const db_pwd = encodeURIComponent("root");
-const db_uri =`mongodb://${db_usr}:${db_pwd}@${db_url}`;
+const db_uri = `mongodb://${db_usr}:${db_pwd}@${db_url}`;
 // console.log(db_uri);
 
 // 增加 options 解决 node 20360 warning
 const client = new MongoClient(db_uri,
-    {   useNewUrlParser: true,
+    {
+        useNewUrlParser: true,
         useUnifiedTopology: true
     });
 
@@ -24,7 +25,7 @@ exports.initDb = async function () {
 }
 
 // 退出断开数据库连接
-exports.closeDb = async function () { 
+exports.closeDb = async function () {
     console.log("=== ! CLOSED connection with DB");
     await client.close();
 }
@@ -36,31 +37,31 @@ exports.findUser = async function (target_user_email) {
     let res;
     // 预处理查询语句 查询数据
     const query = { '_id': target_user_email };
-    const options = {projection: {'_id':1, 'upwd': 1, 'pass': 1}};
-    
+    const options = { projection: { '_id': 1, 'upwd': 1, 'pass': 1 } };
+
     try {
         const userlist = client.db('epdc_sys_db').collection('userlist');
         res = await userlist.find(query, options).toArray();
         return res;
-    } finally{
+    } finally {
         console.log("=== ~ DONE. connection keeping");
     }
 };
 
 // 添加用户 - 注册用
-exports.insertUser = async function (target_user){
+exports.insertUser = async function (target_user) {
     // 预处理查询语句 插入数据
     let res;
     const doc = {
-        '_id' : target_user.uemail,
-        'uname' : target_user.uname,
-        'upwd' : target_user.upwd,
-        'pass' : false,
-        'postscript' : target_user.postscript,
-        'signup' : '',
-        'lastlog' : ''
+        '_id': target_user.uemail,
+        'uname': target_user.uname,
+        'upwd': target_user.upwd,
+        'pass': false,
+        'postscript': target_user.postscript,
+        'signup': '',
+        'lastlog': ''
     }
-    
+
     try {
         const userlist = client.db('epdc_sys_db').collection('userlist');
         res = await userlist.insertOne(doc);
@@ -77,13 +78,13 @@ exports.findAdmin = async function (target_admin_email) {
     let res;
     // 预处理查询语句 查询数据
     const query = { '_id': target_admin_email };
-    const options = {projection: {'_id':1, 'apwd': 1}};
-    
+    const options = { projection: { '_id': 1, 'apwd': 1 } };
+
     try {
         const adminlist = client.db('epdc_sys_db').collection('adminlist');
         res = await adminlist.find(query, options).toArray();
         return res;
-    } finally{
+    } finally {
         console.log("=== ~ connection keeping");
     }
 };
@@ -93,29 +94,61 @@ exports.findCheckedUser = async function () {
     let res;
     // 预处理查询语句 查询数据
     const query = { 'pass': true };
-    const options = {projection: {'_id':1, 'uname': 1, 'lastlog': 1}};
-    
+    const options = { projection: { '_id': 1, 'uname': 1, 'lastlog': 1 } };
+
     try {
         const userlist = client.db('epdc_sys_db').collection('userlist');
         res = await userlist.find(query, options).toArray();
         return res;
-    } finally{
+    } finally {
         console.log("=== ~ DONE. connection keeping");
     }
 };
+
+// 修改指定用户密码 - 用户管理用
+exports.modifyUPwd = async function (target_admin_email, newPwd) {
+    let res;
+    // 预处理查询语句 查询数据
+    const query = { _id: target_admin_email };
+    const options = { upsert: true };
+    const updateDoc = { $set: { "upwd": newPwd } };
+
+    try {
+        const userlist = client.db('epdc_sys_db').collection('userlist');
+        res = await userlist.updateOne(query, updateDoc, options);
+        return res.modifiedCount;
+    } finally {
+        console.log("=== ~ connection keeping");
+    }
+}
+
+// 删除指定用户 - 用户管理用
+exports.deleteUser = async function (target_user_email) {
+    let res;
+    // 预处理查询语句 查询数据
+    const query = { _id: target_user_email };
+
+    try {
+        const userlist = client.db('epdc_sys_db').collection('userlist');
+        res = await userlist.deleteOne(query)
+        return res.deletedCount;
+    } finally {
+        console.log("=== ~ connection keeping");
+    }
+}
 
 // 查询通过注册的用户 - 用户管理用
 exports.findCheckingUser = async function () {
     let res;
     // 预处理查询语句 查询数据
     const query = { 'pass': false };
-    const options = {projection: {'_id':1, 'uname': 1, 'postscript': 1, 'signup': 1}};
-    
+    const options = { projection: { '_id': 1, 'uname': 1, 'postscript': 1, 'signup': 1 } };
+
     try {
         const userlist = client.db('epdc_sys_db').collection('userlist');
         res = await userlist.find(query, options).toArray();
         return res;
-    } finally{
+    } finally {
         console.log("=== ~ DONE. connection keeping");
     }
 };
