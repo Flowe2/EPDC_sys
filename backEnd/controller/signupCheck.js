@@ -44,7 +44,7 @@ exports.toPassApply = async function (data) {
     }
     // 预处理查询参数
     const targetCol = 'userlist';
-    const query = { _id: target_user_email };
+    const query = { _id: data.uemail };
     const updateDoc = { $set: { 'pass': true } };
     const options = { upsert: true };
     try {

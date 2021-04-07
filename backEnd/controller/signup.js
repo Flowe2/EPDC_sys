@@ -6,7 +6,7 @@ const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
 
-exports.realtimeCheck = async function () {
+exports.realtimeCheck = async function (data) {
     let arr = { 'ifAvailable': false};
     // 预处理查询参数
     const targetCol = 'userlist';

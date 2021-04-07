@@ -28,7 +28,7 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户邮箱" width="150">
+      <el-table-column prop="uemail" sortable label="用户邮箱" width="150">
         <template #default="scope">
           <el-popover
             effect="light"
@@ -133,6 +133,8 @@
 </template>
 
 <script>
+const baseUrl = "http://localhost:3000";
+
 export default {
   name: "UserMaintain",
   data() {
@@ -176,7 +178,7 @@ export default {
     postModify: function(uemail, newupwd) {
       this.axios({
         method: "POST",
-        url: "http://localhost:3000/admin/manage/modifyupwd",
+        url: baseUrl + "/admin/manage/modifyupwd",
         data: {
           "atoken": localStorage.getItem("atoken"),
           "uemail": uemail,
@@ -197,6 +199,7 @@ export default {
         } else {
           // 登录失败
           alert("操作失败: " + res.err);
+          this.getCheckedUserList();
         }
       })
       .catch(err => {
@@ -207,7 +210,7 @@ export default {
     postDelete: function(uemail) {
       this.axios({
         method: "POST",
-        url: "http://localhost:3000/admin/manage/deleteuser",
+        url: baseUrl + "/admin/manage/deleteuser",
         data: {
           "atoken": localStorage.getItem("atoken"),
           "uemail": uemail,
@@ -227,6 +230,7 @@ export default {
         } else {
           // 登录失败
           alert("操作失败: " + res.err);
+          this.getCheckedUserList();
         }
       })
       .catch(err => {
@@ -238,7 +242,7 @@ export default {
     getCheckedUserList: function () {
       this.axios({
       method: "POST",
-      url: "http://localhost:3000/admin/manage/usermaintain",
+      url: baseUrl + "/admin/manage/usermaintain",
       data: {
         "atoken": localStorage.getItem("atoken"),
       },

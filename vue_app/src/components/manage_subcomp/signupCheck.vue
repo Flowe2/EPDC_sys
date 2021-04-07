@@ -28,7 +28,7 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户邮箱" width="150">
+      <el-table-column prop="uemail" sortable label="用户邮箱" width="150">
         <template #default="scope">
           <el-popover
             effect="light"
@@ -67,7 +67,7 @@
       <el-table-column min-width="80px">
         <!-- 占位 -->
       </el-table-column>
-      <el-table-column label="申请注册日期" width="200">
+      <el-table-column prop="signup" sortable label="申请注册日期" width="200">
         <template #default="scope">
           <i class="el-icon-time"></i>
           <span style="margin-left: 10px">{{ scope.row.signup }}</span>
@@ -137,6 +137,8 @@
 </template>
 
 <script>
+const baseUrl = "http://localhost:3000";
+
 export default {
   name: "SignupCheck",
   data() {
@@ -162,12 +164,23 @@ export default {
       console.log(row.uemail);
       this.postRefuse(row.uemail);
     },
+
+    // 改变分页大小
+    handleSizeChange: function (size) {
+      console.log(size + " per page.");
+      this.curtPageSize = size;
+    },
+    // 改变当前页码
+    handleCurrentChange: function (currentPage) {
+      console.log("current page: " + currentPage);
+      this.currentPage = currentPage;
+    },
     
     // axios - 通过注册申请
     postPass: function(uemail) {
       this.axios({
         method: "POST",
-        url: "http://localhost:3000/admin/manage/passapply",
+        url: baseUrl + "/admin/manage/passapply",
         data: {
           "atoken": localStorage.getItem("atoken"),
           "uemail": uemail,
@@ -187,6 +200,7 @@ export default {
         } else {
           // 登录失败
           alert("操作失败: " + res.err);
+          this.getCheckingUserList();
         }
       })
       .catch(err => {
@@ -198,7 +212,7 @@ export default {
     postRefuse: function(uemail) {
       this.axios({
         method: "POST",
-        url: "http://localhost:3000/admin/manage/refuseapply",
+        url: baseUrl + "/admin/manage/refuseapply",
         data: {
           "atoken": localStorage.getItem("atoken"),
           "uemail": uemail,
@@ -218,6 +232,7 @@ export default {
         } else {
           // 登录失败
           alert("操作失败: " + res.err);
+          this.getCheckingUserList();
         }
       })
       .catch(err => {
@@ -229,7 +244,7 @@ export default {
     getCheckingUserList: function () {
       this.axios({
         method: "POST",
-        url: "http://localhost:3000/admin/manage/signupcheck",
+        url: baseUrl + "/admin/manage/signupcheck",
         data: {
           atoken: localStorage.getItem("atoken"),
         },
