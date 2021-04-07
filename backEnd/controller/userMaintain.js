@@ -11,12 +11,16 @@ exports.checkedUserlist = async function (data) {
     let res = {userlist: [], counter: 0};
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if ( verifyRes.pass == true ) {
-        console.log('=== ~ token verify pass');
+        console.log("=== ~ token verify pass");
     } else {
-        console.log('=== ! token verify failed, err: ', verifyRes.err);
+        console.log("=== ! token verify failed, err: ", verifyRes.err);
     }
+    // 预处理查询参数
+    const targetCol = 'userlist';
+    const query = { 'pass': true };
+    const options = { projection: { '_id': 1, 'uname': 1, 'lastlog': 1 } };
     try {
-        res.userlist = await thDB.findCheckedUser();
+        res.userlist = await thDB.findUser(targetCol, query, options);
         res.userlist.forEach(element => {
             let temp = element._id;
             element._id = undefined;
@@ -34,17 +38,22 @@ exports.toModifyUPwd = async function (data) {
     let res = {userlist: [], counter: 0};
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if ( verifyRes.pass == true ) {
-        console.log('=== ~ token verify pass');
+        console.log("=== ~ token verify pass");
     } else {
-        console.log('=== ! token verify failed, err: ', verifyRes.err);
+        console.log("=== ! token verify failed, err: ", verifyRes.err);
     }
+    // 预处理查询参数
+    const targetCol = 'userlist';
+    const query = { _id: data.uemail };
+    const updateDoc = { $set: { 'upwd': data.newupwd } };
+    const options = { upsert: true };
     try {
-        let temp = await thDB.modifyUPwd(data.uemail, data.newupwd);
+        let temp = await thDB.updateUser(targetCol, query, updateDoc, options);
         if (temp === 1) {
             res.ifSuccess = true;
             res.err = undefined;
         } else {
-            res.err = "No match";
+            res.err = 'No match';
         }
         return res;
     } catch (e) {
@@ -57,17 +66,20 @@ exports.toDeleteUser = async function (data) {
     let res = {ifSuccess: false, err: ''};
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if ( verifyRes.pass == true ) {
-        console.log('=== ~ token verify pass');
+        console.log("=== ~ token verify pass");
     } else {
-        console.log('=== ! token verify failed, err: ', verifyRes.err);
+        console.log("=== ! token verify failed, err: ", verifyRes.err);
     }
+    // 预处理查询参数
+    const targetCol = 'userlist';
+    const query = { _id: data.uemail };
     try {
-        let temp = await thDB.deleteUser(data.uemail);
+        let temp = await thDB.deleteUser(targetCol, query);
         if (temp === 1) {
             res.ifSuccess = true;
             res.err = undefined;
         } else {
-            res.err = "No match";
+            res.err = 'No match';
         }
         return res;
     } catch (e) {

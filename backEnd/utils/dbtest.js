@@ -131,15 +131,78 @@ const theDB = require('./theMongoDB');
 
 // ==========================================================
 // test #7 for 注册管理查询    [OK]
-theDB.initDb().then(() => {
-    theDB.deleteUser("delete@test.com")
-        .catch(console.dir)
-        .then((res) => {
-            if (res == 1) {
-                console.log("delete success.");
-            } else {
-                console.log("no result");
-            }
-            theDB.closeDb();
-        });
-});
+// theDB.initDb().then(() => {
+//     theDB.deleteUser("delete@test.com")
+//         .catch(console.dir)
+//         .then((res) => {
+//             if (res == 1) {
+//                 console.log("delete success.");
+//             } else {
+//                 console.log("no result");
+//             }
+//             theDB.closeDb();
+//         });
+// });
+
+/*  =============================== 重构, 上方测试demo已失效 =============================== */
+
+// 用户登录查询    [OK]
+// const userlist = 'userlist';
+// const query1 = { '_id': "abc@123.com" };
+// const options1 = { projection: { '_id': 1, 'upwd': 1, 'pass': 1 } };
+// let res1;
+// theDB.initDb().then(()=>{
+//     theDB.findUser(userlist, query1, options1)
+//         .catch(console.dir)
+//         .then((res) => {
+//             if (res.length != 0) {
+//                 res1 = res[0];
+//                 console.log(res1);
+//             } else {
+//                 console.log("no result");
+//             }
+//             theDB.closeDb();
+//         });
+// });
+
+
+// 用户注册查询    [OK]
+// const userlist = 'userlist';
+// const insertDoc = {
+//     "_id": "123123123@qq.com",
+//     "uname": "123123",
+//     "upwd": "123456",
+//     "postscript": "注册插入测试",
+//     "signup": "2021-04-07 12:01:10",
+//     "lastlog": ""
+// };
+// theDB.initDb().then(()=>{
+//     theDB.insertUser(userlist, insertDoc)
+//         .catch(console.dir)
+//         .then((res) => {
+//             if (res == 1) {
+//                 console.log(res);
+//                 // console.log(`${res.insertedCount} documents were inserted with the _id: ${res.insertedId}`);
+//             } else {
+//                 console.log("err");
+//             }
+//             theDB.closeDb();
+//         });
+// });
+
+
+// 删除用户测试    [OK]
+// const targetCol = 'userlist';
+// const query = { _id: "123123123@qq.com" };
+// theDB.initDb().then(() => {
+//     theDB.deleteUser(targetCol, query)
+//         .catch(console.dir)
+//         .then((res) => {
+//             if (res == 1) {
+//                 console.log("delete success.");
+//             } else {
+//                 console.log("no result");
+//             }
+//             theDB.closeDb();
+//         });
+// });
