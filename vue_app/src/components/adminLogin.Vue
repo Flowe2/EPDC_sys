@@ -78,6 +78,7 @@ export default {
           localStorage.setItem("timeStamp", res.timeStamp);
           localStorage.setItem("atoken", res.atoken);
           alert("☺ 登录成功");
+          this.$emit('alog', true);
           this.$router.push('/admin/manage');
         } else {
           // 登录失败

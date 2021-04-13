@@ -2,7 +2,8 @@
   <div>
     <!-- head bar -->
     <div id="headbar">
-      <UserHeadBar :role="role"></UserHeadBar>
+      <UserHeadBar :logged="logged" :role="role" v-on:ulog="ulog($event)">
+      </UserHeadBar>
     </div>
 
     <!-- 分界线 -->
@@ -10,7 +11,7 @@
 
     <!-- router result -->
     <div id="display">
-      <router-view></router-view>
+      <router-view v-on:ulog="ulog($event)"></router-view>
     </div>
   </div>
 </template>
@@ -23,10 +24,13 @@ export default {
   data() {
     return {
       role: false,
+      logged: false,
     };
   },
   methods: {
-    
+    ulog: function (status) {
+      this.logged = status;
+    },
   },
   components: {
     UserHeadBar,

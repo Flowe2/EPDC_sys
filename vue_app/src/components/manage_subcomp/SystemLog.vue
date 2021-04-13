@@ -34,10 +34,23 @@
           <span style="margin-left: 10px">{{ scope.row.timestamp }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="role" sortable label="身份" width="200">
+      <el-table-column
+        prop="role"
+        label="身份"
+        width="100"
+        :filters="[
+          { text: '管理员', value: 'admin' },
+          { text: '用户', value: 'user' },
+        ]"
+        :filter-method="filterTag"
+        filter-placement="bottom-end"
+      >
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.role }}</span>
+          <el-tag
+            :type="scope.row.role === 'admin' ? 'success' : 'primary'"
+            disable-transitions
+            >{{ scope.row.role }}</el-tag
+          >
         </template>
       </el-table-column>
       <el-table-column prop="who" sortable label="帐号" width="200">

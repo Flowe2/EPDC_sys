@@ -279,6 +279,7 @@ export default {
             localStorage.setItem("timeStamp", res.timeStamp);
             localStorage.setItem("token", res.token);
             alert("☺ 登录成功");
+            this.$emit('ulog', true);
             this.$router.push("/user/quBank");
           } else {
             // 登录失败

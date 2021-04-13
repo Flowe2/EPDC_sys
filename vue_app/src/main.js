@@ -6,13 +6,15 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import router from './router/index';
 
+
 createApp(App)
     .use(ElementPlus)
     .use(router)            // Vue-router
     .use(VueAxios, axios)   // VueAxios中间件
     .mount('#app');
 
-axios.defaults.baseURL = 'http://localhost:3000';
+
+// axios.defaults.baseURL = 'http://localhost:3000';
 
 // vue-router 全局前置守卫
 router.beforeEach(function (to, from, next) {

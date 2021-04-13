@@ -28,7 +28,7 @@ function JWT() {
                 // 验证出错: token过期 / token不正确
                 res = { 'err' : err.message, 'pass': false };
             } else {
-                console.log('payload analysis: ', payLoad);
+                // console.log('payload analysis: ', payLoad);
                 console.log("=== ~ payload parsing successfully");
                 res = { 'payload' : payLoad, 'pass': true }
             }

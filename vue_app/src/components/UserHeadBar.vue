@@ -1,7 +1,7 @@
 <template>
-  <div id="headbarcomp">
+  <div id="headbarcomp" >
     <!-- 登录后显示头像区域 -->
-    <div id="user" v-if="logged && !role">
+    <div id="user" v-show="logged && !role">
       <el-button class="avatarBtn" circle style="padding: 0px" @click="ulogout">
         <el-avatar
           class="face"
@@ -12,7 +12,7 @@
         </el-avatar>
       </el-button>
     </div>
-    <div id="admin" v-if="logged && role">
+    <div id="admin" v-show="logged && role">
       <el-button class="avatarBtn" circle style="padding: 0px" @click="alogout">
         <el-avatar
           class="face"
@@ -25,7 +25,7 @@
     </div>
 
     <!-- 登录前显示管理员跳转区域 -->
-    <div id="toAdmin" v-if="!logged && !role">
+    <div id="toAdmin" v-show="!logged && !role">
       <button class="headerButton">
         <router-link style="text-decoration: none" to="/admin/login"
           >管理员登陆</router-link
@@ -40,37 +40,38 @@ export default {
   name: "UserHeadBar",
   data() {
     return {
-      logged: false,
+      
     };
   },
-  props: ["role"],
+  props: ["logged", "role"],
   methods: {
     alogout: function () {
       console.log("admin logged out");
       localStorage.removeItem("atoken");
       localStorage.removeItem("timeStamp");
-      this.logged = false;
+      this.$emit("alog", false)
       this.$router.replace("/admin/login");
     },
     ulogout: function () {
       console.log("user logged out");
       localStorage.removeItem("token");
       localStorage.removeItem("timeStamp");
+      this.$emit("ulog", false)
       this.$router.replace("/");
     },
   },
-  beforeMount() {
-    this.$nextTick(() => {
-      if (localStorage.getItem("atoken") || localStorage.getItem("token")) {
-        let validTime = Math.floor(Date.now() / 1000) - 60 * 60;
-        if (localStorage.getItem("timeStamp") > validTime) {
-          console.log("avatar");
-          this.logged = true;
-        }
-      }
-      console.log("=====");
-    });
-  },
+  // beforeMount() {
+  //   this.$nextTick(() => {
+  //     if (localStorage.getItem("atoken") || localStorage.getItem("token")) {
+  //       let validTime = Math.floor(Date.now() / 1000) - 60 * 60;
+  //       if (localStorage.getItem("timeStamp") > validTime) {
+  //         console.log("avatar");
+  //         this.logged = true;
+  //       }
+  //     }
+  //     console.log("=====");
+  //   });
+  // },
 };
 </script>
 

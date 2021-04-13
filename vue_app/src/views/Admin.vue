@@ -2,7 +2,9 @@
   <div>
     <div id="headbar">
       <UserHeadBar
+        :logged="logged"
         :role="role"
+        v-on:alog="alog($event)"
       ></UserHeadBar>
     </div>
 
@@ -10,10 +12,9 @@
     <div id="divider"></div>
 
     <div id="display">
-      <router-view></router-view>
+      <router-view v-on:alog="alog($event)"></router-view>
     </div>
-  </div>  
-
+  </div>
 </template>
 
 <script>
@@ -24,11 +25,13 @@ export default {
   data() {
     return {
       role: true,
-      // logged: false,
+      logged: false,
     };
   },
   methods: {
-    
+    alog: function (status) {
+      this.logged = status;
+    },
   },
   components: {
     UserHeadBar,
@@ -56,7 +59,7 @@ export default {
     //   this.$router.push("/admin/login");
     // }
   },
-}
+};
 </script>
 
 <style>
