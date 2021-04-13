@@ -154,7 +154,7 @@
                 <input
                   type="submit"
                   class="base_input button"
-                  :value="checkEmail && checkPwd ? '注 册' : 'LOADING'"
+                  :value="checkEmail ? ( checkPwd ? '注 册' : '密码为空 / 两次密码不一致') : '邮箱为空 / 已存在'"
                   :disabled="!(checkEmail && checkPwd)"
                   @click="to_sign_up"
                 />
@@ -174,7 +174,6 @@
 
 <script>
 import _ from "lodash";
-const baseUrl = "http://localhost:3000";
 
 export default {
   name: "UserLogin",
@@ -262,7 +261,7 @@ export default {
     postLogin: function (email, pwd) {
       this.axios({
         method: "POST",
-        url: baseUrl + "/user/login",
+        url: "/user/login",
         data: {
           uemail: email,
           upwd: pwd,
@@ -296,7 +295,7 @@ export default {
     postSignup: function (u_signup) {
       this.axios({
         method: "POST",
-        url: baseUrl + "/user/signup",
+        url: "/user/signup",
         data: {
           "uemail": u_signup.uemail,
           "uname": u_signup.uname,
@@ -314,11 +313,11 @@ export default {
           if (res.ifSuccess == true) {
             // 申请成功, 跳转回登录界面
             alert("☺ 申请成功, 请等待审核");
-            this.$router.replace("/");
+            this.$router.replace("/user/login");
           } else {
             // 申请失败, 跳转回登录界面
-            alert("登录失败: " + res.err);
-            this.$router.replace("/");
+            alert("注册失败, " + res.err);
+            this.$router.replace("/user/login");
           }
         })
         .catch((err) => {
@@ -332,7 +331,7 @@ export default {
       console.log("post real-time-check");
       this.axios({
         method: "POST",
-        url: baseUrl + "/user/realtimecheck",
+        url: "/user/realtimecheck",
         data: {
           uemail: this.u_signup.uemail,
         },
@@ -374,6 +373,8 @@ export default {
     "u_signup.uemail": function () {
       if (this.u_signup.uemail != "") {
         this.postRealTimeCheck();
+      } else {
+        this.checkEmail = false;
       }
     },
     // 注册页面密码非空检测及二次检测, 防抖

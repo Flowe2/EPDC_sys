@@ -29,20 +29,25 @@ const routes = [
     children: [
       {
         path: '/',
-        redirect: '/user'
+        redirect: '/user',
       },
       {
         path: 'qubank',
         name: 'QuBank',
         component: QuBank,
-        // meta: {
-        //   // token验证
-        //   ifPass: true
-        // }
+        children: [
+          
+        ]
       },
       {
         path: 'login',
-        component: UserLogin
+        name: 'UserLogin',
+        component: UserLogin,
+        meta: {
+          // 去除验证
+          ifPass: false,
+          login: true
+        },
       }
     ]
   },
@@ -56,30 +61,51 @@ const routes = [
     },
     children: [
       {
+        path: '',
+        redirect: { name: 'Manage_UserMaintain' },
+      },
+      {
         path: 'manage',
+        name: 'Manage',
         component: Manage,
         children: [
           {
+            path: '',
+            name: 'Manage_UserMaintain',
+            redirect: { name: 'UserMaintain' },
+          },
+          {
             path: 'usermaintain',
+            name: 'UserMaintain',
             component: UserMaintain,
+            // alias: '',
           },
           {
             path: 'signupcheck',
+            name: 'SignupCheck',
             component: SignupCheck,
           },
           {
             path: 'systemlog',
+            name: 'SystemLog',
             component: SystemLog,
           },
           {
             path: 'adminsetting',
+            name: 'AdminSetting',
             component: AdminSetting,
           },
         ]
       },
       {
         path: 'login',
+        name: 'AdminLogin',
         component: AdminLogin,
+        meta: {
+          // 去除验证
+          ifAPass: false,
+          login: true
+        },
       }
     ]
   },

@@ -60,7 +60,7 @@ export default {
     postLogin: function(account, pwd) {
       this.axios({
         method: "POST",
-        url: "http://localhost:3000/admin/login",
+        url: "/admin/login",
         data: {
           "account": account,
           "apwd": pwd

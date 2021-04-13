@@ -3,7 +3,7 @@
     <!-- 左侧边栏 -->
     <el-aside class="mAside" width="auto">
       <!-- 导航栏内容 -->
-      <el-menu :default-active="indexList[0].path" class="mAsideMenu" :collapse="isCollapse" :router="enableRouter">
+      <el-menu default-active="/admin/manage/usermaintain" class="mAsideMenu" :collapse="isCollapse" :router="enableRouter">
         <!-- 切换按钮 -->
         <button class="mAsideCollapBtn" @click="isCollapse = !isCollapse">
           <i class="el-icon-s-unfold"></i>
@@ -23,7 +23,7 @@
           </el-menu-item>
         </el-submenu>
         <el-menu-item class="mAsideMenuFont" :index="indexList[2].path">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-s-order"></i>
           <template #title>{{ indexList[2].name }}</template>
         </el-menu-item>
         <el-menu-item class="mAsideMenuFont" :index="indexList[3].path">
@@ -71,7 +71,7 @@ export default {
   methods: {
     test: function () {
       console.log();
-    }
+    },
   }
 };
 </script>

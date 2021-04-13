@@ -48,9 +48,9 @@ exports.signup = async function (data) {
             arr.err = undefined;
         } else {
             console.log("=== ! err");
-            arr.err = 'err';
-            return arr;
+            arr.err = '遇到一些意外';
         }
+        return arr;
     } catch (e) {
         throw e;
     }

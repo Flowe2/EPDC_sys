@@ -1,7 +1,9 @@
 <template>
   <div>
     <div id="headbar">
-      <UserHeadBar :logged="logged" :role="role"></UserHeadBar>
+      <UserHeadBar
+        :role="role"
+      ></UserHeadBar>
     </div>
 
     <!-- 分界线 -->
@@ -10,7 +12,8 @@
     <div id="display">
       <router-view></router-view>
     </div>
-  </div>
+  </div>  
+
 </template>
 
 <script>
@@ -21,36 +24,39 @@ export default {
   data() {
     return {
       role: true,
-      logged: false,
+      // logged: false,
     };
+  },
+  methods: {
+    
   },
   components: {
     UserHeadBar,
   },
   beforeCreate() {
     // this.$router.push('/admin/login');
-    if (localStorage.getItem("atoken") != null) {
-      // token是否过期
-      let validTime = Math.floor(Date.now() / 1000) - 60 * 60;
-      if (localStorage.getItem("timeStamp") > validTime) {
-        // 已登录, 继续跳转
-        console.log("u-l-check pass");
-        this.$router.push("/admin/manage/usermaintain");
-        this.$nextTick(()=>{
-          this.logged = true;
-        })
-      } else {
-        // token过期, 跳转至用户登录页面
-        console.log("u-l-check fail: out-of-date token");
-        this.$router.push("/admin/login");
-      }
-    } else {
-      // 未登录, 跳转至用户登录页面
-      console.log("u-l-check fail: no token yet");
-      this.$router.push("/admin/login");
-    }
+    // if (localStorage.getItem("atoken") != null) {
+    //   // token是否过期
+    //   let validTime = Math.floor(Date.now() / 1000) - 60 * 60;
+    //   if (localStorage.getItem("timeStamp") > validTime) {
+    //     // 已登录, 继续跳转
+    //     console.log("u-l-check pass");
+    //     this.$router.push("/admin/manage/usermaintain");
+    //     this.$nextTick(() => {
+    //       this.logged = true;
+    //     });
+    //   } else {
+    //     // token过期, 跳转至用户登录页面
+    //     console.log("u-l-check fail: out-of-date token");
+    //     this.$router.push("/admin/login");
+    //   }
+    // } else {
+    //   // 未登录, 跳转至用户登录页面
+    //   console.log("u-l-check fail: no token yet");
+    //   this.$router.push("/admin/login");
+    // }
   },
-};
+}
 </script>
 
 <style>

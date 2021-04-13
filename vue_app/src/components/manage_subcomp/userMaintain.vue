@@ -133,8 +133,6 @@
 </template>
 
 <script>
-const baseUrl = "http://localhost:3000";
-
 export default {
   name: "UserMaintain",
   data() {
@@ -178,7 +176,7 @@ export default {
     postModify: function(uemail, newupwd) {
       this.axios({
         method: "POST",
-        url: baseUrl + "/admin/manage/modifyupwd",
+        url: "/admin/manage/modifyupwd",
         data: {
           "atoken": localStorage.getItem("atoken"),
           "uemail": uemail,
@@ -210,7 +208,7 @@ export default {
     postDelete: function(uemail) {
       this.axios({
         method: "POST",
-        url: baseUrl + "/admin/manage/deleteuser",
+        url: "/admin/manage/deleteuser",
         data: {
           "atoken": localStorage.getItem("atoken"),
           "uemail": uemail,
@@ -242,7 +240,7 @@ export default {
     getCheckedUserList: function () {
       this.axios({
       method: "POST",
-      url: baseUrl + "/admin/manage/usermaintain",
+      url: "/admin/manage/usermaintain",
       data: {
         "atoken": localStorage.getItem("atoken"),
       },

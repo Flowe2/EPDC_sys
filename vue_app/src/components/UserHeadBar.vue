@@ -2,17 +2,24 @@
   <div id="headbarcomp">
     <!-- 登录后显示头像区域 -->
     <div id="user" v-if="logged && !role">
-      <el-button class="avatarBtn" circle style="padding: 0px" @click="logout(user)">
-        <el-avatar class="face" size="large" fit="fill"
-        src="https://th.bing.com/th/id/R5fc1b95a05749c8659c86bdb83c5e4ba?rik=Yz1Bt8CFUBtnpg&riu=http%3a%2f%2fimg.zcool.cn%2fcommunity%2f0180d358d08cefa801219c77d48d74.jpg%40900w_1l_2o_100sh.jpg&ehk=DELe5Ra3xFL8tE5b%2bNTECROM%2fHsrFwIUDncvTi%2fN2Us%3d&risl=&pid=ImgRaw">
+      <el-button class="avatarBtn" circle style="padding: 0px" @click="ulogout">
+        <el-avatar
+          class="face"
+          size="large"
+          fit="fill"
+          src="https://th.bing.com/th/id/R5fc1b95a05749c8659c86bdb83c5e4ba?rik=Yz1Bt8CFUBtnpg&riu=http%3a%2f%2fimg.zcool.cn%2fcommunity%2f0180d358d08cefa801219c77d48d74.jpg%40900w_1l_2o_100sh.jpg&ehk=DELe5Ra3xFL8tE5b%2bNTECROM%2fHsrFwIUDncvTi%2fN2Us%3d&risl=&pid=ImgRaw"
+        >
         </el-avatar>
       </el-button>
-      
     </div>
     <div id="admin" v-if="logged && role">
-      <el-button class="avatarBtn" circle style="padding: 0px" @click="logout(admin)">
-        <el-avatar class="face" size="large" fit="fill"
-        src="https://www.weixinzixun.com/UploadFiles/img_3_3952179620_3941292677_26.jpg">
+      <el-button class="avatarBtn" circle style="padding: 0px" @click="alogout">
+        <el-avatar
+          class="face"
+          size="large"
+          fit="fill"
+          src="https://www.weixinzixun.com/UploadFiles/img_3_3952179620_3941292677_26.jpg"
+        >
         </el-avatar>
       </el-button>
     </div>
@@ -32,22 +39,38 @@
 export default {
   name: "UserHeadBar",
   data() {
-    return {};
+    return {
+      logged: false,
+    };
   },
-  props: ["logged", "role"],
+  props: ["role"],
   methods: {
-    logout: function (role) {
-      if (role == "user"){
-        console.log("user logged out");
-        localStorage.removeItem("token");
-        this.$router.replace("/");
-      } else {
-        console.log("admin logged out");
-        localStorage.removeItem("atoken");
-        this.$router.replace("/admin/login")
+    alogout: function () {
+      console.log("admin logged out");
+      localStorage.removeItem("atoken");
+      localStorage.removeItem("timeStamp");
+      this.logged = false;
+      this.$router.replace("/admin/login");
+    },
+    ulogout: function () {
+      console.log("user logged out");
+      localStorage.removeItem("token");
+      localStorage.removeItem("timeStamp");
+      this.$router.replace("/");
+    },
+  },
+  beforeMount() {
+    this.$nextTick(() => {
+      if (localStorage.getItem("atoken") || localStorage.getItem("token")) {
+        let validTime = Math.floor(Date.now() / 1000) - 60 * 60;
+        if (localStorage.getItem("timeStamp") > validTime) {
+          console.log("avatar");
+          this.logged = true;
+        }
       }
-    }
-  }
+      console.log("=====");
+    });
+  },
 };
 </script>
 

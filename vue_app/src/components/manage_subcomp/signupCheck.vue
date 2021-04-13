@@ -137,8 +137,6 @@
 </template>
 
 <script>
-const baseUrl = "http://localhost:3000";
-
 export default {
   name: "SignupCheck",
   data() {
@@ -180,7 +178,7 @@ export default {
     postPass: function(uemail) {
       this.axios({
         method: "POST",
-        url: baseUrl + "/admin/manage/passapply",
+        url: "/admin/manage/passapply",
         data: {
           "atoken": localStorage.getItem("atoken"),
           "uemail": uemail,
@@ -212,7 +210,7 @@ export default {
     postRefuse: function(uemail) {
       this.axios({
         method: "POST",
-        url: baseUrl + "/admin/manage/refuseapply",
+        url: "/admin/manage/refuseapply",
         data: {
           "atoken": localStorage.getItem("atoken"),
           "uemail": uemail,
@@ -244,7 +242,7 @@ export default {
     getCheckingUserList: function () {
       this.axios({
         method: "POST",
-        url: baseUrl + "/admin/manage/signupcheck",
+        url: "/admin/manage/signupcheck",
         data: {
           atoken: localStorage.getItem("atoken"),
         },
