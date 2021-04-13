@@ -7,7 +7,7 @@ function JWT() {
     this.generateToken = function (data) {
         let payLoad = {
             'type': 'JWT',
-            'user': data.account,
+            'account': data.account,
             'role': data.role,
         };
         // 秘钥
@@ -28,9 +28,9 @@ function JWT() {
                 // 验证出错: token过期 / token不正确
                 res = { 'err' : err.message, 'pass': false };
             } else {
-                // console.log('payload analysis: ', payLoad);
+                console.log('payload analysis: ', payLoad);
                 console.log("=== ~ payload parsing successfully");
-                res = { 'err' : null, 'pass': true }
+                res = { 'payload' : payLoad, 'pass': true }
             }
         });
     return res;
@@ -38,7 +38,7 @@ function JWT() {
     this.timeStamp = function () {
         let nowDate = new Date();
         // yyyy-mm-dd hh:mm:ss
-        let timeStamp = nowDate.getFullYear() + '-' + nowDate.getMonth() + '-' + nowDate.getDate() 
+        let timeStamp = nowDate.getFullYear() + '-' + (nowDate.getMonth()+1) + '-' + nowDate.getDate() 
             + ' ' + nowDate.getHours() + ':' + nowDate.getMinutes() + ':' + nowDate.getSeconds();
         return timeStamp;
     };

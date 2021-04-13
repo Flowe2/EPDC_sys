@@ -5,12 +5,14 @@ const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
+// 系统日志controller
+const syslog = require('../controller/syslog');
 
 // 账户维护 - 查询处理
 exports.checkedUserlist = async function (data) {
-    let res = {userlist: [], counter: 0};
+    let res = { userlist: [], counter: 0 };
     let verifyRes = jwtutil.verifyToken(data.atoken);
-    if ( verifyRes.pass == true ) {
+    if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
@@ -35,9 +37,9 @@ exports.checkedUserlist = async function (data) {
 
 // 账户维护 - 修改账户
 exports.toModifyUPwd = async function (data) {
-    let res = {userlist: [], counter: 0};
+    let res = { userlist: [], counter: 0 };
     let verifyRes = jwtutil.verifyToken(data.atoken);
-    if ( verifyRes.pass == true ) {
+    if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
@@ -50,6 +52,12 @@ exports.toModifyUPwd = async function (data) {
     try {
         let temp = await thDB.updateUser(targetCol, query, updateDoc, options);
         if (temp === 1) {
+            const logData = {
+                'role': verifyRes.payload.role,
+                'who': verifyRes.payload.account,
+                'operation': 'modify password [user:' + data.uemail + ']'
+            };
+            await syslog.addSyslog(logData);
             res.ifSuccess = true;
             res.err = undefined;
         } else {
@@ -63,9 +71,9 @@ exports.toModifyUPwd = async function (data) {
 
 // 账户维护 - 删除账户
 exports.toDeleteUser = async function (data) {
-    let res = {ifSuccess: false, err: ''};
+    let res = { ifSuccess: false, err: '' };
     let verifyRes = jwtutil.verifyToken(data.atoken);
-    if ( verifyRes.pass == true ) {
+    if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
@@ -76,6 +84,12 @@ exports.toDeleteUser = async function (data) {
     try {
         let temp = await thDB.deleteUser(targetCol, query);
         if (temp === 1) {
+            const logData = {
+                'role': verifyRes.payload.role,
+                'who': verifyRes.payload.account,
+                'operation': 'delete user [user:' + data.uemail + ']'
+            };
+            await syslog.addSyslog(logData);
             res.ifSuccess = true;
             res.err = undefined;
         } else {

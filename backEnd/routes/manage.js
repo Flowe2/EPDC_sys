@@ -1,6 +1,8 @@
 // addr: ip:port/admin/manage
 const express = require('express');
 const router = express.Router();
+// syslog controller集合
+const syslog = require('../controller/syslog');
 
 // userMaintain controller集
 const userMaintain = require('../controller/userMaintain');
@@ -64,6 +66,15 @@ router.post('/refuseapply', async (req, res, next) => {
     // console.log(data);
     console.log("=== ~ receive POST : @ admin - refuse the signup apply of user: ", data.uemail);
     let arr = await signupCheck.toRefuseApply(data);
+    console.log("=== ~ ready to send");
+    res.json(arr);
+})
+
+// admin 获取系统日志
+router.post('/syslog', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - get syslog");
+    let arr = await syslog.getSyslog(data);
     console.log("=== ~ ready to send");
     res.json(arr);
 })

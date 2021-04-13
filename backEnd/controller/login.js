@@ -44,7 +44,7 @@ async function login(data) {
                     };
                 });
             // 预处理给JWT的data
-            data = { 'acount': data.uemail, 'role': false };
+            data = { 'account': data.uemail, 'role': false };
             arr.ifPass = true;
             arr.token = jwtutil.generateToken(data);
             arr.timeStamp = Math.floor(Date.now() / 1000);

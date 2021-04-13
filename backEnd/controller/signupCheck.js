@@ -5,6 +5,9 @@ const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
+// 系统日志controller
+const syslog = require('../controller/syslog');
+
 
 // 注册管理 - 查询处理
 exports.checkingList = async function (data) {
@@ -50,6 +53,12 @@ exports.toPassApply = async function (data) {
     try {
         let temp = await thDB.updateUser(targetCol, query, updateDoc, options);
         if (temp === 1) {
+            const logData = {
+                'role': verifyRes.payload.role,
+                'who': verifyRes.payload.account,
+                'operation': 'pass signup [user:' + data.uemail + ']'
+            };
+            await syslog.addSyslog(logData);
             res.ifSuccess = true;
             res.err = undefined;
         } else {
@@ -76,6 +85,12 @@ exports.toRefuseApply = async function (data) {
     try {
         let temp = await thDB.deleteUser(targetCol, query);
         if (temp === 1) {
+            const logData = {
+                'role': verifyRes.payload.role,
+                'who': verifyRes.payload.account,
+                'operation': 'refuse signup [user:' + data.uemail + ']'
+            };
+            await syslog.addSyslog(logData);
             res.ifSuccess = true;
             res.err = undefined;
         } else {

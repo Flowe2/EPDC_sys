@@ -31,7 +31,7 @@ async function adminlogin(data) {
     }
     if (targetAdmin.apwd == data.apwd) {
         // 验证通过, 更新lastlog, 生成token
-        const updateDoc = { $set: { "lastlog": jwtutil.timeStamp() } };
+        const updateDoc = { $set: { 'lastlog': jwtutil.timeStamp() } };
         const updateOptions = { upsert: true };
         await thDB.updateUser(targetCol, query, updateDoc, updateOptions)
             .catch(console.dir)
@@ -43,7 +43,7 @@ async function adminlogin(data) {
                 };
             });
         // 预处理给JWT的data
-        data = { 'acount': data.account, 'role': true };
+        data = { 'account': data.account, 'role': true };
         arr.ifAPass = true;
         arr.atoken = jwtutil.generateToken(data);
         arr.timeStamp = Math.floor(Date.now() / 1000);

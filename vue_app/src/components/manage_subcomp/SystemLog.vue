@@ -52,14 +52,23 @@
           <span style="margin-left: 10px">{{ scope.row.operation }}</span>
         </template>
       </el-table-column>
-      <el-table-column min-width="80px">
-        <!-- 占位 -->
-      </el-table-column>
-
-      <el-table-column min-width="80px">
-        <!-- 占位 -->
-      </el-table-column>
     </el-table>
+
+    <el-divider content-position="right"
+      ><i class="el-icon-more-outline"></i
+    ></el-divider>
+
+    <el-pagination
+      :total="displayCounter"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-sizes="pageSizes"
+      :page-size="curtPageSize"
+      :hide-on-single-page="onlySinglePage"
+      layout="total, sizes, prev, pager, next, jumper"
+    >
+    </el-pagination>
   </div>
 </template>
 
@@ -79,6 +88,17 @@ export default {
     };
   },
   methods: {
+    // 改变分页大小
+    handleSizeChange: function (size) {
+      console.log(size + " per page.");
+      this.curtPageSize = size;
+    },
+    // 改变当前页码
+    handleCurrentChange: function (currentPage) {
+      console.log("current page: " + currentPage);
+      this.currentPage = currentPage;
+    },
+
     // axios - 获取用户
     getSyslog: function () {
       this.axios({
