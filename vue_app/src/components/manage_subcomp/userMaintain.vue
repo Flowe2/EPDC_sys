@@ -16,6 +16,7 @@
           currentPage * curtPageSize
         )
       "
+      v-loading="loading"
       stripe
       height="550px"
       style="width: 100%"
@@ -137,6 +138,7 @@ export default {
   name: "UserMaintain",
   data() {
     return {
+      loading: true,
       displayList: [],
       displayCounter: 0,
       checkedList: [], // { uemail: "", uname: "", lastlog: ""  }
@@ -260,6 +262,7 @@ export default {
         this.$nextTick(() => {
           this.displayList = this.checkedList;
           this.displayCounter = this.checkedCounter;
+          this.loading = false;
         });
       })
       .catch((err) => {

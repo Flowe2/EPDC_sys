@@ -16,6 +16,7 @@
           currentPage * curtPageSize
         )
       "
+      v-loading="loading"
       stripe
       height="550px"
       style="width: 100%"
@@ -90,6 +91,7 @@ export default {
   name: "SystemLog",
   data() {
     return {
+      loading: true,
       displayList: [],
       displayCounter: 0,
       syslog: [],
@@ -136,6 +138,7 @@ export default {
           this.$nextTick(() => {
             this.displayList = this.syslog;
             this.displayCounter = this.syslogCounter;
+            this.loading = false;
           });
         })
         .catch((err) => {

@@ -16,6 +16,7 @@
           currentPage * curtPageSize
         )
       "
+      v-loading="loading"
       stripe
       height="550px"
       style="width: 100%"
@@ -141,6 +142,7 @@ export default {
   name: "SignupCheck",
   data() {
     return {
+      loading: true,
       displayList: [],
       displayCounter: 0,
       checkingList: [], // { uemail: "", uname: "", postscript: "", signup: "" }
@@ -262,6 +264,7 @@ export default {
           this.$nextTick(() => {
             this.displayList = this.checkingList;
             this.displayCounter = this.checkingCounter;
+            this.loading = false;
           });
         })
         .catch((err) => {

@@ -1,7 +1,7 @@
 <template>
   <div id="headbarcomp" >
     <!-- 登录后显示头像区域 -->
-    <div id="user" v-show="logged && !role">
+    <div id="user" v-if="logged && !role">
       <el-button class="avatarBtn" circle style="padding: 0px" @click="ulogout">
         <el-avatar
           class="face"
@@ -12,7 +12,7 @@
         </el-avatar>
       </el-button>
     </div>
-    <div id="admin" v-show="logged && role">
+    <div id="admin" v-if="logged && role">
       <el-button class="avatarBtn" circle style="padding: 0px" @click="alogout">
         <el-avatar
           class="face"
