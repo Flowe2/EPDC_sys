@@ -398,7 +398,6 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .loginBody {
   width: 100%;

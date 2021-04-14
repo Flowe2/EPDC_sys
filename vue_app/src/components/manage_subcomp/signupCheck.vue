@@ -131,6 +131,7 @@
       :page-sizes="pageSizes"
       :page-size="curtPageSize"
       :hide-on-single-page="onlySinglePage"
+      :pager-count="limitPage"
       layout="total, sizes, prev, pager, next, jumper"
     >
     </el-pagination>
@@ -150,6 +151,7 @@ export default {
       currentPage: 1, // 初始页为 1
       pageSizes: [10, 20, 50, 100],
       curtPageSize: 10,
+      limitPage: 6,   // 大于5页折叠多余页码按钮
       onlySinglePage: false,
     };
   },
