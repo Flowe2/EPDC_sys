@@ -1,0 +1,51 @@
+{
+  "id": "2487035",
+  "name": "试题管理系统",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "5881146",
+      "name": "单选框",
+      "font_class": "danxuankuang",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "5881147",
+      "name": "多选框",
+      "font_class": "duoxuankuang",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "7964507",
+      "name": "试卷管理",
+      "font_class": "shijuanguanli",
+      "unicode": "e630",
+      "unicode_decimal": 58928
+    },
+    {
+      "icon_id": "8356542",
+      "name": "填空题",
+      "font_class": "tiankongti",
+      "unicode": "e646",
+      "unicode_decimal": 58950
+    },
+    {
+      "icon_id": "13124479",
+      "name": "判断",
+      "font_class": "panduan",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "19021990",
+      "name": "题库编写",
+      "font_class": "zhuguanti",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    }
+  ]
+}

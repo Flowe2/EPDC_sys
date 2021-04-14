@@ -1,16 +1,20 @@
 <template>
   <div>
+    <!-- head bar -->
     <div id="headbar">
       <UserHeadBar
         :logged="logged"
         :role="role"
         v-on:alog="alog($event)"
+        v-on:switchBg="relySwitchBg"
+        v-on:choseBg="relyChoseBg($event)"
       ></UserHeadBar>
     </div>
 
     <!-- 分界线 -->
     <div id="divider"></div>
 
+    <!-- router result -->
     <div id="display">
       <router-view v-on:alog="alog($event)"></router-view>
     </div>
@@ -32,9 +36,17 @@ export default {
     alog: function (status) {
       this.logged = status;
     },
+    relySwitchBg: function () {
+      console.log("rely switch particlesBg");
+      this.$emit("relySwitchBg");
+    },
+    relyChoseBg: function (command) {
+      console.log("rely chose particlesBg: " + command);
+      this.$emit("relyChoseBg", command);
+    }
   },
   components: {
-    UserHeadBar,
+    UserHeadBar
   },
   beforeMount() {
     let validTime = Math.floor(Date.now() / 1000) - 60 * 60;

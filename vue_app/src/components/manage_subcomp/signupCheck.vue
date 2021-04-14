@@ -297,4 +297,5 @@ export default {
   font: bold;
   font-size: 15px;
 }
+
 </style>

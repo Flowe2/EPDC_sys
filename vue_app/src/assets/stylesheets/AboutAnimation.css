@@ -1,0 +1,36 @@
+@keyframes starsMove {
+    to {
+      transform: translateY(100%);
+    }
+  }
+  
+  @keyframes smoke {
+    30% {
+      transform: scale(2);
+      opacity: 1;
+    }
+    31% {
+      opacity: 0.5;
+    }
+  }
+  
+  @keyframes rocketShake {
+    from {
+      transform: rotate(-0.5deg);
+    }
+    to {
+      transform: rotate(0.5deg);
+    }
+  }
+  
+  @keyframes rocketMove {
+    50% {
+      transform: translateY(-15%);
+    }
+    70% {
+      transform: translateY(0);
+    }
+    80% {
+      transform: translateY(2%);
+    }
+  }

@@ -1,8 +1,43 @@
 <template>
-  <router-view class="main"></router-view>
+  <particles-bg v-show="bgSwticher" :type="currentBg" bg />
+  <router-view
+    class="main"
+    v-on:relySwitchBg="bgSwticher = !bgSwticher"
+    v-on:relyChoseBg="changeBg($event)"
+  ></router-view>
 </template>
 
 <script>
+import { ParticlesBg } from "particles-bg-vue";
+export default {
+  name: "App",
+  data() {
+    return {
+      bgSwticher: true,
+      currentBg: "circle",
+      bgList: [
+        "circle",
+        "ball",
+        "lines",
+        "thick",
+        "color",
+        "cobweb",
+        "polygon",
+        "square",
+        "fountain",
+      ],
+    };
+  },
+  components: {
+    ParticlesBg,
+  },
+  methods: {
+    changeBg: function (command) {
+      this.currentBg = this.bgList[command];
+      console.log(this.currentBg);
+    }
+  },
+};
 </script>
 
 <style>

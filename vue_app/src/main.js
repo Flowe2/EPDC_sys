@@ -6,6 +6,7 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import router from './router/index';
 
+import './assets/icons/iconfont.css';    // 引用图标
 
 createApp(App)
     .use(ElementPlus)

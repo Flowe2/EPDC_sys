@@ -2,7 +2,13 @@
   <div>
     <!-- head bar -->
     <div id="headbar">
-      <UserHeadBar :logged="logged" :role="role" v-on:ulog="ulog($event)">
+      <UserHeadBar
+        :logged="logged"
+        :role="role"
+        v-on:ulog="ulog($event)"
+        v-on:switchBg="relySwitchBg"
+        v-on:choseBg="relyChoseBg($event)"
+      >
       </UserHeadBar>
     </div>
 
@@ -31,6 +37,14 @@ export default {
     ulog: function (status) {
       this.logged = status;
     },
+    relySwitchBg: function () {
+      console.log("rely switch particlesBg");
+      this.$emit("relySwitchBg");
+    },
+    relyChoseBg: function (command) {
+      console.log("rely chose particlesBg: " + command);
+      this.$emit("relyChoseBg", command);
+    }
   },
   components: {
     UserHeadBar,
