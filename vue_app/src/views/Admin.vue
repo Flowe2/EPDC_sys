@@ -1,13 +1,22 @@
 <template>
   <div>
+    <particles-bg v-show="bgSwticher" type="circle" bg />
+    <div id="bgSwitcher">
+      <el-tooltip
+        :content="'动态背景开关: ' + (bgSwticher ? 'ON' : 'OFF')"
+        placement="top"
+      >
+        <el-switch v-model="bgSwticher"> </el-switch>
+      </el-tooltip>
+    </div>
     <!-- head bar -->
     <div id="headbar">
       <UserHeadBar
+        :bgSwticher="bgSwticher"
         :logged="logged"
         :role="role"
         v-on:alog="alog($event)"
-        v-on:switchBg="relySwitchBg"
-        v-on:choseBg="relyChoseBg($event)"
+        v-on:bgSwitch="test"
       ></UserHeadBar>
     </div>
 
@@ -22,12 +31,14 @@
 </template>
 
 <script>
+import { ParticlesBg } from "particles-bg-vue";
 import UserHeadBar from "@/components/UserHeadBar.vue";
 
 export default {
   name: "Admin",
   data() {
     return {
+      bgSwticher: true,
       role: true,
       logged: false,
     };
@@ -36,17 +47,10 @@ export default {
     alog: function (status) {
       this.logged = status;
     },
-    relySwitchBg: function () {
-      console.log("rely switch particlesBg");
-      this.$emit("relySwitchBg");
-    },
-    relyChoseBg: function (command) {
-      console.log("rely chose particlesBg: " + command);
-      this.$emit("relyChoseBg", command);
-    }
   },
   components: {
-    UserHeadBar
+    ParticlesBg,
+    UserHeadBar,
   },
   beforeMount() {
     let validTime = Math.floor(Date.now() / 1000) - 60 * 60;
@@ -64,5 +68,6 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+
 </style>

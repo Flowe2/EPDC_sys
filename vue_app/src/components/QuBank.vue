@@ -1,72 +1,112 @@
 <template>
-    <el-container class="qubankLayout">
-      <el-header name="qActionBar" class="qHeader" height="auto">
-        <el-row
-          class="qHeaderRow"
-          :gutter="20"
-          type="flex"
-          align="middle"
-          justify="center"
-        >
-          <el-col :span="4"> 搜索框及按钮 </el-col>
-          <el-col :span="4"> 加至试卷 </el-col>
-          <el-col :span="4"> 上传按钮 </el-col>
-          <el-col :span="4"> 删除按钮 </el-col>
-          <el-col :span="4" :offset="3">
-            <el-button
-              type="primary"
-              size="mini"
-              icon="iconfont icon-shijuanguanli"
-              >组卷+badge</el-button
-            >
-          </el-col>
-        </el-row>
-      </el-header>
+  <el-container class="qubankLayout">
+    <el-header name="qActionBar" class="qHeader" height="auto">
+      <el-row
+        class="qHeaderRow"
+        :gutter="20"
+        type="flex"
+        align="middle"
+        justify="center"
+      >
+        <el-col :span="4"> 搜索框及按钮 </el-col>
+        <el-col :span="4"> 加至试卷 </el-col>
+        <el-col :span="4"> 上传按钮 </el-col>
+        <el-col :span="4"> 删除按钮 </el-col>
+        <el-col :span="4" :offset="3">
+          <el-button
+            type="primary"
+            size="mini"
+            icon="iconfont icon-shijuanguanli"
+            @click="drawer = true"
+            >组卷+badge</el-button
+          >
+        </el-col>
+      </el-row>
+    </el-header>
 
-      <el-container>
-        <el-aside name="qFilterBar" class="qAside" width="200px">
-          <el-menu default-active="" class="qAsideMenu" router>
-            <el-submenu index="1" class="qAsideMenuFont">
-              <template #title>
-                <i class="el-icon-finished"></i>
-                <span>选择题</span>
-              </template>
-              <el-menu-item class="qAsideSubMenuFont" index="1-1">
-                <i class="iconfont icon-danxuankuang"></i>
-                <template #title> 单选题</template>
-              </el-menu-item>
-              <el-menu-item class="qAsideSubMenuFont" index="1-2" widt="20px">
-                <i class="iconfont icon-duoxuankuang"></i>
-                <template #title> 多选题</template>
-              </el-menu-item>
-            </el-submenu>
-            <el-menu-item class="qAsideMenuFont" index="2">
-              <i class="iconfont icon-panduan"></i>
-              <template #title> 判断题</template>
+    <el-container>
+      <el-aside name="qFilterBar" class="qAside" width="200px">
+        <el-menu default-active="" class="qAsideMenu" router>
+          <el-submenu index="1" class="qAsideMenuFont">
+            <template #title>
+              <i class="el-icon-finished"></i>
+              <span>选择题</span>
+            </template>
+            <el-menu-item class="qAsideSubMenuFont" index="1-1">
+              <i class="iconfont icon-danxuankuang"></i>
+              <template #title> 单选题</template>
             </el-menu-item>
-            <el-menu-item class="qAsideMenuFont" index="3">
-              <i class="iconfont icon-tiankongti"></i>
-              <template #title> 填空题</template>
+            <el-menu-item class="qAsideSubMenuFont" index="1-2" widt="20px">
+              <i class="iconfont icon-duoxuankuang"></i>
+              <template #title> 多选题</template>
             </el-menu-item>
-            <el-menu-item class="qAsideMenuFont" index="4">
-              <i class="iconfont icon-zhuguanti"></i>
-              <template #title> 主观题</template>
-            </el-menu-item>
-          </el-menu>
-        </el-aside>
-        <el-main name="qDisplay" class="qMain">
-          Main
-          <router-view></router-view>
-        </el-main>
-      </el-container>
+          </el-submenu>
+          <el-menu-item class="qAsideMenuFont" index="2">
+            <i class="iconfont icon-panduan"></i>
+            <template #title> 判断题</template>
+          </el-menu-item>
+          <el-menu-item class="qAsideMenuFont" index="3">
+            <i class="iconfont icon-tiankongti"></i>
+            <template #title> 填空题</template>
+          </el-menu-item>
+          <el-menu-item class="qAsideMenuFont" index="4">
+            <i class="iconfont icon-zhuguanti"></i>
+            <template #title> 主观题</template>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-main name="qDisplay" class="qMain">
+        Main
+        <router-view></router-view>
+      </el-main>
     </el-container>
+  </el-container>
+
+  <el-drawer
+    title="我是标题"
+    v-model="drawer"
+    direction="rtl"
+    :before-close="handleClose"
+    destroy-on-close
+  >
+  <ComposedPaper></ComposedPaper>
+  </el-drawer>
 </template>
 
 <script>
+import ComposedPaper from "@/components/qubank_subcomp/ComposedPaper.vue";
+
 export default {
   name: "QuBank",
   data() {
-    return {};
+    return {
+      drawer: false,
+      indexList: [
+        {
+          path: "/user/qubank/siglechoice",
+          name: "单选题",
+        },
+        {
+          path: "/user/qubank/multiplechoice",
+          name: "多选题",
+        },
+        {
+          path: "/user/qubank/truefalse",
+          name: "判断题",
+        },
+        {
+          path: "/user/qubank/gapfilling",
+          name: "填空题",
+        },
+        {
+          path: "/user/qubank/subjective",
+          name: "主观题",
+        },
+      ],
+    };
+  },
+  components: {
+    ComposedPaper,
   },
   methods: {},
 };
@@ -88,7 +128,7 @@ export default {
   padding: 0;
   margin: 20px 0 20px 0;
   border-radius: 10px;
-  background-color: cyan;
+  background-color: whitesmoke;
 }
 
 .qHeaderRow {
@@ -100,7 +140,6 @@ export default {
   height: 75%;
   margin-right: 20px;
   border-radius: 10px;
-  background-color: cadetblue;
 }
 
 .qAsideMenu {

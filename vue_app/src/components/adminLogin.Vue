@@ -104,12 +104,12 @@ export default {
   --space-xl: calc(var(--space-root) * 2);
   --color-primary: mediumslateblue;
   --color-secondary: black;
-  --color-tertiary: linear-gradient(141deg,#9fb8ad 0%,#1fc8db 51%,#2cb5e8 75%);
   --base-border-radius: 0.25rem;
   --ease: cubic-bezier(0.075, 0.82, 0.165, 1);
   --duration: 350ms;
   --font-family: 'Roboto', sans-serif;
   --font-size: 1.25rem;
+  --color-tertiary: linear-gradient(141deg,#9fb8ad 0%,#1fc8db 51%,#2cb5e8 75%);
   place-items: center;
   margin: 0;
   width: 100%;
@@ -119,7 +119,6 @@ export default {
   font-size: var(--font-size);
   font-family: var(--font-family);
   line-height: 1.2;
-  background: var(--color-tertiary);
 }
 
 * {
@@ -148,7 +147,7 @@ export default {
   content: '';
   position: absolute;
   pointer-events: none;
-  background-color: #ebebeb;
+  background: var(--color-tertiary);
   width: 25%;
   height: 100%;
   -webkit-transition: background-color var(--duration) var(--ease), -webkit-transform var(--duration) var(--ease);
@@ -184,14 +183,14 @@ export default {
 }
 
 .form:hover:before, .form:hover:after, .form:focus-within:before, .form:focus-within:after {
-  background-color: white;
+  background-color: var(--color-tertiary);
   -webkit-transform: skewY(0);
           transform: skewY(0);
 }
 
 .form-inner {
   padding: var(--space-xl);
-  background-color: white;
+  background: var(--color-tertiary);
   z-index: 1;
 }
 

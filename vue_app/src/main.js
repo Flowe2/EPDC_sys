@@ -13,8 +13,7 @@ createApp(App)
     .use(router)            // Vue-router
     .use(VueAxios, axios)   // VueAxios中间件
     .mount('#app');
-
-
+    
 // axios.defaults.baseURL = 'http://localhost:3000';
 
 // vue-router 全局前置守卫

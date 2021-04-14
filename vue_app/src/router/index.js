@@ -7,17 +7,27 @@ import UserLogin from '@/components/UserLogin.vue';
 import AdminLogin from '@/components/AdminLogin.vue';
 
 import QuBank from '@/components/QuBank.vue';
+import SingleChoice from '@/components/qubank_subcomp/SingleChoice.vue';      // 单选
+import MultipleChoice from '@/components/qubank_subcomp/MultipleChoice.vue';  // 多选
+import TrueFalse from '@/components/qubank_subcomp/TrueFalse.vue';            // 判断
+import GapFilling from '@/components/qubank_subcomp/GapFilling.vue';          // 填空
+import Subjective from '@/components/qubank_subcomp/Subjective.vue';          // 主观
+import ComposedPaper from '@/components/qubank_subcomp/ComposedPaper.vue';    // 组卷功能
 
 import Manage from '@/components/Manage.vue';
-import UserMaintain from '@/components/manage_subcomp/UserMaintain.vue';
-import SignupCheck from '@/components/manage_subcomp/SignupCheck.vue';
-import SystemLog from '@/components/manage_subcomp/SystemLog.vue';
-import AdminSetting from '@/components/manage_subcomp/AdminSetting.vue';
+import UserMaintain from '@/components/manage_subcomp/UserMaintain.vue';      // 账号维护
+import SignupCheck from '@/components/manage_subcomp/SignupCheck.vue';        // 注册管理
+import SystemLog from '@/components/manage_subcomp/SystemLog.vue';            // 系统日志
+import AdminSetting from '@/components/manage_subcomp/AdminSetting.vue';      // 系统设置
 
-import About from '@/views/About.vue';
-import NotFound from '@/views/NotFound.vue';
+import About from '@/views/About.vue';                                        // About
+import NotFound from '@/views/NotFound.vue';                                  // 404
 
 const routes = [
+  {
+    path: '/',
+    redirect: '/user',
+  },
   {
     path: '/user',
     name: 'User',
@@ -28,15 +38,44 @@ const routes = [
     },
     children: [
       {
-        path: '/',
-        redirect: '/user',
+        path: '',
+        redirect: '/user/qubank',
       },
       {
         path: 'qubank',
         name: 'QuBank',
         component: QuBank,
         children: [
-          
+          {
+            path: 'singlechoice',
+            name: 'SingleChoice',
+            component: SingleChoice,
+          },
+          {
+            path: 'multiplechoice',
+            name: 'MultipleChoice',
+            component: MultipleChoice,
+          },
+          {
+            path: 'truefalse',
+            name: 'TrueFalse',
+            component: TrueFalse,
+          },
+          {
+            path: 'gapfilling',
+            name: 'GapFilling',
+            component: GapFilling,
+          },
+          {
+            path: 'subjective',
+            name: 'Subjective',
+            component: Subjective,
+          },
+          {
+            path: 'composedpaper',
+            name: 'ComposedPaper',
+            component: ComposedPaper,
+          },
         ]
       },
       {
@@ -78,7 +117,6 @@ const routes = [
             path: 'usermaintain',
             name: 'UserMaintain',
             component: UserMaintain,
-            // alias: '',
           },
           {
             path: 'signupcheck',

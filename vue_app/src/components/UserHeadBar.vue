@@ -14,29 +14,6 @@
       </el-button>
     </div>
 
-    <el-dropdown
-      class="bgSwither"
-      split-button
-      type="primary"
-      @click="switchBg"
-      @command="choseBg"
-      :hide-on-click="false"
-    >
-      更多菜单
-      <template #dropdown>
-        <el-dropdown-menu divided="true">
-          <el-dropdown-item command="0">circle</el-dropdown-item>
-          <el-dropdown-item command="1">ball</el-dropdown-item>
-          <el-dropdown-item command="2">lines</el-dropdown-item>
-          <el-dropdown-item command="3">thick</el-dropdown-item>
-          <el-dropdown-item command="4">color</el-dropdown-item>
-          <el-dropdown-item command="5">cobweb</el-dropdown-item>
-          <el-dropdown-item command="6">polygon</el-dropdown-item>
-          <el-dropdown-item command="7">square</el-dropdown-item>
-          <el-dropdown-item command="8">fountain</el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
     <!-- 登录前显示用户跳转区域 -->
     <el-button
       v-show="!logged && role"
@@ -78,25 +55,17 @@ export default {
       localStorage.removeItem("atoken");
       localStorage.removeItem("timeStamp");
       this.$emit("alog", false);
-      this.$router.replace("/admin/login");
+      this.$router.push("/admin/login");
     },
     ulogout: function () {
       console.log("user logged out");
       localStorage.removeItem("token");
       localStorage.removeItem("timeStamp");
       this.$emit("ulog", false);
-      this.$router.replace("/");
-    },
-    switchBg: function () {
-      console.log("switch particlesBg");
-      this.$emit("switchBg");
-    },
-    choseBg: function (command) {
-      console.log("change bg to: "+ command);
-      this.$emit("choseBg", command);
+      this.$router.push("/user/login");
     },
     toUser: function () {
-      this.$router.replace("/");
+      this.$router.replace("/user/login");
     },
     toAdmin: function () {
       this.$router.replace("/admin/login");
@@ -137,7 +106,8 @@ export default {
   height: 55px;
 }
 
-.headerButton, .bgSwither{
+.headerButton,
+.bgSwither {
   margin: 15px 15px 0 0;
   float: right;
 }

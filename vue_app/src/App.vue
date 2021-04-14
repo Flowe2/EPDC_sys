@@ -1,42 +1,15 @@
 <template>
-  <particles-bg v-show="bgSwticher" :type="currentBg" bg />
-  <router-view
-    class="main"
-    v-on:relySwitchBg="bgSwticher = !bgSwticher"
-    v-on:relyChoseBg="changeBg($event)"
-  ></router-view>
+  <router-view></router-view>
 </template>
 
 <script>
-import { ParticlesBg } from "particles-bg-vue";
 export default {
   name: "App",
   data() {
-    return {
-      bgSwticher: true,
-      currentBg: "circle",
-      bgList: [
-        "circle",
-        "ball",
-        "lines",
-        "thick",
-        "color",
-        "cobweb",
-        "polygon",
-        "square",
-        "fountain",
-      ],
-    };
+    return {};
   },
-  components: {
-    ParticlesBg,
-  },
-  methods: {
-    changeBg: function (command) {
-      this.currentBg = this.bgList[command];
-      console.log(this.currentBg);
-    }
-  },
+  components: {},
+  methods: {},
 };
 </script>
 
@@ -57,6 +30,29 @@ body {
   width: 100%;
   margin: 0;
   background: rgba(40, 57, 101, 0.9);
+}
+
+#bgSwitcher {
+  top: 15px;
+  right: 200px;
+  z-index: 2;
+  position: absolute;
+}
+
+#divider {
+  height: 5px;
+  width: 100%;
+  /* 动画效果绑定 */
+  -webkit-animation-name: div_animate;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-duration: 5s;
+  -webkit-animation-iteration-count: infinite;
+}
+
+#display {
+  height: 100%;
+  width: 100%;
+  margin: 0;
 }
 
 /* 分割线动画 定义时间轴 */
@@ -84,21 +80,5 @@ body {
     background-color: #ffc602;
     height: 5px;
   }
-}
-
-#divider {
-  height: 5px;
-  width: 100%;
-  /* 动画效果绑定 */
-  -webkit-animation-name: div_animate;
-  -webkit-animation-timing-function: linear;
-  -webkit-animation-duration: 5s;
-  -webkit-animation-iteration-count: infinite;
-}
-
-#display {
-  height: 100%;
-  width: 100%;
-  margin: 0;
 }
 </style>
