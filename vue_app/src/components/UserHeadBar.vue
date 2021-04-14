@@ -7,7 +7,7 @@
           class="face"
           size="large"
           fit="fill"
-          src="https://th.bing.com/th/id/R5fc1b95a05749c8659c86bdb83c5e4ba?rik=Yz1Bt8CFUBtnpg&riu=http%3a%2f%2fimg.zcool.cn%2fcommunity%2f0180d358d08cefa801219c77d48d74.jpg%40900w_1l_2o_100sh.jpg&ehk=DELe5Ra3xFL8tE5b%2bNTECROM%2fHsrFwIUDncvTi%2fN2Us%3d&risl=&pid=ImgRaw"
+          :src="avatars[1]"
         >
         </el-avatar>
       </el-button>
@@ -18,7 +18,7 @@
           class="face"
           size="large"
           fit="fill"
-          src="https://www.weixinzixun.com/UploadFiles/img_3_3952179620_3941292677_26.jpg"
+          :src="avatars[1]"
         >
         </el-avatar>
       </el-button>
@@ -32,6 +32,14 @@
         >
       </button>
     </div>
+
+    <div id="toUser" v-show="!logged && role">
+      <button class="headerButton">
+        <router-link style="text-decoration: none" to="/"
+          >我是用户</router-link
+        >
+      </button>
+    </div>
   </div>
 </template>
 
@@ -40,7 +48,10 @@ export default {
   name: "UserHeadBar",
   data() {
     return {
-      
+      avatars: [
+        require("@/assets/avatars/avatar00.jpg"),
+        require("@/assets/avatars/avatar01.jpg")
+      ]
     };
   },
   props: ["logged", "role"],
@@ -60,18 +71,6 @@ export default {
       this.$router.replace("/");
     },
   },
-  // beforeMount() {
-  //   this.$nextTick(() => {
-  //     if (localStorage.getItem("atoken") || localStorage.getItem("token")) {
-  //       let validTime = Math.floor(Date.now() / 1000) - 60 * 60;
-  //       if (localStorage.getItem("timeStamp") > validTime) {
-  //         console.log("avatar");
-  //         this.logged = true;
-  //       }
-  //     }
-  //     console.log("=====");
-  //   });
-  // },
 };
 </script>
 

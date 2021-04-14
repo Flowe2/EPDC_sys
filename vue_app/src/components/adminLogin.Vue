@@ -26,7 +26,7 @@
                 </path>
               </svg>
             </span>
-            <input class="al-input" type="password" id="apwd" v-model="a_login.apwd" />
+            <input class="al-input" type="password" id="apwd" v-model="a_login.apwd" @keyup.enter="to_log_in" />
           </div>
         </div>
         <div class="btn-group">

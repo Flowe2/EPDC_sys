@@ -73,6 +73,7 @@
                   class="base_input input"
                   data-type="password"
                   v-model="u_login.upwd"
+                  @keyup.enter="to_log_in" 
                 />
               </div>
               <div class="group">
