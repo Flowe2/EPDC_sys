@@ -94,7 +94,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .root {
   --space-root: 1rem;
   --space-xs: calc(var(--space-root) / 2);

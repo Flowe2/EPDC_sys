@@ -399,6 +399,10 @@ export default {
 </script>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+}
+
 .loginBody {
   width: 100%;
   height: calc(100% - 85px);
