@@ -39,13 +39,18 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/user/qubank',
+        redirect: { name: "RelaySingleChoice" },
       },
       {
         path: 'qubank',
         name: 'QuBank',
         component: QuBank,
         children: [
+          {
+            path: '',
+            name: "RelaySingleChoice",
+            redirect: { name: "SingleChoice"}
+          },
           {
             path: 'singlechoice',
             name: 'SingleChoice',
@@ -101,7 +106,7 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: { name: 'Manage_UserMaintain' },
+        redirect: { name: 'RelayUserMaintain' },
       },
       {
         path: 'manage',
@@ -110,7 +115,7 @@ const routes = [
         children: [
           {
             path: '',
-            name: 'Manage_UserMaintain',
+            name: 'RelayUserMaintain',
             redirect: { name: 'UserMaintain' },
           },
           {

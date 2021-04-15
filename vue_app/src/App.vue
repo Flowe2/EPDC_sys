@@ -29,7 +29,7 @@ body {
   height: 80px;
   width: 100%;
   margin: 0;
-  background: rgba(40, 57, 101, 0.9);
+  background: #394045;
 }
 
 #bgSwitcher {

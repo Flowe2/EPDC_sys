@@ -1,4 +1,6 @@
-<template></template>
+<template>
+  <div>判断page</div>
+</template>
 
 <script>
 export default {
@@ -10,5 +12,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

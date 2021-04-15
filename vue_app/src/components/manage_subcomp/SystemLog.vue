@@ -10,6 +10,7 @@
     ></el-divider>
 
     <el-table
+      class="mElTable"
       :data="
         displayList.slice(
           (currentPage - 1) * curtPageSize,
@@ -157,6 +158,6 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 
 </style>

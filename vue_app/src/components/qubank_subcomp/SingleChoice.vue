@@ -1,4 +1,8 @@
-<template></template>
+<template>
+  <div>
+    单选page
+  </div>
+</template>
 
 <script>
 export default {

@@ -27,7 +27,7 @@
         <li class="ul_li" v-for="item in 5" :key="item">
           <el-button
             class="bkg_btn_bottom"
-            :class="{actvieBtn: (item-1 == pic_num)}"
+            :class="{ actvieBtn: item - 1 == pic_num }"
             @click="changePic(item - 1)"
           ></el-button>
         </li>
@@ -73,7 +73,7 @@
                   class="base_input input"
                   data-type="password"
                   v-model="u_login.upwd"
-                  @keyup.enter="to_log_in" 
+                  @keyup.enter="to_log_in"
                 />
               </div>
               <div class="group">
@@ -155,7 +155,13 @@
                 <input
                   type="submit"
                   class="base_input button"
-                  :value="checkEmail ? ( checkPwd ? '注 册' : '密码为空 / 两次密码不一致') : '邮箱为空 / 已存在'"
+                  :value="
+                    checkEmail
+                      ? checkPwd
+                        ? '注 册'
+                        : '密码为空 / 两次密码不一致'
+                      : '邮箱为空 / 已存在'
+                  "
                   :disabled="!(checkEmail && checkPwd)"
                   @click="to_sign_up"
                 />
@@ -226,7 +232,7 @@ export default {
     to_sign_up: function () {
       const self = this;
       console.log(self.u_signup);
-      self.postSignup(self.u_signup)
+      self.postSignup(self.u_signup);
     },
 
     // cookie 操作
@@ -280,7 +286,7 @@ export default {
             localStorage.setItem("timeStamp", res.timeStamp);
             localStorage.setItem("token", res.token);
             alert("☺ 登录成功");
-            this.$emit('ulog', true);
+            this.$emit("ulog", true);
             this.$router.push("/user/quBank");
           } else {
             // 登录失败
@@ -299,10 +305,10 @@ export default {
         method: "POST",
         url: "/user/signup",
         data: {
-          "uemail": u_signup.uemail,
-          "uname": u_signup.uname,
-          "upwd": u_signup.upwd,
-          "postscript": u_signup.postscript,
+          uemail: u_signup.uemail,
+          uname: u_signup.uname,
+          upwd: u_signup.upwd,
+          postscript: u_signup.postscript,
         },
       })
         .then((response) => {
@@ -425,6 +431,7 @@ export default {
   padding: 0;
   list-style: none;
 }
+
 .ul_li {
   margin: 0;
   padding: 0;
@@ -439,17 +446,21 @@ export default {
   border: 0;
   box-shadow: 10px 5px 5px 1px rgba(0, 0, 0, 0.24);
 }
+
 .bkg_btn:hover {
   opacity: 0.8;
 }
+
 #bkg_btn_left {
   float: left;
   margin-left: 20px;
 }
+
 #bkg_btn_right {
   float: right;
   margin-right: 20px;
 }
+
 .bkg_btn_bottom {
   height: 5px;
   min-height: 5px;
@@ -464,6 +475,7 @@ export default {
   background-color: rgba(0, 0, 0, 0.6);
   box-shadow: 10px 5px 5px 1px rgba(0, 0, 0, 0.24);
 }
+
 .actvieBtn {
   background-color: rgba(0, 0, 0, 1);
 }
@@ -477,18 +489,21 @@ export default {
   position: relative;
   box-shadow: 25px 10px 10px 10px rgba(0, 0, 0, 0.24);
 }
+
 .content-box {
   width: 100%;
   height: 100%;
   position: absolute;
   padding: 60px 70px 50px 70px;
-  background: rgba(40, 57, 101, 0.9);
+  background: #394045;
 }
+
 .base_input {
   outline: none;
   border: none;
   font-size: 15px;
 }
+
 .content-box .log-in-htm,
 .content-box .sign-up-htm {
   top: 0;
@@ -503,11 +518,13 @@ export default {
   -webkit-transition: all 0.4s linear;
   transition: all 0.4s linear;
 }
+
 .content-box .log-in,
 .content-box .sign-up,
 .login-form .group .check {
   display: none;
 }
+
 .content-box .tab {
   font-size: 22px;
   margin-right: 15px;
@@ -516,11 +533,13 @@ export default {
   display: inline-block;
   border-bottom: 2px solid transparent;
 }
+
 .content-box .log-in:checked + .tab,
 .content-box .sign-up:checked + .tab {
   color: #fff;
   border-color: #1161ee;
 }
+
 .login-form {
   min-height: 345px;
   position: relative;
@@ -529,9 +548,11 @@ export default {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
+
 .login-form .group {
   margin-bottom: 15px;
 }
+
 .login-form .group .label,
 .login-form .group .input,
 .login-form .group .button {
@@ -539,6 +560,7 @@ export default {
   color: #fff;
   display: block;
 }
+
 .login-form .group .input,
 .login-form .group .button {
   border: none;
@@ -546,20 +568,25 @@ export default {
   border-radius: 25px;
   background: rgba(255, 255, 255, 0.1);
 }
+
 .login-form .group input[data-type="password"] {
   text-security: circle;
   -webkit-text-security: circle;
 }
+
 .login-form .group .label {
   color: #aaa;
   font-size: 18px;
 }
+
 .login-form .group .button {
   background: #1161ee;
 }
+
 .login-form .group .button:disabled {
   background: #92bde9;
 }
+
 .login-form .group label .icon {
   width: 15px;
   height: 15px;
@@ -568,6 +595,7 @@ export default {
   display: inline-block;
   background: rgba(255, 255, 255, 0.1);
 }
+
 .login-form .group label .icon:before,
 .login-form .group label .icon:after {
   content: "";
@@ -578,6 +606,7 @@ export default {
   -webkit-transition: all 0.2s ease-in-out 0s;
   transition: all 0.2s ease-in-out 0s;
 }
+
 .login-form .group label .icon:before {
   left: 3px;
   width: 5px;
@@ -586,6 +615,7 @@ export default {
   -ms-transform: scale(0) rotate(0);
   transform: scale(0) rotate(0);
 }
+
 .login-form .group label .icon:after {
   top: 6px;
   right: 0;
@@ -593,22 +623,27 @@ export default {
   -ms-transform: scale(0) rotate(0);
   transform: scale(0) rotate(0);
 }
+
 .login-form .group .check:checked + label {
   color: #fff;
 }
+
 .login-form .group .check:checked + label .icon {
   background: #1161ee;
 }
+
 .login-form .group .check:checked + label .icon:before {
   -webkit-transform: scale(1) rotate(45deg);
   -ms-transform: scale(1) rotate(45deg);
   transform: scale(1) rotate(45deg);
 }
+
 .login-form .group .check:checked + label .icon:after {
   -webkit-transform: scale(1) rotate(-45deg);
   -ms-transform: scale(1) rotate(-45deg);
   transform: scale(1) rotate(-45deg);
 }
+
 .content-box
   .log-in:checked
   + .tab
@@ -620,19 +655,23 @@ export default {
   -ms-transform: rotate(0);
   transform: rotate(0);
 }
+
 .content-box .sign-up:checked + .tab + .login-form .sign-up-htm {
   -webkit-transform: rotate(0);
   -ms-transform: rotate(0);
   transform: rotate(0);
 }
+
 .hr {
   height: 2px;
   margin: 40px 0 35px 0;
   background: rgba(255, 255, 255, 0.2);
 }
+
 .foot-lnk {
   text-align: center;
 }
+
 .forget {
   color: inherit;
   text-decoration: none;

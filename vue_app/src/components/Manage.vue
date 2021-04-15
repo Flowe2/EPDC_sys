@@ -3,7 +3,12 @@
     <!-- 左侧边栏 -->
     <el-aside class="mAside" width="auto">
       <!-- 导航栏内容 -->
-      <el-menu default-active="/admin/manage/usermaintain" class="mAsideMenu" :collapse="isCollapse" :router="enableRouter">
+      <el-menu
+        :default-active="indexList[0].path"
+        class="mAsideMenu"
+        :collapse="isCollapse"
+        router
+      >
         <!-- 切换按钮 -->
         <button class="mAsideCollapBtn" @click="isCollapse = !isCollapse">
           <i class="el-icon-s-unfold"></i>
@@ -17,7 +22,11 @@
             <i class="el-icon-edit"></i>
             <template #title>{{ indexList[0].name }}</template>
           </el-menu-item>
-          <el-menu-item class="mAsideSubMenuFont" :index="indexList[1].path" widt='20px'>
+          <el-menu-item
+            class="mAsideSubMenuFont"
+            :index="indexList[1].path"
+            widt="20px"
+          >
             <i class="el-icon-document-checked"></i>
             <template #title>{{ indexList[1].name }}</template>
           </el-menu-item>
@@ -49,39 +58,42 @@ export default {
       enableRouter: true,
       indexList: [
         {
-          path: '/admin/manage/usermaintain',
-          name: '账号维护'
+          path: "/admin/manage/usermaintain",
+          name: "账号维护",
         },
         {
-          path: '/admin/manage/signupcheck',
-          name: '注册管理'
+          path: "/admin/manage/signupcheck",
+          name: "注册管理",
         },
         {
-          path: '/admin/manage/systemlog',
-          name: '系统日志'
+          path: "/admin/manage/systemlog",
+          name: "系统日志",
         },
         {
-          path: '/admin/manage/adminsetting',
-          name: '设置'
+          path: "/admin/manage/adminsetting",
+          name: "设置",
         },
       ],
-      viewName: '',
+      viewName: "",
     };
   },
   methods: {
     test: function () {
       console.log();
     },
-  }
+  },
 };
 </script>
 
-<style>
+<style scoped>
 .manageLayout {
   --display-height: calc(100% - 85px);
   width: 100%;
   height: var(--display-height);
   position: absolute;
+}
+
+.mAside {
 }
 
 .mAsideCollapBtn {
@@ -102,6 +114,8 @@ export default {
 .mAsideMenu {
   margin: 15px;
   height: var(--display-height);
+  border-right: 0;
+  border-radius: 15px;
 }
 
 .mAsideMenu:not(.el-menu--collapse) {
@@ -109,13 +123,20 @@ export default {
 }
 
 .mAsideMenuFont {
-
 }
 
 .mAsideSubMenuFont {
-
 }
 
 .mMainBody {
+}
+
+/* 覆盖所有子组件 */
+>>> .el-divider__text {
+  border-radius: 15px;
+}
+
+>>> .mElTable {
+  border-radius: 15px;
 }
 </style>
