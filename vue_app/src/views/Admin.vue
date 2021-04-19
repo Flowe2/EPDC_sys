@@ -25,6 +25,7 @@
 
     <!-- router result -->
     <div id="display">
+      <!-- 监听登录成功emit的alog事件 -->
       <router-view v-on:alog="alog($event)"></router-view>
     </div>
   </div>

@@ -44,17 +44,17 @@
               <p class="sc_eumail_wrapper">
                 <el-divider direction="vertical"></el-divider>
                 邮&nbsp;&nbsp;&nbsp;&nbsp;箱
-                <i class="el-icon-chat-dot-round"></i> 
+                <i class="el-icon-chat-dot-round"></i>
                 {{ scope.row.uemail }}
               </p>
               <p class="sc_eumail_wrapper">
                 <el-divider direction="vertical"></el-divider>
-                用户名 <i class="el-icon-s-custom"></i> 
+                用户名 <i class="el-icon-s-custom"></i>
                 {{ scope.row.uname }}
               </p>
               <p class="sc_eumail_wrapper">
                 <el-divider direction="vertical"></el-divider>
-                留&nbsp;&nbsp;&nbsp;&nbsp;言 <i class="el-icon-paperclip"></i> 
+                留&nbsp;&nbsp;&nbsp;&nbsp;言 <i class="el-icon-paperclip"></i>
                 {{ scope.row.postscript }}
               </p>
             </template>
@@ -82,7 +82,13 @@
         <template #default="scope">
           <el-popover placement="left" :width="200" trigger="click">
             <p>
-              <el-alert title="确认通过?" type="success" :closable="false" center show-icon></el-alert>
+              <el-alert
+                title="确认通过?"
+                type="success"
+                :closable="false"
+                center
+                show-icon
+              ></el-alert>
             </p>
             <div style="text-align: center">
               <el-button
@@ -100,7 +106,13 @@
           </el-popover>
           <el-popover placement="left" :width="200" trigger="click">
             <p>
-              <el-alert title="确认删除?" type="error" :closable="false" center show-icon></el-alert>
+              <el-alert
+                title="确认删除?"
+                type="error"
+                :closable="false"
+                center
+                show-icon
+              ></el-alert>
             </p>
             <div style="text-align: center">
               <el-button
@@ -111,9 +123,7 @@
               >
             </div>
             <template #reference>
-              <el-button size="mini" type="danger"
-                >拒 绝</el-button
-              >
+              <el-button size="mini" type="danger">拒 绝</el-button>
             </template>
           </el-popover>
         </template>
@@ -152,7 +162,7 @@ export default {
       currentPage: 1, // 初始页为 1
       pageSizes: [10, 20, 50, 100],
       curtPageSize: 10,
-      limitPage: 6,   // 大于5页折叠多余页码按钮
+      limitPage: 6, // 大于5页折叠多余页码按钮
       onlySinglePage: false,
     };
   },
@@ -178,69 +188,69 @@ export default {
       console.log("current page: " + currentPage);
       this.currentPage = currentPage;
     },
-    
+
     // axios - 通过注册申请
-    postPass: function(uemail) {
+    postPass: function (uemail) {
       this.axios({
         method: "POST",
         url: "/admin/manage/passapply",
         data: {
-          "atoken": localStorage.getItem("atoken"),
-          "uemail": uemail,
-        }
+          atoken: localStorage.getItem("atoken"),
+          uemail: uemail,
+        },
       })
-      .then(response => {
-        // 处理登录结果
-        // 成功: { ifSuccess: true }
-        // 失败: { ifSuccess: false, err: '...' }
-        let res = JSON.stringify(response.data);
-        res = JSON.parse(res)
-        console.log(res);
-        if (res.ifSuccess == true) {
-          // 登录成功, 储存token, 跳转至quBank界面
-          alert("☺ 操作成功");
-          this.getCheckingUserList();
-        } else {
-          // 登录失败
-          alert("操作失败: " + res.err);
-          this.getCheckingUserList();
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
+        .then((response) => {
+          // 处理登录结果
+          // 成功: { ifSuccess: true }
+          // 失败: { ifSuccess: false, err: '...' }
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          console.log(res);
+          if (res.ifSuccess == true) {
+            // 登录成功, 储存token, 跳转至quBank界面
+            alert("☺ 操作成功");
+            this.getCheckingUserList();
+          } else {
+            // 登录失败
+            alert("操作失败: " + res.err);
+            this.getCheckingUserList();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
 
-    // axios - 通过注册申请
-    postRefuse: function(uemail) {
+    // axios - 拒绝注册申请
+    postRefuse: function (uemail) {
       this.axios({
         method: "POST",
         url: "/admin/manage/refuseapply",
         data: {
-          "atoken": localStorage.getItem("atoken"),
-          "uemail": uemail,
-        }
+          atoken: localStorage.getItem("atoken"),
+          uemail: uemail,
+        },
       })
-      .then(response => {
-        // 处理登录结果
-        // 成功: { ifSuccess: true }
-        // 失败: { ifSuccess: false, err: '...' }
-        let res = JSON.stringify(response.data);
-        res = JSON.parse(res)
-        console.log(res);
-        if (res.ifSuccess == true) {
-          // 登录成功, 储存token, 跳转至quBank界面
-          alert("☺ 操作成功");
-          this.getCheckingUserList();
-        } else {
-          // 登录失败
-          alert("操作失败: " + res.err);
-          this.getCheckingUserList();
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
+        .then((response) => {
+          // 处理登录结果
+          // 成功: { ifSuccess: true }
+          // 失败: { ifSuccess: false, err: '...' }
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          console.log(res);
+          if (res.ifSuccess == true) {
+            // 登录成功, 储存token, 跳转至quBank界面
+            alert("☺ 操作成功");
+            this.getCheckingUserList();
+          } else {
+            // 登录失败
+            alert("操作失败: " + res.err);
+            this.getCheckingUserList();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
 
     // axios - 获取用户
@@ -253,7 +263,6 @@ export default {
         },
       })
         .then((response) => {
-          // 处理登录结果
           // 返回:  {userlist: [ {uemail: '',
           //                  uname: '...',
           //                  lastlog: '},
@@ -267,6 +276,10 @@ export default {
           this.$nextTick(() => {
             this.displayList = this.checkingList;
             this.displayCounter = this.checkingCounter;
+            // 若小于10项则单页显示, 隐藏分页按钮
+            if (this.displayCounter < this.curtPageSize) {
+              this.onlySinglePage = true;
+            }
             this.loading = false;
           });
         })
@@ -277,9 +290,6 @@ export default {
   },
   mounted() {
     this.getCheckingUserList();
-    if (this.displayCounter < this.curtPageSize) {
-      this.onlySinglePage = true;
-    }
   },
 };
 </script>

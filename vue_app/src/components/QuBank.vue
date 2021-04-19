@@ -8,6 +8,7 @@
             clearable
             v-model="fliterKeywords"
             placeholder="回车搜索"
+            @keyup.enter="testSearch"
           ></el-input>
         </el-col>
         <el-col :span="1"
@@ -59,7 +60,8 @@
       <ComposedPaper :chosedCounter="chosedCounter"></ComposedPaper>
     </el-drawer>
 
-    <el-container>
+    <el-container class="qMain">
+      <!-- 侧边栏, 题型选择 -->
       <el-aside name="qFilterBar" class="qAside" width="200px">
         <el-menu
           :default-active="indexList[0].path"
@@ -101,8 +103,9 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-main name="qDisplay" class="qMain">
-        Main
+
+      <!-- 主容器, 展示题库 -->
+      <el-main name="qDisplay" class="qDisplay">
         <router-view></router-view>
       </el-main>
     </el-container>
@@ -147,7 +150,11 @@ export default {
   components: {
     ComposedPaper,
   },
-  methods: {},
+  methods: {
+    testSearch: function () {
+      alert("回车搜索 :" + this.fliterKeywords);
+    }
+  },
 };
 </script>
 
@@ -163,7 +170,7 @@ export default {
 
 .qHeader {
   width: auto;
-  height: 100%;
+  height: 60px ! important; /* 覆盖 element.sytle, 解决优先级问题 */
   padding: 10px;
   margin: 20px 0 20px 0;
   border-radius: 10px;
@@ -198,12 +205,17 @@ export default {
 }
 
 .qMain {
-  height: calc(100% - 20px);
+  height: calc(100% - 110px);
+  margin-bottom: 10px;
+}
+
+.qDisplay {
+  height: 100%;
   width: 100%;
+  padding: 0;
   border-radius: 10px;
   background-color: #394045;
 }
-
 /* 竖直页码
 .el-pager {
   display: flex;
@@ -214,11 +226,20 @@ export default {
   width: 20px;
 } */
 
->>> .el-drawer__header {
+:deep() .el-drawer__header {
   margin-bottom: 0;
 }
 
->>> .el-divider__text {
+:deep() .el-divider__text {
   border-radius: 15px;
+}
+
+:deep() .el-pagination {
+  padding: 10px 10px 0 10px;
+  margin: 0;
+}
+
+:deep() .el-table {
+  margin-top: 10px;
 }
 </style>

@@ -40,11 +40,8 @@
         prop="role"
         label="身份"
         width="100"
-        :filters="[
-          { text: '管理员', value: 'admin' },
-          { text: '用户', value: 'user' },
-        ]"
-        :filter-method="filterTag"
+        :filters="displayRoleFilter"
+        :filter-method="roleFilter"
         filter-placement="bottom-end"
       >
         <template #default="scope">
@@ -96,12 +93,13 @@ export default {
       loading: true,
       displayList: [],
       displayCounter: 0,
+      displayRoleFilter: [],
       syslog: [],
       syslogCounter: 0,
       currentPage: 1, // 初始页为 1
       pageSizes: [10, 20, 50, 100],
       curtPageSize: 10,
-      limitPage: 6,   // 大于5页折叠多余页码按钮
+      limitPage: 6, // 大于5页折叠多余页码按钮
       onlySinglePage: false,
     };
   },
@@ -116,6 +114,23 @@ export default {
       console.log("current page: " + currentPage);
       this.currentPage = currentPage;
     },
+    // 生成过滤器
+    roleFilterGenerator: function (res) {
+      let temp = [];
+      res.forEach((element) => {
+        if (temp.indexOf(element.role) == -1) {
+          temp.push(element.role);
+          this.displayRoleFilter.push({
+            text: element.role,
+            value: element.role,
+          });
+        }
+      });
+    },
+    // role标签过滤器
+    roleFilter: function (value, row) {
+      return row.role === value;
+    },
 
     // axios - 获取用户
     getSyslog: function () {
@@ -128,7 +143,8 @@ export default {
       })
         .then((response) => {
           // 处理登录结果
-          // 返回:  {syslog: [ {'timestamp': 'yyyy-mm-dd',
+          // 返回:  {syslog: [ {'timestamp': 'time stamp',
+          //                     'role': 'user / admin'
           //                     'who': 'uemail / account',
           //                     'operation': '...'},
           //        {}, ... {} ],
@@ -141,6 +157,10 @@ export default {
           this.$nextTick(() => {
             this.displayList = this.syslog;
             this.displayCounter = this.syslogCounter;
+            // 若小于10项则单页显示, 隐藏分页按钮
+            if (this.displayCounter < this.curtPageSize) {
+              this.onlySinglePage = true;
+            }
             this.loading = false;
           });
         })
@@ -151,13 +171,14 @@ export default {
   },
   mounted() {
     this.getSyslog();
-    if (this.displayCounter < this.curtPageSize) {
-      this.onlySinglePage = true;
-    }
+  },
+  watch: {
+    displayList: function () {
+      this.roleFilterGenerator(this.syslog);
+    },
   },
 };
 </script>
 
 <style scoped>
-
 </style>

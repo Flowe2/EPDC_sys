@@ -132,11 +132,11 @@ export default {
 }
 
 /* 覆盖所有子组件 */
->>> .el-divider__text {
+:deep() .el-divider__text {
   border-radius: 15px;
 }
 
->>> .mElTable {
+:deep() .mElTable {
   border-radius: 15px;
 }
 </style>

@@ -215,6 +215,7 @@ export default {
         });
     },
 
+    // axios - 删除用户
     postDelete: function (uemail) {
       this.axios({
         method: "POST",
@@ -270,6 +271,10 @@ export default {
           this.$nextTick(() => {
             this.displayList = this.checkedList;
             this.displayCounter = this.checkedCounter;
+            // 若小于10项则单页显示, 隐藏分页按钮
+            if (this.displayCounter < this.curtPageSize) {
+              this.onlySinglePage = true;
+            }
             this.loading = false;
           });
         })
@@ -280,9 +285,6 @@ export default {
   },
   mounted() {
     this.getCheckedUserList();
-    if (this.displayCounter < this.curtPageSize) {
-      this.onlySinglePage = true;
-    }
   },
 };
 </script>
