@@ -185,11 +185,11 @@ export default {
     },
     // 动态设置table高度, 固定表头
     dynamicTableHeight: function () {
-      let bodyHeight = document.getElementById("um_mainbody").offsetHeight;
+      let bodyHeight = document.getElementById("um_mainbody").clientHeight;
       // divider margin-top=margin-bottom=24, height=1
-      let headHeight = document.getElementById("um_h2").offsetHeight;
+      let headHeight = document.getElementById("um_h2").clientHeight;
       let pagiHeight;
-      (!this.onlySinglePage) ? (pagiHeight = document.getElementById("um_pagination").offsetHeight) : (pagiHeight = 0);
+      (!this.onlySinglePage) ? (pagiHeight = document.getElementById("um_pagination").clientHeight) : (pagiHeight = 0);
       this.tableHeight = bodyHeight - headHeight - 49 * 2 - pagiHeight;
     },
 
