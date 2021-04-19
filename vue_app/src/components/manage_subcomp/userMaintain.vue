@@ -1,6 +1,6 @@
 <template>
   <div class="um_mainbody">
-    <h2 class="um_H2">
+    <h2 class="um_h2">
       <i class="el-icon-edit"></i>
       账号维护
     </h2>
@@ -293,7 +293,7 @@ export default {
 .um_mainbody {
 }
 
-.um_H2 {
+.um_h2 {
   margin: 0;
 }
 

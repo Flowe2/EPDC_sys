@@ -1,6 +1,6 @@
 <template>
   <div class="sc_mainbody">
-    <h2 class="sc_H2">
+    <h2 class="sc_h2">
       <i class="el-icon-document-checked"></i>
       注册管理
     </h2>
@@ -298,7 +298,7 @@ export default {
 .sc_mainbody {
 }
 
-.sc_H2 {
+.sc_h2 {
   margin: 0;
 }
 
