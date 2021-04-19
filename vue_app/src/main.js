@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import ElementPlus from 'element-plus';
-import 'element-plus/lib/theme-chalk/index.css' // 主题样式需要单独引入
+import locale from 'element-plus/lib/locale/lang/zh-cn';    // 中文包
+import 'element-plus/lib/theme-chalk/index.css'             // 主题样式需要单独引入
 import App from './App.vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
@@ -9,9 +10,9 @@ import router from './router/index';
 import './assets/icons/iconfont.css';    // 引用图标
 
 createApp(App)
-    .use(ElementPlus)
-    .use(router)            // Vue-router
-    .use(VueAxios, axios)   // VueAxios中间件
+    .use(ElementPlus, { locale })       // 中文 Element-plus
+    .use(router)                        // Vue-router
+    .use(VueAxios, axios)               // VueAxios中间件
     .mount('#app');
     
 // axios.defaults.baseURL = 'http://localhost:3000';

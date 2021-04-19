@@ -1,5 +1,5 @@
 <template>
-  <el-container class="manageLayout">
+  <el-container class="mLayout">
     <!-- 左侧边栏 -->
     <el-aside class="mAside" width="auto">
       <!-- 导航栏内容 -->
@@ -86,7 +86,7 @@ export default {
 </script>
 
 <style scoped>
-.manageLayout {
+.mLayout {
   --display-height: calc(100% - 85px);
   width: 100%;
   height: var(--display-height);
@@ -138,5 +138,13 @@ export default {
 
 :deep() .mElTable {
   border-radius: 15px;
+}
+
+/* 覆盖elemnt原生分页器样式, 增加圆角 */
+:deep() .el-pagination .btn-prev{
+  border-radius: 15px 0 0 15px;
+}
+:deep() .el-pagination .btn-next{
+  border-radius: 0 15px 15px 0;
 }
 </style>

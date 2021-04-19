@@ -71,6 +71,8 @@
       <el-table-column label="商品名称" prop="name"> </el-table-column>
       <el-table-column label="描述" prop="desc"> </el-table-column>
     </el-table>
+
+    <p>{{ searchingKey }}</p>
   </div>
 </template>
 
@@ -89,8 +91,157 @@ export default {
       curtPageSize: 10,
       limitPage: 6, // 大于5页折叠多余页码按钮
       onlySinglePage: false,
+
+      // test list
+      test: [
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃1",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海市普陀区真北路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987123",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃2",
+          desc: "abc",
+          address: "上海市普陀区真北路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987125",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃3",
+          desc: "荷兰淡奶",
+          address: "上海市普陀区真北路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987126",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃1",
+          desc: "淡奶奶",
+          address: "上海市普陀区真北路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃2",
+          desc: "荷兰不腻",
+          address: "上海市普陀区真北路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12956722",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃3",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海市普陀区真北路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃1",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海市普陀区真北路",
+          shop: "王夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃2",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海市普陀区真北路",
+          shop: "王小夫店",
+          shopId: "10333",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃3",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海市普陀区真北路",
+          shop: "王小妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃1",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "普北路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃2",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海市普陀路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃3",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海市普陀区真北路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃1",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海市普陀区真北路",
+          shop: "王小虎夫妻店",
+          shopId: "10339",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃2",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海市普陀区真北路",
+          shop: "王店",
+          shopId: "10373",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃3",
+          desc: "荷兰优质淡奶，奶香浓而不腻",
+          address: "上海路",
+          shop: "王小虎夫妻店",
+          shopId: "10563",
+        },
+        {
+          id: "12987122",
+          name: "好滋好味鸡蛋仔",
+          keyword: "小吃1",
+          desc: "荷兰不腻",
+          address: "上海市普陀区真北路",
+          shop: "王小虎夫妻店",
+          shopId: "10333",
+        },
+      ],
     };
   },
+  props: ["searchingKey"],
   methods: {
     // 改变分页大小
     handleSizeChange: function (size) {
@@ -107,9 +258,9 @@ export default {
       let bodyHeight = document.getElementById("singlec_body").clientHeight;
       let pagiHeight = document.getElementById("singlec_pagination")
         .clientHeight;
-      this.tableHeight = bodyHeight - pagiHeight - 15;
+      this.tableHeight = bodyHeight - pagiHeight - 20;
     },
-    // 生成过滤器
+    // 生成标签过滤器
     keywordFilterGenerator: function (res) {
       let temp = [];
       res.forEach((element) => {
@@ -128,166 +279,40 @@ export default {
     },
   },
   mounted() {
-    let test = [
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃1",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987123",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃2",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987125",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃3",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987126",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃1",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃2",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃3",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃1",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃2",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃3",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃1",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃2",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃3",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃1",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃2",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃3",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-      {
-        id: "12987122",
-        name: "好滋好味鸡蛋仔",
-        keyword: "小吃1",
-        desc: "荷兰优质淡奶，奶香浓而不腻",
-        address: "上海市普陀区真北路",
-        shop: "王小虎夫妻店",
-        shopId: "10333",
-      },
-    ];
-    this.displayList = test;
-    this.displayCounter = test.length;
+    this.displayList = this.test;
+    this.displayCounter = this.test.length;
     if (this.displayCounter < this.curtPageSize) {
       this.onlySinglePage = true;
     }
-    this.keywordFilterGenerator(test);
+    this.keywordFilterGenerator(this.test);
     // 初始化窗口
-    this.$nextTick( () => {
+    this.$nextTick(() => {
       this.dynamicTableHeight();
-    })
+    });
     // 窗口大小改变时
     window.onresize = () => {
       this.dynamicTableHeight();
     };
+  },
+  watch: {
+    // 简单搜索
+    searchingKey: function () {
+      console.log(this.searchingKey);
+      const search = this.searchingKey;
+      let filterList = Object.keys(this.test[0]);
+      if (search) {
+        this.displayList = this.test.filter((v) => {
+          //some是一个为true，即结果为true
+          return filterList.some((key) => {
+            //要toString是因为对象里有id，id是int类型，要转为字符串类型
+            return v[key].toString().indexOf(search) > -1;
+          });
+        });
+      } else {
+        this.displayList = this.test;
+      }
+      this.displayCounter = this.displayList.length;
+    },
   },
 };
 </script>

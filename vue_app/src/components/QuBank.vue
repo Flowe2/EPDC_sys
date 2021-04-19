@@ -16,9 +16,8 @@
           <el-input
             prefix-icon="el-icon-search"
             clearable
-            v-model="fliterKeywords"
-            placeholder="回车搜索"
-            @keyup.enter="testSearch"
+            v-model="searchingKey"
+            placeholder="输入后请稍等"
           ></el-input>
         </el-col>
         <el-col :span="1"
@@ -106,13 +105,14 @@
 
       <!-- 主容器, 展示题库 -->
       <el-main name="qDisplay" class="qDisplay">
-        <router-view></router-view>
+        <router-view v-bind:searchingKey="debounceSearch"></router-view>
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
+import _ from "lodash";
 import ComposedPaper from "@/components/qubank_subcomp/ComposedPaper.vue";
 
 export default {
@@ -141,7 +141,8 @@ export default {
           name: " 主 观 题",
         },
       ],
-      fliterKeywords: "",
+      searchingKey: "",
+      debounceSearch: "",
       chosedCounter: 0, // 已选题目数量
       maxCounter: 50, // 自定义预计题目数量
       drawer: false,
@@ -151,10 +152,16 @@ export default {
     ComposedPaper,
   },
   methods: {
-    testSearch: function () {
-      alert("回车搜索 :" + this.fliterKeywords);
-    },
+    testSearch: _.debounce(function () {
+      this.debounceSearch = this.searchingKey;
+    }, 1000),
   },
+  watch: {
+    // 搜索防抖, 1秒后传给router-view
+    searchingKey: function () {
+      this.testSearch();
+    }
+  }
 };
 </script>
 
@@ -229,7 +236,6 @@ export default {
 :deep() .el-drawer__header {
   margin-bottom: 0;
 }
-
 :deep() .el-divider__text {
   border-radius: 15px;
 }
@@ -237,6 +243,20 @@ export default {
 :deep() .el-pagination {
   padding: 10px 10px 0 10px;
   margin: 0;
+}
+/* 覆盖el-pagination原生字体颜色 */
+:deep() .el-pagination__total {
+  color: #ffd7ba;
+}
+:deep() .el-pagination__jump {
+  color: #ffd7ba;
+}
+/* 覆盖el-pagination原生分页器样式, 增加圆角 */
+:deep() .el-pagination .btn-prev{
+  border-radius: 15px 0 0 15px;
+}
+:deep() .el-pagination .btn-next{
+  border-radius: 0 15px 15px 0;
 }
 
 :deep() .el-table {
