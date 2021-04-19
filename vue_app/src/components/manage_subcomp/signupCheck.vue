@@ -1,6 +1,6 @@
 <template>
-  <div class="sc_mainbody">
-    <h2 class="sc_h2">
+  <div id="sc_mainbody" class="sc_mainbody">
+    <h2 id="sc_h2" class="sc_h2">
       <i class="el-icon-document-checked"></i>
       注册管理
     </h2>
@@ -19,7 +19,7 @@
       "
       v-loading="loading"
       stripe
-      height="550px"
+      :height="tableHeight"
       style="width: 100%"
       :default-sort="{ prop: 'signup', order: 'descending' }"
     >
@@ -135,6 +135,7 @@
     ></el-divider>
 
     <el-pagination
+      id="sc_pagination"
       :total="displayCounter"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -164,6 +165,7 @@ export default {
       curtPageSize: 10,
       limitPage: 6, // 大于5页折叠多余页码按钮
       onlySinglePage: false,
+      tableHeight: 550,
     };
   },
   methods: {
@@ -187,6 +189,15 @@ export default {
     handleCurrentChange: function (currentPage) {
       console.log("current page: " + currentPage);
       this.currentPage = currentPage;
+    },
+    // 动态设置table高度, 固定表头
+    dynamicTableHeight: function () {
+      let bodyHeight = document.getElementById("sc_mainbody").clientHeight;
+      // divider margin-top=margin-bottom=24, height=1
+      let headHeight = document.getElementById("sc_h2").clientHeight;
+      let pagiHeight;
+      (!this.onlySinglePage) ? (pagiHeight = document.getElementById("sc_pagination").clientHeight) : (pagiHeight = 0);
+      this.tableHeight = bodyHeight - headHeight - 49*2 - pagiHeight;
     },
 
     // axios - 通过注册申请
@@ -290,12 +301,21 @@ export default {
   },
   mounted() {
     this.getCheckingUserList();
+    // 初始化窗口
+    this.$nextTick( () => {
+      this.dynamicTableHeight();
+    })
+    // 窗口大小改变时
+    window.onresize = () => {
+      this.dynamicTableHeight();
+    };
   },
 };
 </script>
 
 <style scoped>
 .sc_mainbody {
+  height: 100%;
 }
 
 .sc_h2 {

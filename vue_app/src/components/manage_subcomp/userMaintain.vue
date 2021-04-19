@@ -1,6 +1,6 @@
 <template>
-  <div class="um_mainbody">
-    <h2 class="um_h2">
+  <div id="um_mainbody" class="um_mainbody">
+    <h2 id="um_h2" class="um_h2">
       <i class="el-icon-edit"></i>
       账号维护
     </h2>
@@ -19,7 +19,7 @@
       "
       v-loading="loading"
       stripe
-      height="550px"
+      :height="tableHeight"
       style="width: 100%"
       :default-sort="{ prop: 'lastlog', order: 'descending' }"
     >
@@ -126,6 +126,7 @@
     ></el-divider>
 
     <el-pagination
+      id="um_pagination"
       :total="displayCounter"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -156,6 +157,7 @@ export default {
       newuPwd: "",
       limitPage: 6, // 大于5页折叠多余页码按钮
       onlySinglePage: false,
+      tableHeight: 550,
     };
   },
   methods: {
@@ -180,6 +182,15 @@ export default {
     handleCurrentChange: function (currentPage) {
       console.log("current page: " + currentPage);
       this.currentPage = currentPage;
+    },
+    // 动态设置table高度, 固定表头
+    dynamicTableHeight: function () {
+      let bodyHeight = document.getElementById("um_mainbody").offsetHeight;
+      // divider margin-top=margin-bottom=24, height=1
+      let headHeight = document.getElementById("um_h2").offsetHeight;
+      let pagiHeight;
+      (!this.onlySinglePage) ? (pagiHeight = document.getElementById("um_pagination").offsetHeight) : (pagiHeight = 0);
+      this.tableHeight = bodyHeight - headHeight - 49 * 2 - pagiHeight;
     },
 
     // axios - 修改密码
@@ -285,12 +296,21 @@ export default {
   },
   mounted() {
     this.getCheckedUserList();
+    // 初始化窗口
+    this.$nextTick(() => {
+      this.dynamicTableHeight();
+    });
+    // 窗口大小改变时
+    window.onresize = () => {
+      this.dynamicTableHeight();
+    };
   },
 };
 </script>
 
 <style scoped>
 .um_mainbody {
+  height: 100%;
 }
 
 .um_h2 {

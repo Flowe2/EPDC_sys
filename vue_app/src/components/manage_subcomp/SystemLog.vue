@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h2 class="sc_H2">
+  <div id="sl_mainbody" class="sl_mainbody">
+    <h2 id="sl_h2" class="sl_h2">
       <i class="el-icon-s-order"></i>
       系统日志
     </h2>
@@ -19,7 +19,7 @@
       "
       v-loading="loading"
       stripe
-      height="550px"
+      :height="tableHeight"
       style="width: 100%"
       :default-sort="{ prop: 'timestamp', order: 'descending' }"
     >
@@ -71,6 +71,7 @@
     ></el-divider>
 
     <el-pagination
+      id="sl_pagination"
       :total="displayCounter"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -101,6 +102,7 @@ export default {
       curtPageSize: 10,
       limitPage: 6, // 大于5页折叠多余页码按钮
       onlySinglePage: false,
+      tableHeight: 550,
     };
   },
   methods: {
@@ -114,6 +116,16 @@ export default {
       console.log("current page: " + currentPage);
       this.currentPage = currentPage;
     },
+    // 动态设置table高度, 固定表头
+    dynamicTableHeight: function () {
+      let bodyHeight = document.getElementById("sl_mainbody").clientHeight;
+      // divider margin-top=margin-bottom=24, height=1
+      let headHeight = document.getElementById("sl_h2").clientHeight;
+      let pagiHeight;
+      (!this.onlySinglePage) ? (pagiHeight = document.getElementById("sl_pagination").clientHeight) : (pagiHeight = 0);
+      this.tableHeight = bodyHeight - headHeight - 49 * 2 - pagiHeight;
+    },
+
     // 生成过滤器
     roleFilterGenerator: function (res) {
       let temp = [];
@@ -169,16 +181,31 @@ export default {
         });
     },
   },
-  mounted() {
-    this.getSyslog();
-  },
   watch: {
     displayList: function () {
       this.roleFilterGenerator(this.syslog);
     },
   },
+  mounted() {
+    this.getSyslog();
+    // 初始化窗口
+    this.$nextTick( () => {
+      this.dynamicTableHeight();
+    })
+    // 窗口大小改变时
+    window.onresize = () => {
+      this.dynamicTableHeight();
+    };
+  },
 };
 </script>
 
 <style scoped>
+.sl_mainbody {
+  height: 100%;
+}
+
+.sl_h2 {
+  margin: 0;
+}
 </style>

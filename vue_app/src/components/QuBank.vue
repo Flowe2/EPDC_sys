@@ -2,7 +2,17 @@
   <el-container class="qubankLayout">
     <el-header name="qActionBar" class="qHeader" height="auto">
       <el-row :gutter="10">
-        <el-col :span="4">
+        <el-col :span="1.5">
+          <el-button class="qHeaderBtn qHeaderUpNDel" icon="el-icon-upload"
+            >上 传</el-button
+          ></el-col
+        >
+        <el-col :span="1.5">
+          <el-button class="qHeaderBtn" icon="el-icon-delete-solid"
+            >删 除</el-button
+          ></el-col
+        >
+        <el-col :span="4" :offset="1">
           <el-input
             prefix-icon="el-icon-search"
             clearable
@@ -18,17 +28,7 @@
             icon="el-icon-more-outline"
           ></el-button>
         </el-col>
-        <el-col :span="1.5" :offset="9">
-          <el-button class="qHeaderBtn qHeaderUpNDel" icon="el-icon-upload"
-            >上 传</el-button
-          ></el-col
-        >
-        <el-col :span="1.5">
-          <el-button class="qHeaderBtn" icon="el-icon-delete-solid"
-            >删 除</el-button
-          ></el-col
-        >
-        <el-col :span="2.5" :offset="1">
+        <el-col :span="2.5" :offset="9">
           <el-button class="qHeaderBtn" icon="el-icon-plus"
             >加入试卷</el-button
           ></el-col
@@ -153,7 +153,7 @@ export default {
   methods: {
     testSearch: function () {
       alert("回车搜索 :" + this.fliterKeywords);
-    }
+    },
   },
 };
 </script>
@@ -170,7 +170,7 @@ export default {
 
 .qHeader {
   width: auto;
-  height: 60px ! important; /* 覆盖 element.sytle, 解决优先级问题 */
+  height: 60px !important; /* 覆盖 element.sytle, 解决优先级问题 */
   padding: 10px;
   margin: 20px 0 20px 0;
   border-radius: 10px;

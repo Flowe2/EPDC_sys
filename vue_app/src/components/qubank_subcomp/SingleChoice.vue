@@ -22,6 +22,7 @@
           currentPage * curtPageSize
         )
       "
+      stripe
       :height="tableHeight"
       style="width: 100%"
     >
@@ -103,9 +104,9 @@ export default {
     },
     // 动态设置table高度, 固定表头
     dynamicTableHeight: function () {
+      let bodyHeight = document.getElementById("singlec_body").clientHeight;
       let pagiHeight = document.getElementById("singlec_pagination")
         .clientHeight;
-      let bodyHeight = document.getElementById("singlec_body").clientHeight;
       this.tableHeight = bodyHeight - pagiHeight - 15;
     },
     // 生成过滤器
@@ -280,7 +281,9 @@ export default {
     }
     this.keywordFilterGenerator(test);
     // 初始化窗口
-    this.dynamicTableHeight();
+    this.$nextTick( () => {
+      this.dynamicTableHeight();
+    })
     // 窗口大小改变时
     window.onresize = () => {
       this.dynamicTableHeight();
