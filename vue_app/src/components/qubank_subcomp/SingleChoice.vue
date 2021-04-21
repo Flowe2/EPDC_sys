@@ -24,55 +24,100 @@
       "
       stripe
       :height="tableHeight"
+      v-loading="loading"
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column type="expand">
         <template #default="props">
-          <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="商品名称">
-              <span>{{ props.row.name }}</span>
+          <el-form label-position="left" inline class="singlec_table_expand">
+            <el-form-item label="题目ID">
+              <span class="singlec_table_expan_span">{{ props.row.id }}</span>
             </el-form-item>
-            <el-form-item label="所属店铺">
-              <span>{{ props.row.shop }}</span>
-            </el-form-item>
-            <el-form-item label="商品 ID">
-              <span>{{ props.row.id }}</span>
-            </el-form-item>
-            <el-form-item label="店铺 ID">
-              <span>{{ props.row.shopId }}</span>
+            <el-form-item label="科目">
+              <span class="singlec_table_expan_span">{{
+                props.row.subject
+              }}</span>
             </el-form-item>
             <el-form-item label="关键词">
-              <span>{{ props.row.keyword }}</span>
+              <el-tag
+                type="info"
+                v-for="keyword in props.row.keywords"
+                :key="keyword"
+                >{{ keyword }}</el-tag
+              >
             </el-form-item>
-            <el-form-item label="店铺地址">
-              <span>{{ props.row.address }}</span>
+            <el-form-item label="题目资源">
+              <span class="singlec_table_expan_span">{{
+                props.row.payload.src
+              }}</span>
             </el-form-item>
-            <el-form-item label="商品描述">
-              <span>{{ props.row.desc }}</span>
+            <el-form-item label="入库时间">
+              <span class="singlec_table_expan_span">{{
+                props.row.additionTime
+              }}</span>
+            </el-form-item>
+            <el-form-item label="上次使用">
+              <span class="singlec_table_expan_span">{{
+                props.row.lastUseTime
+              }}</span>
+            </el-form-item>
+            <el-form-item label="题目内容">
+              <span
+                v-for="sentence in props.row.question"
+                :key="sentence"
+                class="singlec_table_expan_span"
+                >{{ sentence }}</span
+              >
+            </el-form-item>
+            <el-form-item label="答案">
+              <el-tag
+                type="success"
+                effect="dark"
+                v-for="answer in props.row.payload.answer"
+                :key="answer"
+                >{{ answer }}</el-tag
+              >
+            </el-form-item>
+            <el-form-item label="题目选项">
+              <el-tag
+                effect="plain"
+                v-for="option in props.row.payload.options"
+                :key="option"
+                >{{
+                  Object.keys(option)[0] + ": " + option[Object.keys(option)[0]]
+                }}</el-tag
+              >
             </el-form-item>
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="商品 ID" prop="id"> </el-table-column>
+      <el-table-column label="题目内容(前n字)" prop="question">
+         <template #default="props"
+          ><span>{{ props.row.question.toString().substr(0,8) }}</span></template
+        >
+      </el-table-column>
       <el-table-column
-        prop="keyword"
-        label="关键词"
-        width="100"
+        prop="subject"
+        label="科目"
+        width="150"
         :filters="displayKeywordFilter"
         :filter-method="keywordFilter"
         filter-placement="bottom-end"
       >
-        <template #default="scope">
+        <template #default="props">
           <el-tag :type="primary" disable-transitions>{{
-            scope.row.keyword
+            props.row.subject
           }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="商品名称" prop="name"> </el-table-column>
-      <el-table-column label="描述" prop="desc"> </el-table-column>
+      <el-table-column
+        label="上次使用"
+        prop="lastUseTime"
+        width="150"
+      ></el-table-column>
     </el-table>
-
-    <p>{{ searchingKey }}</p>
   </div>
 </template>
 
@@ -81,7 +126,8 @@ export default {
   name: "SingleChoice",
   data() {
     return {
-      // loading: true,
+      singlechoiceCounter: 0,
+      singlechoiceList: [],
       tableHeight: 600,
       displayList: [],
       displayCounter: 0,
@@ -91,157 +137,9 @@ export default {
       curtPageSize: 10,
       limitPage: 6, // 大于5页折叠多余页码按钮
       onlySinglePage: false,
-
-      // test list
-      test: [
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃1",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987123",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃2",
-          desc: "abc",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987125",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃3",
-          desc: "荷兰淡奶",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987126",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃1",
-          desc: "淡奶奶",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃2",
-          desc: "荷兰不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12956722",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃3",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃1",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃2",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小夫店",
-          shopId: "10333",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃3",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃1",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "普北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃2",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃3",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃1",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10339",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃2",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海市普陀区真北路",
-          shop: "王店",
-          shopId: "10373",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃3",
-          desc: "荷兰优质淡奶，奶香浓而不腻",
-          address: "上海路",
-          shop: "王小虎夫妻店",
-          shopId: "10563",
-        },
-        {
-          id: "12987122",
-          name: "好滋好味鸡蛋仔",
-          keyword: "小吃1",
-          desc: "荷兰不腻",
-          address: "上海市普陀区真北路",
-          shop: "王小虎夫妻店",
-          shopId: "10333",
-        },
-      ],
     };
   },
-  props: ["searchingKey"],
+  props: ["loading", "searchingKey"],
   methods: {
     // 改变分页大小
     handleSizeChange: function (size) {
@@ -256,35 +154,77 @@ export default {
     // 动态设置table高度, 固定表头
     dynamicTableHeight: function () {
       let bodyHeight = document.getElementById("singlec_body").clientHeight;
-      let pagiHeight = document.getElementById("singlec_pagination")
-        .clientHeight;
-      this.tableHeight = bodyHeight - pagiHeight - 20;
+      let pagiHeight;
+      !this.onlySinglePage
+        ? (pagiHeight = document.getElementById("singlec_pagination")
+            .clientHeight)
+        : (pagiHeight = 0);
+      this.tableHeight = bodyHeight - pagiHeight - 10;
     },
     // 生成标签过滤器
     keywordFilterGenerator: function (res) {
       let temp = [];
       res.forEach((element) => {
-        if (temp.indexOf(element.keyword) == -1) {
-          temp.push(element.keyword);
+        console.log(element);
+        if (temp.indexOf(element.subject) == -1) {
+          temp.push(element.subject);
           this.displayKeywordFilter.push({
-            text: element.keyword,
-            value: element.keyword,
+            text: element.subject,
+            value: element.subject,
           });
         }
       });
     },
     // role标签过滤器
     keywordFilter: function (value, row) {
-      return row.keyword === value;
+      return row.subject === value;
+    },
+    // 暂存至tempList
+    handleSelectionChange: function (val) {
+      // 传入的为对象, JSON.toStringfy后在JSON.parse解析
+      this.$emit("addToTempList", JSON.parse(JSON.stringify(val)));
+    },
+
+    // axios - 获取单选题列表
+    getSingleChoiceList: function () {
+      this.$emit("loading", true);
+      this.axios({
+        method: "POST",
+        url: "/user/qubank/singlechoicelist",
+        data: {
+          token: localStorage.getItem("token"),
+        },
+      })
+        .then((response) => {
+          // 处理登录结果
+          // 返回:  {singlechoicelist: [ {},
+          //                  {}, ... {} ],
+          //        counter: n}
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          // console.log(res);
+          this.singlechoiceList = res.singlechoicelist;
+          this.singlechoiceCounter = res.counter;
+          this.$nextTick(() => {
+            this.displayList = this.singlechoiceList;
+            this.displayCounter = this.singlechoiceCounter;
+            // 若小于10项则单页显示, 隐藏分页按钮
+            if (this.displayCounter < this.curtPageSize) {
+              this.onlySinglePage = true;
+            }
+            // 加载完成
+            this.$emit("loading", false)
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
   mounted() {
-    this.displayList = this.test;
-    this.displayCounter = this.test.length;
-    if (this.displayCounter < this.curtPageSize) {
-      this.onlySinglePage = true;
-    }
-    this.keywordFilterGenerator(this.test);
+    // 初始化获取数据singlechoicelist
+    this.getSingleChoiceList();
+    this.keywordFilterGenerator(this.displayList);
     // 初始化窗口
     this.$nextTick(() => {
       this.dynamicTableHeight();
@@ -299,9 +239,9 @@ export default {
     searchingKey: function () {
       console.log(this.searchingKey);
       const search = this.searchingKey;
-      let filterList = Object.keys(this.test[0]);
+      let filterList = Object.keys(this.singlechoiceList[0]);
       if (search) {
-        this.displayList = this.test.filter((v) => {
+        this.displayList = this.singlechoiceList.filter((v) => {
           //some是一个为true，即结果为true
           return filterList.some((key) => {
             //要toString是因为对象里有id，id是int类型，要转为字符串类型
@@ -309,9 +249,10 @@ export default {
           });
         });
       } else {
-        this.displayList = this.test;
+        this.displayList = this.singlechoiceList;
       }
       this.displayCounter = this.displayList.length;
+      this.$emit("loading", false);
     },
   },
 };
@@ -320,19 +261,23 @@ export default {
 <style scoped>
 .singlec_body {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 10px);
 }
 
-.demo-table-expand {
+:deep() .singlec_table_expand {
   font-size: 0;
 }
 
-.demo-table-expand label {
+:deep() .singlec_table_expand label {
   width: 90px;
-  color: #99a9bf;
+  color: #2566c2;
 }
 
-.demo-table-expand .el-form-item {
+.singlec_table_expan_span {
+  color: #d5a105;
+}
+
+:deep() .singlec_table_expand .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
   width: 50%;
