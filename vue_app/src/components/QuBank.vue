@@ -3,12 +3,18 @@
     <el-header name="qActionBar" class="qHeader" height="auto">
       <el-row :gutter="10">
         <el-col :span="1.5">
-          <el-button class="qHeaderBtn qHeaderUpNDel" icon="el-icon-upload"
+          <el-button
+            class="qHeaderBtn qHeaderUpNDel"
+            icon="el-icon-upload"
+            @click="ulDrawer = true"
             >上 传</el-button
           ></el-col
         >
         <el-col :span="1.5">
-          <el-button class="qHeaderBtn" icon="el-icon-delete-solid"
+          <el-button
+            class="qHeaderBtn"
+            icon="el-icon-delete-solid"
+            @click="dtDrawer = true"
             >删 除</el-button
           ></el-col
         >
@@ -28,21 +34,21 @@
           ></el-button>
         </el-col>
         <el-col :span="2.5" :offset="9">
-          <el-button class="qHeaderBtn" icon="el-icon-plus"
+          <el-button class="qHeaderBtn" icon="el-icon-plus" @click="addToPaper"
             >加入试卷</el-button
           ></el-col
         >
         <el-col :span="2.5">
           <el-badge
-            :value="chosedCounter"
+            :value="chosenCounter"
             :max="50"
             type="warning"
-            :hidden="chosedCounter == 0 ? true : false"
+            :hidden="chosenCounter == 0 ? true : false"
           >
             <el-button
               class="qHeaderBtn"
               icon="iconfont icon-shijuanguanli"
-              @click="drawer = true"
+              @click="cpDrawer = true"
             >
               组 卷 界 面</el-button
             >
@@ -52,11 +58,41 @@
     </el-header>
 
     <!-- 组卷子组件 -->
-    <el-drawer title="组 卷 界 面" v-model="drawer" direction="rtl" size="60%">
+    <el-drawer
+      title="组 卷 界 面"
+      v-model="cpDrawer"
+      direction="rtl"
+      size="60%"
+    >
       <el-divider content-position="right"
         ><i class="el-icon-more-outline"></i
       ></el-divider>
-      <ComposedPaper :chosedCounter="chosedCounter"></ComposedPaper>
+      <ComposedPaper
+        :chosenCounter="chosenCounter"
+        :chosenList="chosenList"
+      ></ComposedPaper>
+    </el-drawer>
+    <!-- 上传界面 -->
+    <el-drawer
+      title="上 传 界 面"
+      v-model="ulDrawer"
+      direction="ltr"
+      size="40%"
+    >
+      <el-divider content-position="left"
+        ><i class="el-icon-more-outline"></i
+      ></el-divider>
+    </el-drawer>
+    <!-- 删除界面 -->
+    <el-drawer
+      title="删 除 界 面"
+      v-model="dtDrawer"
+      direction="ltr"
+      size="40%"
+    >
+      <el-divider content-position="left"
+        ><i class="el-icon-more-outline"></i
+      ></el-divider>
     </el-drawer>
 
     <el-container class="qMain">
@@ -102,10 +138,14 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-
       <!-- 主容器, 展示题库 -->
       <el-main name="qDisplay" class="qDisplay">
-        <router-view v-bind:searchingKey="debounceSearch"></router-view>
+        <router-view
+          :searchingKey="debounceSearch"
+          :loading="loading"
+          @loading="loading = $event"
+          @addToTempList="addToTempList($event)"
+        ></router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -141,27 +181,42 @@ export default {
           name: " 主 观 题",
         },
       ],
+      loading: false,
       searchingKey: "",
       debounceSearch: "",
-      chosedCounter: 0, // 已选题目数量
+      chosenCounter: 0, // 已选题目数量
+      chosenList: [], // 已选试题
+      tempList: [], // 暂存已选试题
       maxCounter: 50, // 自定义预计题目数量
-      drawer: false,
+      cpDrawer: false, // 组卷drawer
+      ulDrawer: false, // 上传drawer
+      dtDrawer: false, // 删除drawer
     };
   },
   components: {
     ComposedPaper,
   },
   methods: {
+    addToTempList: function (tempList) {
+      this.tempList = tempList;
+    },
+    addToPaper: function () {
+      this.tempList.forEach((element) => {
+        this.chosenList.push(element);
+        this.chosenCounter++;
+      });
+    },
     testSearch: _.debounce(function () {
       this.debounceSearch = this.searchingKey;
+      this.loading = true;
     }, 1000),
   },
   watch: {
     // 搜索防抖, 1秒后传给router-view
     searchingKey: function () {
       this.testSearch();
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -223,16 +278,8 @@ export default {
   border-radius: 10px;
   background-color: #394045;
 }
-/* 竖直页码
-.el-pager {
-  display: flex;
-  flex-direction: column;
-}
 
-.el-pager > li {
-  width: 20px;
-} */
-
+/* 组卷界面drawer */
 :deep() .el-drawer__header {
   margin-bottom: 0;
 }
@@ -252,10 +299,10 @@ export default {
   color: #ffd7ba;
 }
 /* 覆盖el-pagination原生分页器样式, 增加圆角 */
-:deep() .el-pagination .btn-prev{
+:deep() .el-pagination .btn-prev {
   border-radius: 15px 0 0 15px;
 }
-:deep() .el-pagination .btn-next{
+:deep() .el-pagination .btn-next {
   border-radius: 0 15px 15px 0;
 }
 
