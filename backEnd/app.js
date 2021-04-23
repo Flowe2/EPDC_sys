@@ -4,6 +4,10 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
+// 读取配置文件
+const config = require('./serverConf');
+const frontServer = config.frontServer + ':' + config.frontPort;
+
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin');
 
@@ -13,12 +17,12 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({  
-    origin:['http://localhost:8080'],
+    origin:['http://'+frontServer],
     methods:['GET','POST'],
 }));
 //跨域问题 - cors 中间件
 app.all('*',function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+  res.header('Access-Control-Allow-Origin', 'http://'+frontServer);
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
 　next();　

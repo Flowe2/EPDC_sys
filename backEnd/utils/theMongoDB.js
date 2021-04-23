@@ -1,10 +1,13 @@
 // 用户信息相关
 
+// 读取配置文件
+const config = require('../serverConf');
+
 // 调用mongodb相关库
 const { MongoClient } = require('mongodb');
-const db_url = 'localhost:27017';
-const db_usr = encodeURIComponent('root');
-const db_pwd = encodeURIComponent('root');
+const db_url = config.dbServer + ":" + config.dbPort;
+const db_usr = encodeURIComponent(config.dbUser);
+const db_pwd = encodeURIComponent(config.dbPwd);
 const db_uri = `mongodb://${db_usr}:${db_pwd}@${db_url}`;
 // console.log(db_uri);
 
