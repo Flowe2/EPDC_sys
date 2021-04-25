@@ -45,6 +45,17 @@ exports.findUser = async function (targetCol, query, options) {
     }
 };
 
+exports.pullQuestions = async function (targetCol, query) {
+    let res;
+    try {
+        const col = client.db('epdc_sys_db').collection(targetCol);
+        res = await col.find(query).toArray();
+        return res;
+    } finally {
+        console.log("=== ~ connection keeping");
+    }
+}
+
 /* ================================== insert ================================== */
 exports.insertUser = async function (targetCol, doc) {
     let res;

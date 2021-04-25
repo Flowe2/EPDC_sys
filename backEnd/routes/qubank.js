@@ -9,7 +9,7 @@ const questionsManage = require('../controller/questionsManage');
 router.post('/singlechoicelist', async (req, res, next) => {
     let data = req.body;
     console.log("=== ~ receive POST : @ user - get single-choice list");
-    let arr = await questionsManage.getSingleChoiceList(data);
+    let arr = await questionsManage.getQuestionsList(data, "sc");
     console.log("=== ~ ready to send");
     res.json(arr);
 })

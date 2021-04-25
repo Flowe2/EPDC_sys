@@ -7,46 +7,52 @@ const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
 
-// 查询单选题
-exports.getSingleChoiceList = async function (data) {
-    let res = { singlechoicelist: [], counter: 0 };
+// 查询题目列表
+exports.getQuestionsList = async function (data, type) {
     let verifyRes = jwtutil.verifyToken(data.token);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
     }
-    
-    res.singlechoicelist = test;
-    res.counter = test.length;
-    return res;
-    // 预处理查询参数
-    // {
-    //   id: "qwsdjr124",
-    //   subject: "操作系统原理",
-    //   type: "sc",
-    //   keywords: ["系统", "交互性"],
-    //   question: "为了提高系统的交互性，人们设计了(__)",
-    //   payload: {
-    //     src: "",
-
-    //     options: [
-    //       { A: "批处理系统" },
-    //       { B: "分时系统" },
-    //       { C: "实时系统" },
-    //       { D: "分布式系统" },
-    //     ],
-    //     answer: ["B"],
-    //   },
-    //   additionTime: "2020-04-20",
-    //   lastUseTime: "2020-ss-me",
-    // },
-    const targetCol = 'singlechoice';
-    const query = { };
-    const options = { projection: { 'timestamp': 1, 'role': 1, 'who': 1, 'operation': 1 } };
+    let res;
+    let targetCol;
+    switch (type) {
+        case "sc":
+            res = { singlechoicelist: [], counter: 0 };
+            targetCol = 'singlechoice';
+            break;
+        case "mc":
+            res = { multiplechoicelist: [], counter: 0 };
+            targetCol = 'multiplechoice';
+            break;
+        case "tf":
+            res = { truefalselist: [], counter: 0 };
+            targetCol = 'truefalse';
+            break;
+        case "gf":
+            res = { gapfillinglist: [], counter: 0 };
+            targetCol = 'gapfilling';
+            break;
+        case "sj":
+            res = { subjectivelist: [], counter: 0 };
+            targetCol = 'subjective';
+            break;
+        default:
+            res = { err: "type err."};
+            return res;
+    }
+    const query = { 'type': type };
     try {
-        res.syslog = await thDB.findUser(targetCol, query, options);
-        res.counter = res.syslog.length;
+        questionlist = await thDB.pullQuestions(targetCol, query);
+        for (let index in res){
+            if (index != "counter") {
+                res[index] = questionlist;
+            }
+            else {
+                res[index] = questionlist.length;
+            }
+        }
         return res;
     } catch (e) {
         throw (e);
