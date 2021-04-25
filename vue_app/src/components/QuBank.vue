@@ -57,44 +57,6 @@
       </el-row>
     </el-header>
 
-    <!-- 组卷子组件 -->
-    <el-drawer
-      title="组 卷 界 面"
-      v-model="cpDrawer"
-      direction="rtl"
-      size="60%"
-    >
-      <el-divider content-position="right"
-        ><i class="el-icon-more-outline"></i
-      ></el-divider>
-      <ComposedPaper
-        :chosenCounter="chosenCounter"
-        :chosenList="chosenList"
-      ></ComposedPaper>
-    </el-drawer>
-    <!-- 上传界面 -->
-    <el-drawer
-      title="上 传 界 面"
-      v-model="ulDrawer"
-      direction="ltr"
-      size="40%"
-    >
-      <el-divider content-position="left"
-        ><i class="el-icon-more-outline"></i
-      ></el-divider>
-    </el-drawer>
-    <!-- 删除界面 -->
-    <el-drawer
-      title="删 除 界 面"
-      v-model="dtDrawer"
-      direction="ltr"
-      size="40%"
-    >
-      <el-divider content-position="left"
-        ><i class="el-icon-more-outline"></i
-      ></el-divider>
-    </el-drawer>
-
     <el-container class="qMain">
       <!-- 侧边栏, 题型选择 -->
       <el-aside name="qFilterBar" class="qAside" width="200px">
@@ -148,12 +110,62 @@
         ></router-view>
       </el-main>
     </el-container>
+
+    <!-- 组卷子组件 -->
+    <el-drawer
+      title="组 卷 界 面"
+      v-model="cpDrawer"
+      class="cpDrawer"
+      direction="rtl"
+      size="60%"
+    >
+      <el-divider content-position="right"
+        ><i class="el-icon-more-outline"></i
+      ></el-divider>
+      <ComposedPaper
+        :chosenCounter="chosenCounter"
+        :chosenList="chosenList"
+      ></ComposedPaper>
+    </el-drawer>
+
+    <!-- 上传界面 -->
+    <el-drawer
+      title="上 传 界 面"
+      v-model="ulDrawer"
+      class="ulDrawer"
+      direction="ltr"
+      size="40%"
+    >
+      <el-divider content-position="left"
+        ><i class="el-icon-more-outline"></i
+      ></el-divider>
+      <UploadQuestion
+        :keywordsList="keywordsList"
+        :ulDrawer="ulDrawer"
+      ></UploadQuestion>
+    </el-drawer>
+
+    <!-- 删除界面 -->
+    <el-drawer
+      title="删 除 界 面"
+      v-model="dtDrawer"
+      class="dtDrawer"
+      direction="ltr"
+      size="40%"
+    >
+      <el-divider content-position="left"
+        ><i class="el-icon-more-outline"></i
+      ></el-divider>
+      <DeleteQuestion></DeleteQuestion>
+    </el-drawer>
   </el-container>
 </template>
 
 <script>
 import _ from "lodash";
 import ComposedPaper from "@/components/qubank_subcomp/ComposedPaper.vue";
+import UploadQuestion from "@/components/qubank_subcomp/UploadQuestion.vue";
+import DeleteQuestion from "@/components/qubank_subcomp/DeleteQuestion.vue";
 
 export default {
   name: "QuBank",
@@ -190,11 +202,14 @@ export default {
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
       ulDrawer: false, // 上传drawer
+      keywordsList: ["HTML", "操作系统"],
       dtDrawer: false, // 删除drawer
     };
   },
   components: {
     ComposedPaper,
+    UploadQuestion,
+    DeleteQuestion,
   },
   methods: {
     addToTempList: function (tempList) {
@@ -286,6 +301,8 @@ export default {
 :deep() .el-divider__text {
   border-radius: 15px;
 }
+
+/* 上传界面drawer */
 
 :deep() .el-pagination {
   padding: 10px 10px 0 10px;
