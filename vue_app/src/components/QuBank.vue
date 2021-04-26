@@ -129,13 +129,18 @@
     </el-drawer>
 
     <!-- 上传界面 -->
-    <el-drawer
-      title="上 传 界 面"
-      v-model="ulDrawer"
-      class="ulDrawer"
-      direction="ltr"
-      size="40%"
-    >
+    <el-drawer v-model="ulDrawer" class="ulDrawer" direction="ltr" size="40%">
+      <template #title
+        ><span>上 传 界 面</span
+        ><el-button
+          size="small"
+          circle
+          icon="el-icon-question"
+          class="ulHelpBtn"
+          title="上传提示"
+          @click="ulHelpShow"
+        ></el-button
+      ></template>
       <el-divider content-position="left"
         ><i class="el-icon-more-outline"></i
       ></el-divider>
@@ -225,6 +230,35 @@ export default {
       this.debounceSearch = this.searchingKey;
       this.loading = true;
     }, 1000),
+
+    // 上传界面帮助
+    ulHelpShow: function () {
+      this.$notify({
+        type: "info",
+        title: "上传提示",
+        dangerouslyUseHTMLString: true,
+        message:
+          "<strong>科目</strong>\
+          <p>可从远程拉取已有科目中选择, 也可新添科目</p>\
+          <strong>题型</strong>\
+          <p>目前仅支持单选/多选/判断/填空/主观题, 若为选择题则会出现选项栏</p>\
+          <strong>关键词</strong>\
+          <p>请从题目内容中摘选至少一个关键词</p>\
+          <strong>题目内容</strong>\
+          <p>输入文本格式题目内容, 公式请用Latex格式, 若存在图片资源, 请在<code>题目资源</code>中上传</p>\
+          <strong>选项</strong>\
+          <p>仅当题型为选择题时可用, 要求同<em>答案</em></p>\
+          <strong>答案</strong>\
+          <p>输入文本格式题目内容, 可以有多个, 依次输入即可, 点击空白处/回车即保存</p>\
+          <strong>题目资源(可选)</strong>\
+          <p>数量限一张, 大小尽量小即可</p>\
+          <strong>入库时间</strong>\
+          <p>系统自动添加, 若停留太久, 可点击右侧更新按钮刷新时间</p>\
+          <strong>最近使用(可选)</strong>\
+          <p>若题目已试用过则请添加本项, 目前仅支持选择</p>",
+        duration: 0,
+      });
+    },
   },
   watch: {
     // 搜索防抖, 1秒后传给router-view
@@ -260,7 +294,7 @@ export default {
   color: #ffd7ba;
   font-weight: bold;
   display: inline;
-  background-color: #292929;
+  background-color: #363232;
 }
 
 .qAside {
@@ -294,6 +328,14 @@ export default {
   background-color: #394045;
 }
 
+/* 抽屉允许滚动 */
+:deep() .el-drawer__body {
+   overflow: auto;
+}
+:deep() .el-drawer__container ::-webkit-scrollbar{
+  display: none;
+}
+
 /* 组卷界面drawer */
 :deep() .el-drawer__header {
   margin-bottom: 0;
@@ -301,8 +343,14 @@ export default {
 :deep() .el-divider__text {
   border-radius: 15px;
 }
+:deep() .el-divider--horizontal {
+  margin: 10px 0;
+}
 
 /* 上传界面drawer */
+.ulHelpBtn {
+  border: 0;
+}
 
 :deep() .el-pagination {
   padding: 10px 10px 0 10px;

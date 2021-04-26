@@ -83,10 +83,10 @@
             <el-form-item label="题目选项">
               <el-tag
                 effect="plain"
-                v-for="option in props.row.payload.options"
+                v-for="(option, index) in props.row.payload.options"
                 :key="option"
                 >{{
-                  Object.keys(option)[0] + ": " + option[Object.keys(option)[0]]
+                  optionIndex(index) + ": " + option
                 }}</el-tag
               >
             </el-form-item>
@@ -178,6 +178,11 @@ export default {
     // role标签过滤器
     keywordFilter: function (value, row) {
       return row.subject === value;
+    },
+    // 选项序号转字母处理
+    optionIndex: function (index) {
+      let indexLetter = String.fromCodePoint(65 + index);
+      return indexLetter;
     },
     // 暂存至tempList
     handleSelectionChange: function (val) {

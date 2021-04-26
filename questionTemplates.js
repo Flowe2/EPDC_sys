@@ -92,7 +92,7 @@ testSJ: [
         payload: {
             src: "pic addr",
             options: [],
-            answer: ["answer addr"]
+            answer: ["answer...(latex formula)..."]
         },
         additionTime: "2020-04-20",
         lastUseTime: "2020-ss-me"

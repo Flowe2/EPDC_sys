@@ -81,4 +81,13 @@ body {
     height: 5px;
   }
 }
+
+/* 全局滚动条样式修改 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #d9dbe0;
+  border-radius: 3px;
+}
 </style>
