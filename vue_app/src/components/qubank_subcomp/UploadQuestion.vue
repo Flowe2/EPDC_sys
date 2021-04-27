@@ -5,6 +5,7 @@
         ref="newQuForm"
         :model="newQu"
         :rules="newQuRules"
+        :v-loading="newQuLoading"
         label-position="left"
         label-width="80px"
         class="ulForm"
@@ -12,7 +13,7 @@
         <el-form-item label="科目" prop="subject">
           <el-autocomplete
             v-model="newQu.subject"
-            :fetch-suggestions="querySubjectsAsync"
+            :fetch-suggestions="ulAsyncSubjectQuery"
             placeholder="请输入科目"
             @select="handleSelect"
           ></el-autocomplete>
@@ -53,6 +54,71 @@
           >
           </el-input>
         </el-form-item>
+        <el-form-item
+          label="选项"
+          prop="options"
+          v-show="showOptions > 0 ? true : false"
+        >
+          <el-tag
+            :key="option"
+            v-for="option in newQu.payload.options"
+            closable
+            disable-transitions
+            @close="rmTag('option', option)"
+          >
+            {{ option }}
+          </el-tag>
+          <el-input
+            class="input-new-tag"
+            v-if="optionInputVisible"
+            v-model="optionInputValue"
+            ref="saveOptionInput"
+            size="small"
+            @keyup.enter="addTag('option')"
+            @blur="addTag('option')"
+          >
+          </el-input>
+          <el-button
+            v-else
+            class="button-new-tag"
+            size="small"
+            type="primary"
+            plain
+            @click="showInput('option')"
+            >添加选项</el-button
+          >
+        </el-form-item>
+        <el-form-item label="答案" prop="answer" v-model="newQu.answer">
+          <el-tag
+            :key="answer"
+            v-for="answer in newQu.payload.answer"
+            type="success"
+            closable
+            disable-transitions
+            @close="rmTag('answer', answer)"
+          >
+            {{ answer }}
+          </el-tag>
+          <el-input
+            class="input-new-tag"
+            v-if="answerInputVisible"
+            v-model="answerInputValue"
+            ref="saveAnswerInput"
+            size="small"
+            @keyup.enter="addTag('answer')"
+            @blur="addTag('answer')"
+          >
+          </el-input>
+          <el-button
+            v-else
+            class="button-new-tag"
+            size="small"
+            type="success"
+            plain
+            @click="showInput('answer')"
+            >添加答案</el-button
+          >
+        </el-form-item>
       </el-form>
     </el-main>
     <el-header>
@@ -78,11 +144,13 @@ export default {
   data() {
     return {
       inputKeyword: "",
+      newQuLoading: false,
       optionInputVisible: false,
       optionInputValue: "",
       answerInputVisible: false,
       answerInputValue: "",
       showOptions: 0,
+      
       // form data
       newQu: {
         subject: "",
@@ -97,16 +165,131 @@ export default {
         additionTime: "",
         lastUseTime: "",
       },
+      newQuRules: {
+        subject: [
+          { required: true, message: "请输入科目", trigger: "blur" },
+          { min: 1, message: "科目不能为空", trigger: "blur" },
+        ],
+        type: [
+          {
+            required: true,
+            message: "请选择题型",
+            trigger: "blur",
+          },
+        ],
+        keywords: [
+          {
+            type: "array",
+            required: true,
+            message: "请选择或输入至少一个关键词",
+            trigger: "blur",
+          },
+        ],
+        question: [
+          { required: true, message: "请输入题目内容", trigger: "blur" },
+          { min: 1, message: "题目内容不能为空", trigger: "blur" },
+        ],
+      },
     };
   },
   props: ["keywordsList", "ulDrawer"],
   methods: {
+    // 移除选项
+    rmTag: function (optionOrAnswer, tag) {
+      if (optionOrAnswer == "option") {
+        let options = this.newQu.payload.options;
+        options.splice(options.indexOf(tag), 1);
+        this.newQu.payload.options = options;
+      } else {
+        let answer = this.newQu.payload.options;
+        answer.splice(answer.indexOf(tag), 1);
+        this.newQu.payload.answer = answer;
+      }
+    },
+    // 显示选项输入框
+    showInput: function (optionOrAnswer) {
+      if (optionOrAnswer == "option") {
+        this.optionInputVisible = true;
+        this.$nextTick(() => {
+          this.$refs.saveOptionInput.$refs.input.focus();
+        });
+      } else {
+        this.answerInputVisible = true;
+        this.$nextTick(() => {
+          this.$refs.saveAnswerInput.$refs.input.focus();
+        });
+      }
+    },
+    // 增加选项
+    addTag: function (optionOrAnswer) {
+      if (optionOrAnswer == "option") {
+        let optionInputValue = this.optionInputValue;
+        if (optionInputValue) {
+          this.newQu.payload.options.push(optionInputValue);
+        }
+        this.optionInputVisible = false;
+        this.optionInputValue = "";
+      } else {
+        let answerInputValue = this.answerInputValue;
+        if (answerInputValue) {
+          this.newQu.payload.answer.push(answerInputValue);
+        }
+        this.answerInputVisible = false;
+        this.answerInputValue = "";
+      }
+    },
+
+    
+    // 表单验证补充 - 选择题选项 + 答案
+    validateOA: function () {
+      if (this.showOptions > 1) {
+        // 多选 - 要求答案数量>选项数量>1
+        if (
+          this.newQu.payload.options.length > 2 &&
+          this.newQu.payload.answer.length > 1
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      } else if (this.showOptions > 0) {
+        // 单选 - 要求答案数量>选项数量>0
+        if (
+          this.newQu.payload.options.length > 1 &&
+          this.newQu.payload.answer.length > 0
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      // 非选择题不用验证
+      else {
+        return true;
+      }
+    },
     // 提交表单
     submitNewQu: function () {
       console.log(this.newQu);
+      let validateAnO;
+      if (this.validateOA()) {
+        validateAnO = true;
+      } else {
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            "<strong>\
+              <p>单选题要求: <i>答案数量 > 选项数量 > 0</i></p>\
+              <p>多选题要求: <i>答案数量 > 选项数量 > 1</i></p>\
+            </strong>",
+          type: "error",
+        });
+        validateAnO = false;
+      }
       this.$refs["newQuForm"].validate((valid) => {
-        if (valid) {
-          alert("submit!");
+        if (valid && validateAnO) {
+          this.newQuLoading = true;
+          this.postNewQuestion();
         } else {
           console.log("error submit!!");
           return false;
@@ -134,15 +317,44 @@ export default {
           });
         });
     },
+
+    // axios - 上传题目
+    postNewQuestion: function () {
+      this.axios({
+        method: "POST",
+        url: "/user/qubank/uploadquestion",
+        data: {
+          token: localStorage.getItem("token"),
+          newqu: this.newQu
+        },
+      })
+        .then((response) => {
+          // 处理上传结果
+          // 返回:  {"ifSuccess": "true / false",
+          //        "err": "undefined / err message"}
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          // console.log(res);
+          if (res.ifSuccess == true) {
+            this.newQuLoading = false;
+            // 上传成功重置表单
+            this.$refs["newQuForm"].resetFields();
+            alert("上传题目成功");
+          } else {
+            alert(res.err);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
   watch: {
     "newQu.type": function () {
-      if (this.newQu.type == "mc") {
-        this.showOptions = 2;
-      } else if (this.newQu.type == "sc") {
-        this.showOptions = 1;
+      if (this.newQu.type == "sc" || this.newQu.type == "mc") {
+        this.showOptions = true;
       } else {
-        this.showOptions = 0;
+        this.showOptions = false;
       }
     },
   },

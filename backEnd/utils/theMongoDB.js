@@ -34,6 +34,7 @@ exports.closeDb = async function () {
 }
 
 /* =================================== find =================================== */
+// 账户查询
 exports.findUser = async function (targetCol, query, options) {
     let res;
     try {
@@ -45,6 +46,7 @@ exports.findUser = async function (targetCol, query, options) {
     }
 };
 
+// 题目查询
 exports.pullQuestions = async function (targetCol, query) {
     let res;
     try {
@@ -57,6 +59,7 @@ exports.pullQuestions = async function (targetCol, query) {
 }
 
 /* ================================== insert ================================== */
+// 新增账户
 exports.insertUser = async function (targetCol, doc) {
     let res;
     try {
@@ -67,6 +70,30 @@ exports.insertUser = async function (targetCol, doc) {
         console.log("=== ~ connection keeping");
     }
 }
+
+// 新增题目
+exports.insertQuestion = async function (targetCol, doc) {
+    let res;
+    try {
+        const col = client.db('epdc_sys_db').collection(targetCol);
+        res = await col.insertOne(doc);
+        return res.insertedCount;
+    } finally {
+        console.log("=== ~ connection keeping");
+    }
+}
+
+// 新增题目资源
+// exports.insertQuSrc = async function (targetCol, doc) {
+//     let res;
+//     try {
+//         const col = client.db('epdc_sys_db').collection(targetCol);
+//         res = await col.insertOne(doc);
+//         return res.insertedCount;
+//     } finally {
+//         console.log("=== ~ connection keeping");
+//     }
+// }
 
 /* ================================== delete ================================== */
 exports.deleteUser = async function (targetCol, query) {

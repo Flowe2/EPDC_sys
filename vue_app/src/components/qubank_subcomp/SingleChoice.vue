@@ -33,7 +33,7 @@
         <template #default="props">
           <el-form label-position="left" inline class="singlec_table_expand">
             <el-form-item label="题目ID">
-              <span class="singlec_table_expan_span">{{ props.row.id }}</span>
+              <span class="singlec_table_expan_span">{{ props.row._id }}</span>
             </el-form-item>
             <el-form-item label="科目">
               <span class="singlec_table_expan_span">{{
@@ -195,20 +195,21 @@ export default {
       this.$emit("loading", true);
       this.axios({
         method: "POST",
-        url: "/user/qubank/singlechoicelist",
+        url: "/user/qubank/getquestionlist",
         data: {
           token: localStorage.getItem("token"),
+          type: 'sc'
         },
       })
         .then((response) => {
           // 处理登录结果
-          // 返回:  {singlechoicelist: [ {},
+          // 返回:  {questionlist: [ {},
           //                  {}, ... {} ],
           //        counter: n}
           let res = JSON.stringify(response.data);
           res = JSON.parse(res);
           // console.log(res);
-          this.singlechoiceList = res.singlechoicelist;
+          this.singlechoiceList = res.questionlist;
           this.singlechoiceCounter = res.counter;
           this.$nextTick(() => {
             this.displayList = this.singlechoiceList;

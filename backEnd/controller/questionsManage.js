@@ -1,60 +1,74 @@
 // 题库管理controller
 
 // 调用封装JWT工具
-const e = require('express');
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
 
+// 题型判断
+const questionTypeJudge = function (type) {
+    switch (type) {
+        case "sc":
+            return 'singlechoice';
+        case "mc":
+            return 'multiplechoice';
+        case "tf":
+            return 'truefalse';
+        case "gf":
+            return 'gapfilling';
+        case "sj":
+            return 'subjective';
+        default:
+            return undefined;
+    }
+}
+
 // 查询题目列表
-exports.getQuestionsList = async function (data, type) {
+exports.getQuestionsList = async function (data) {
     let verifyRes = jwtutil.verifyToken(data.token);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
     }
-    let res;
-    let targetCol;
-    switch (type) {
-        case "sc":
-            res = { singlechoicelist: [], counter: 0 };
-            targetCol = 'singlechoice';
-            break;
-        case "mc":
-            res = { multiplechoicelist: [], counter: 0 };
-            targetCol = 'multiplechoice';
-            break;
-        case "tf":
-            res = { truefalselist: [], counter: 0 };
-            targetCol = 'truefalse';
-            break;
-        case "gf":
-            res = { gapfillinglist: [], counter: 0 };
-            targetCol = 'gapfilling';
-            break;
-        case "sj":
-            res = { subjectivelist: [], counter: 0 };
-            targetCol = 'subjective';
-            break;
-        default:
-            res = { err: "type err."};
-            return res;
-    }
-    const query = { 'type': type };
+    let targetCol = questionTypeJudge(data.type);
+    const query = { 'type': data.type };
+    let res = { questionlist: [], counter: 0 };
     try {
-        questionlist = await thDB.pullQuestions(targetCol, query);
-        for (let index in res){
-            if (index != "counter") {
-                res[index] = questionlist;
-            }
-            else {
-                res[index] = questionlist.length;
-            }
-        }
+        qureyRes = await thDB.pullQuestions(targetCol, query);
+        res.questionlist = qureyRes;
+        res.counter = qureyRes.length;
         return res;
     } catch (e) {
         throw (e);
+    }
+}
+
+// 上传题目
+exports.uploadNewQuestion = async function (data) {
+    let verifyRes = jwtutil.verifyToken(data.token);
+    if (verifyRes.pass == true) {
+        console.log("=== ~ token verify pass");
+    } else {
+        console.log("=== ! token verify failed, err: ", verifyRes.err);
+    }
+    // 预处理查询参数
+    const targetCol = questionTypeJudge(data.newqu.type);
+    const insertDoc = data.newqu;
+    let arr = { 'ifSuccess': false, 'err': '' };
+    try {
+        let insertRes = await thDB.insertQuestion(targetCol, insertDoc);
+        if (insertRes == 1) {
+            console.log("=== ~ res: insert seccess");
+            arr.ifSuccess = true;
+            arr.err = undefined;
+        } else {
+            console.log("=== ! err");
+            arr.err = '插入题库时遇到一些意外';
+        }
+        return arr;
+    } catch (e) {
+        throw e;
     }
 }
