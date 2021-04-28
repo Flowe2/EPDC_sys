@@ -36,9 +36,10 @@ router.post('/uploadquestion', async (req, res, next) => {
 router.post('/uploadsrc', async (req, res, next) => {
     let data = req.body;
     console.log("=== ~ receive POST : @ user - upload quesion src");
+    console.log(data);
     // let arr = await questionsManage.uploadQuestionSrc(data);
     console.log("=== ~ ready to send");
-    res.push('add new question src');
+    res.json({msg: 'add new question src'});
 })
 
 module.exports = router;

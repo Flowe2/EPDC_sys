@@ -119,6 +119,63 @@
             >添加答案</el-button
           >
         </el-form-item>
+        <el-form-item label="入库时间">
+          <el-tag type="info">{{ newQu.additionTime }}</el-tag>
+          <el-divider direction="vertical"></el-divider>
+          <el-button
+            title="更新时间"
+            type="info"
+            size="small"
+            icon="el-icon-refresh"
+            @click="getNowTimeStmp"
+          ></el-button>
+        </el-form-item>
+        <el-form-item label="最近使用">
+          <el-date-picker
+            v-model="luYear"
+            @blur="setLastUseTime('year')"
+            type="year"
+            size="small"
+            clearable
+            placeholder="学年"
+          >
+          </el-date-picker>
+          <span> - </span>
+          <el-select
+            v-model="luSemester"
+            @blur="setLastUseTime('semester')"
+            size="small"
+            filterable
+            placeholder="学期"
+            class="ulDatePicker"
+            ref="ulDateSemester"
+          >
+            <el-option
+              v-for="semester in semesters"
+              :key="semester.value"
+              :label="semester.label"
+              :value="semester.value"
+            >
+            </el-option>
+          </el-select>
+          <span> - </span>
+          <el-select
+            v-model="luPeriod"
+            size="small"
+            filterable
+            placeholder="场景"
+            class="ulDatePicker"
+            ref="ulDatePeriod"
+          >
+            <el-option
+              v-for="period in periods"
+              :key="period.value"
+              :label="period.label"
+              :value="period.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
     </el-main>
     <el-header>
@@ -150,7 +207,37 @@ export default {
       answerInputVisible: false,
       answerInputValue: "",
       showOptions: 0,
-      
+      luYear: "",
+      luSemester: "",
+      semesters: [
+        {
+          value: "fs",
+          label: "第一学期",
+        },
+        {
+          value: "ss",
+          label: "第二学期",
+        },
+      ],
+      luPeriod: "",
+      periods: [
+        {
+          value: "ct",
+          label: "课堂测试",
+        },
+        {
+          value: "hw",
+          label: "课后作业",
+        },
+        {
+          value: "me",
+          label: "期中考试",
+        },
+        {
+          value: "fe",
+          label: "期末考试",
+        },
+      ],
       // form data
       newQu: {
         subject: "",
@@ -194,6 +281,25 @@ export default {
   },
   props: ["keywordsList", "ulDrawer"],
   methods: {
+    // 时间戳工具函数
+    getNowTimeStmp: function () {
+      let nowDate = new Date();
+      // yyyy-mm-dd hh:mm:ss
+      let timeStamp =
+        nowDate.getFullYear() +
+        "-" +
+        (nowDate.getMonth() + 1) +
+        "-" +
+        nowDate.getDate() +
+        " " +
+        nowDate.getHours() +
+        ":" +
+        nowDate.getMinutes() +
+        ":" +
+        nowDate.getSeconds();
+      this.newQu.additionTime = timeStamp;
+    },
+
     // 移除选项
     rmTag: function (optionOrAnswer, tag) {
       if (optionOrAnswer == "option") {
@@ -239,7 +345,22 @@ export default {
       }
     },
 
-    
+    // 最近使用时间picker
+    setLastUseTime: function (param) {
+      if (param == "year") {
+        setTimeout(() => {
+          this.$refs.ulDateSemester.focus();
+        }, 500);
+      } else if (param == "semester") {
+        setTimeout(() => {
+          this.$refs.ulDatePeriod.focus();
+        }, 500);
+      } else {
+        this.newQu.lastUseTime =
+          this.luYear + "-" + this.luSemester + "-" + this.luPeriod;
+      }
+    },
+
     // 表单验证补充 - 选择题选项 + 答案
     validateOA: function () {
       if (this.showOptions > 1) {
@@ -325,7 +446,7 @@ export default {
         url: "/user/qubank/uploadquestion",
         data: {
           token: localStorage.getItem("token"),
-          newqu: this.newQu
+          newqu: this.newQu,
         },
       })
         .then((response) => {
@@ -348,6 +469,38 @@ export default {
           console.log(err);
         });
     },
+    // axios - 拉取推荐科目
+    // ulAsyncSubjectQuery: function () {
+    //   this.axios({
+    //     method: "POST",
+    //     url: "/user/qubank/suggestedsubjects",
+    //     data: {
+    //       token: localStorage.getItem("token"),
+    //     },
+    //   })
+    //     .then((response) => {
+    //       // 处理上传结果
+    //       // 返回:  {"subjects": ["", ""...""],
+    //       //        "counter": n}
+    //       let res = JSON.stringify(response.data);
+    //       res = JSON.parse(res);
+    //       // console.log(res);
+    //       if (res.ifSuccess == true) {
+    //         this.newQuLoading = false;
+    //         // 上传成功重置表单
+    //         this.$refs["newQuForm"].resetFields();
+    //         alert("上传题目成功");
+    //       } else {
+    //         alert(res.err);
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // },
+  },
+  mounted() {
+    this.getNowTimeStmp();
   },
   watch: {
     "newQu.type": function () {
@@ -386,5 +539,9 @@ export default {
   width: 90px;
   margin-left: 10px;
   vertical-align: bottom;
+}
+
+.ulDatePicker {
+  width: 100px;
 }
 </style>
