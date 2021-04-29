@@ -2,7 +2,7 @@
   <el-container class="qubankLayout">
     <el-header name="qActionBar" class="qHeader" height="auto">
       <el-row :gutter="10">
-        <el-col :span="1.5">
+        <el-col :span="1.5" class="qElCol">
           <el-button
             class="qHeaderBtn qHeaderUpNDel"
             icon="el-icon-upload"
@@ -10,7 +10,7 @@
             >上 传</el-button
           ></el-col
         >
-        <el-col :span="1.5">
+        <el-col :span="1.5" class="qElCol">
           <el-button
             class="qHeaderBtn"
             icon="el-icon-delete-solid"
@@ -18,7 +18,7 @@
             >删 除</el-button
           ></el-col
         >
-        <el-col :span="4" :offset="1">
+        <el-col :span="4" :offset="1" class="qElCol">
           <el-input
             prefix-icon="el-icon-search"
             clearable
@@ -26,24 +26,29 @@
             placeholder="输入后请稍等"
           ></el-input>
         </el-col>
-        <el-col :span="1"
+        <el-col :span="1" class="qElCol"
           ><el-button
             class="qHeaderBtn qHeaderUpNDel"
             title="更多条件筛选"
             icon="el-icon-more-outline"
           ></el-button>
         </el-col>
-        <el-col :span="2.5" :offset="9">
-          <el-button class="qHeaderBtn" icon="el-icon-plus" @click="addToPaper"
+        <el-col :span="2.5" :offset="6" class="qElCol">
+          <el-button class="qHeaderBtn" icon="el-icon-remove-outline" @click="addToDelete"
+            >准备删除</el-button
+          ></el-col
+        >
+        <el-col :span="2.5" class="qElCol">
+          <el-button class="qHeaderBtn" icon="el-icon-circle-plus-outline" @click="addToPaper"
             >加入试卷</el-button
           ></el-col
         >
-        <el-col :span="2.5">
+        <el-col :span="2.5" :offset="1" class="qElCol">
           <el-badge
-            :value="chosenCounter"
+            :value="composeCounter"
             :max="50"
             type="warning"
-            :hidden="chosenCounter == 0 ? true : false"
+            :hidden="composeCounter == 0 ? true : false"
           >
             <el-button
               class="qHeaderBtn"
@@ -107,6 +112,7 @@
           :loading="loading"
           @loading="loading = $event"
           @addToTempList="addToTempList($event)"
+          :ifSelectable="ifSelectable"
         ></router-view>
       </el-main>
     </el-container>
@@ -123,8 +129,8 @@
         ><i class="el-icon-more-outline"></i
       ></el-divider>
       <ComposedPaper
-        :chosenCounter="chosenCounter"
-        :chosenList="chosenList"
+        :composeCounter="composeCounter"
+        :composeList="composeList"
       ></ComposedPaper>
     </el-drawer>
 
@@ -201,8 +207,11 @@ export default {
       loading: false,
       searchingKey: "",
       debounceSearch: "",
-      chosenCounter: 0, // 已选题目数量
-      chosenList: [], // 已选试题
+      composeCounter: 0, // 已选题目数量
+      composeList: [], // 已选试题列表
+      deleteCounter: 0, // 预删除题目数量
+      deleteList: [], // 预删除试题列表
+      bannedList: [],
       tempList: [], // 暂存已选试题
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
@@ -222,9 +231,27 @@ export default {
     },
     addToPaper: function () {
       this.tempList.forEach((element) => {
-        this.chosenList.push(element);
-        this.chosenCounter++;
+        // 所选加入到组卷
+        this.composeList.push(element);
+        this.composeCounter++;
       });
+    },
+    addToDelete: function () {
+      this.tempList.forEach((element) => {
+        // 所选加入到删除
+        this.deleteList.push(element);
+        this.deleteCounter++;
+      });
+    },
+    // 判断复选框是否可用
+    ifSelectable: function (row) {
+      console.log(row._id);
+      this.bannedList.forEach(element => {
+        if (element._id == row._id){
+          return false;
+        }
+      });
+      return true;
     },
     testSearch: _.debounce(function () {
       this.debounceSearch = this.searchingKey;
@@ -265,6 +292,12 @@ export default {
     searchingKey: function () {
       this.testSearch();
     },
+    composeList: function () {
+      this.bannedList = this.composeList.concat(this.deleteList);
+    },
+    deleteList: function () {
+      this.bannedList = this.composeList.concat(this.deleteList);
+    }
   },
 };
 </script>
@@ -281,11 +314,14 @@ export default {
 
 .qHeader {
   width: auto;
-  height: 60px !important; /* 覆盖 element.sytle, 解决优先级问题 */
   padding: 10px;
   margin: 20px 0 20px 0;
   border-radius: 10px;
   background-color: #394045;
+}
+
+:deep() .qElCol {
+  min-height: 40px;  
 }
 
 .qHeaderBtn {

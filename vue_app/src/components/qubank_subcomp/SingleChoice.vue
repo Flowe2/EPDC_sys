@@ -28,50 +28,74 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column type="selection" :selectable="ifSelectable" width="55"></el-table-column>
       <el-table-column type="expand">
         <template #default="props">
-          <el-form label-position="left" inline class="singlec_table_expand">
-            <el-form-item label="题目ID">
-              <span class="singlec_table_expan_span">{{ props.row._id }}</span>
-            </el-form-item>
-            <el-form-item label="科目">
-              <span class="singlec_table_expan_span">{{
-                props.row.subject
-              }}</span>
-            </el-form-item>
-            <el-form-item label="关键词">
+          <el-descriptions
+            class="margin-top" 
+            column="2"
+            size="medium"
+            border
+          >
+            <el-descriptions-item>
+              <template #label>
+                <i class="el-icon-place"></i>
+                题目ID
+              </template>
+              {{ props.row._id }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <i class="el-icon-star-on"></i>
+                科目
+              </template>
+              {{ props.row.subject }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <i class="el-icon-key"></i>
+                关键词
+              </template>
               <el-tag
                 type="info"
                 v-for="keyword in props.row.keywords"
                 :key="keyword"
                 >{{ keyword }}</el-tag
               >
-            </el-form-item>
-            <el-form-item label="题目资源">
-              <span class="singlec_table_expan_span">{{
-                props.row.payload.src
-              }}</span>
-            </el-form-item>
-            <el-form-item label="入库时间">
-              <span class="singlec_table_expan_span">{{
-                props.row.additionTime
-              }}</span>
-            </el-form-item>
-            <el-form-item label="上次使用">
-              <span class="singlec_table_expan_span">{{
-                props.row.lastUseTime
-              }}</span>
-            </el-form-item>
-            <el-form-item label="题目内容">
-              <span
-                v-for="sentence in props.row.question"
-                :key="sentence"
-                class="singlec_table_expan_span"
-                >{{ sentence }}</span
-              >
-            </el-form-item>
-            <el-form-item label="答案">
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <i class="el-icon-date"></i>
+                入库时间
+              </template>
+              {{ props.row.additionTime }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <i class="el-icon-paperclip"></i>
+                题目资源
+              </template>
+              {{ props.row.payload.src }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <i class="el-icon-date"></i>
+                上次使用
+              </template>
+              {{ props.row.lastUseTime }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <i class="el-icon-tickets"></i>
+                题目内容
+              </template>
+              {{ props.row.question }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <i class="el-icon-folder-checked"></i>
+                答案
+              </template>
               <el-tag
                 type="success"
                 effect="dark"
@@ -79,23 +103,27 @@
                 :key="answer"
                 >{{ answer }}</el-tag
               >
-            </el-form-item>
-            <el-form-item label="题目选项">
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <i class="el-icon-folder-opened"></i>
+                题目选项
+              </template>
               <el-tag
                 effect="plain"
                 v-for="(option, index) in props.row.payload.options"
                 :key="option"
-                >{{
-                  optionIndex(index) + ": " + option
-                }}</el-tag
+                >{{ optionIndex(index) + ": " + option }}</el-tag
               >
-            </el-form-item>
-          </el-form>
+            </el-descriptions-item>
+          </el-descriptions>
         </template>
       </el-table-column>
-      <el-table-column label="题目内容(前n字)" prop="question">
-         <template #default="props"
-          ><span>{{ props.row.question.toString().substr(0,8) }}</span></template
+      <el-table-column label="题目内容(前20字)" prop="question">
+        <template #default="props"
+          ><span>{{
+            props.row.question.toString().substr(0, 20)
+          }}</span></template
         >
       </el-table-column>
       <el-table-column
@@ -129,6 +157,7 @@ export default {
       singlechoiceCounter: 0,
       singlechoiceList: [],
       tableHeight: 600,
+      bannedList: [],
       displayList: [],
       displayCounter: 0,
       displayKeywordFilter: [], // 过滤器
@@ -139,7 +168,7 @@ export default {
       onlySinglePage: false,
     };
   },
-  props: ["loading", "searchingKey"],
+  props: ["loading", "searchingKey", "ifSelectable"],
   methods: {
     // 改变分页大小
     handleSizeChange: function (size) {
@@ -184,6 +213,8 @@ export default {
       let indexLetter = String.fromCodePoint(65 + index);
       return indexLetter;
     },
+    // 筛除已选择的, 并禁用复选框
+    
     // 暂存至tempList
     handleSelectionChange: function (val) {
       // 传入的为对象, JSON.toStringfy后在JSON.parse解析
@@ -198,7 +229,7 @@ export default {
         url: "/user/qubank/getquestionlist",
         data: {
           token: localStorage.getItem("token"),
-          type: 'sc'
+          type: "sc",
         },
       })
         .then((response) => {
@@ -219,7 +250,7 @@ export default {
               this.onlySinglePage = true;
             }
             // 加载完成
-            this.$emit("loading", false)
+            this.$emit("loading", false);
           });
         })
         .catch((err) => {
