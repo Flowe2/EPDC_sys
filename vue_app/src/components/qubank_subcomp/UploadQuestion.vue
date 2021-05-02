@@ -119,6 +119,24 @@
             >添加答案</el-button
           >
         </el-form-item>
+        <el-form-item label="题目资源">
+          <el-upload
+            action
+            ref="uploadFile"
+            class="ulDragUpload"
+            :http-request="ulHandleUpload"
+            :on-exceed="ulHandleExceed"
+            :before-upload="ulBeforeUpload"
+            :on-preview="ulPictureCardPreview"
+            list-type="picture-card"
+            limit="1"
+            drag
+            accept=".jpg,.jpeg,.png,.gif,.bmp"
+          >
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">拖拽至此<br />或<em>点击上传</em></div>
+          </el-upload>
+        </el-form-item>
         <el-form-item label="入库时间">
           <el-tag type="info">{{ newQu.additionTime }}</el-tag>
           <el-divider direction="vertical"></el-divider>
@@ -192,6 +210,10 @@
         </el-col>
       </el-row>
     </el-header>
+
+    <el-dialog title="题目资源预览" v-model="dialogVisible" width="440px">
+      <img :src="dialogImageUrl" alt="" style="width: 400px; height: 400px" />
+    </el-dialog>
   </el-container>
 </template>
 
@@ -238,6 +260,9 @@ export default {
           label: "期末考试",
         },
       ],
+      uploadsrcs: [],
+      dialogVisible: false,
+      disabled: false,
       // form data
       newQu: {
         subject: "",
@@ -343,6 +368,77 @@ export default {
         this.answerInputVisible = false;
         this.answerInputValue = "";
       }
+    },
+
+    // upload部分 - 图片预览
+    ulPictureCardPreview: function (file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
+    // upload部分 - 超出数量限制操作
+    ulHandleExceed: function (file, newfile) {
+      this.$message({
+        message: "仅能上传一张图片, 请先删除上一张",
+        type: "error",
+      });
+      console.log(file);
+      console.log(newfile);
+    },
+    // upload部分 - 格式及大小检查
+    ulBeforeUpload: function (file) {
+      const typeList = [
+        "image/jpg",
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/bmp",
+      ];
+      let isJPG = false;
+      typeList.forEach((type) => {
+        if (file.type === type) {
+          isJPG = true;
+        }
+      });
+      // 限制大小为10MB
+      let isLt2M = file.size / 1024 / 1024 < 10;
+      if (!isJPG) {
+        this.$message.error("只能是图片格式!(.jpg/.jpeg/.png/.gif/.bmp)");
+      } else if (!isLt2M) {
+        this.$message.error("题目资源大小不能超过 10MB!");
+      } else {
+        this.$message.success("题目资源格式及大小检查通过.");
+      }
+      return isJPG && isLt2M;
+    },
+    // upload部分 - 自定义上传操作
+    ulHandleUpload: function (file) {
+      this.uploadsrcs.push(file.file);
+      console.log(this.uploadsrcs[0]);
+      this.axios({
+        method: "POST",
+        url: "/user/qubank/uploadsrc",
+        data: {
+          token: localStorage.getItem("token"),
+          src: this.uploadsrcs[0],
+        },
+      })
+        .then((response) => {
+          // 处理上传图片结果
+          // 返回:  {"ifSuccess": "true / false",
+          //        "srcid": "...",
+          //        "err": "undefined / err message"}
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          console.log(res);
+          // if (res.ifSuccess == true) {
+          //   this.newQu.payload.src = res.srcid;
+          //   alert("上传题目成功");
+          // } else {
+          //   alert(res.err);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
 
     // 最近使用时间picker
@@ -469,7 +565,7 @@ export default {
           console.log(err);
         });
     },
-    // axios - 拉取推荐科目
+    // axios - 拉去推荐科目
     // ulAsyncSubjectQuery: function () {
     //   this.axios({
     //     method: "POST",
@@ -539,6 +635,30 @@ export default {
   width: 90px;
   margin-left: 10px;
   vertical-align: bottom;
+}
+
+/* 修改上传资源dragger样式 */
+:deep() .el-upload-dragger {
+  height: 100%;
+  width: 100%;
+  line-height: 20px;
+}
+:deep() .el-upload--picture-card {
+  height: 100px;
+  width: 100px;
+}
+:deep() .el-upload-list--picture-card .el-upload-list__item {
+  height: 100px;
+  width: 100px;
+}
+
+:deep() .el-date-editor.el-input {
+  width: 100px;
+}
+
+:deep() .el-upload-dragger .el-icon-upload {
+  font-size: 40px;
+  margin: 0;
 }
 
 .ulDatePicker {
