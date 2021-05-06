@@ -5,13 +5,13 @@
     <h3 class="errH3">target address not found, please check again...</h3>
 
     <nav class="shelf">
-      <a class="book home-page" @click="toUser">User Home</a>
-      <a class="book about-us" @click="toAdmin">Admin Home</a>
+      <a class="book user-page" href="/">User Home</a>
+      <a class="book admin-page" href="/admin">Admin Home</a>
       <!-- 管理员邮箱 -->
       <a class="book contact" href="mailto:954827899@qq.com?subject=Contact Us">Contact</a>
-      <a class="book faq" @click="toAbout">F.A.Q.</a>
+      <a class="book about-page" href="/about">F.A.Q.</a>
 
-      <span class="book not-found">{{ err_path }}</span>
+      <span class="book not-found">{{ '...' + err_path.substr(-10) }}</span>
 
       <span class="door left"></span>
       <span class="door right"></span>
@@ -29,23 +29,7 @@ export default {
       err_path: ''
     };
   },
-  methods: {
-    toUser () {
-      this.$router.push({
-        path: "/",
-      });
-    },
-    toAdmin () {
-      this.$router.push({
-        path: "/admin",
-      });
-    },
-    toAbout () {
-      this.$router.push({
-        path: "/about",
-      });
-    },
-  },
+  methods: {},
   beforeRouteEnter(to, from, next) {
     next( NotFound => {
       NotFound.err_path = to.path;
@@ -182,14 +166,14 @@ export default {
   box-shadow: inset 0 0 0.75rem rgba(255, 255, 255, 0.1);
 }
 
-.book.home-page {
+.book.user-page {
   -webkit-transform: rotate(-90deg) translate(-12.4rem, 3rem);
   transform: rotate(-90deg) translate(-12.4rem, 3rem);
   -webkit-transform-origin: 0;
   transform-origin: 0;
 }
 
-.book.about-us {
+.book.admin-page {
   -webkit-transform: rotate(-100deg) translate(-13.4rem, 6.1rem);
   transform: rotate(-100deg) translate(-13.4rem, 6.1rem);
   -webkit-transform-origin: 0;
@@ -202,7 +186,7 @@ export default {
   border-radius: 0.3rem 0 0 0.3rem;
 }
 
-.book.faq {
+.book.about-page {
   right: 0.8rem;
   bottom: 3.3rem;
   border-radius: 0.3rem 0 0 0.3rem;

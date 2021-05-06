@@ -2,16 +2,46 @@
   <div id="headbarcomp">
     <!-- 登录后显示头像区域 -->
     <div id="user" v-if="logged && !role">
-      <el-button class="avatarBtn" circle style="padding: 0px" @click="ulogout">
-        <el-avatar class="face" size="large" fit="fill" :src="avatars[1]">
-        </el-avatar>
-      </el-button>
+      <el-popover
+        placement="right-end"
+        title="用户"
+        :width="200"
+        trigger="hover"
+        content="点击头像退出登录"
+      >
+        <template #reference>
+          <el-button
+            class="avatarBtn"
+            circle
+            style="padding: 0px"
+            @click="ulogout"
+          >
+            <el-avatar class="face" size="large" fit="fill" :src="avatars[1]">
+            </el-avatar>
+          </el-button>
+        </template>
+      </el-popover>
     </div>
     <div id="admin" v-if="logged && role">
-      <el-button class="avatarBtn" circle style="padding: 0px" @click="alogout">
-        <el-avatar class="face" size="large" fit="fill" :src="avatars[1]">
-        </el-avatar>
-      </el-button>
+      <el-popover
+        placement="right-end"
+        title="管理员"
+        :width="200"
+        trigger="hover"
+        content="点击头像退出登录"
+      >
+        <template #reference>
+          <el-button
+            class="avatarBtn"
+            circle
+            style="padding: 0px"
+            @click="alogout"
+          >
+            <el-avatar class="face" size="large" fit="fill" :src="avatars[1]">
+            </el-avatar>
+          </el-button>
+        </template>
+      </el-popover>
     </div>
 
     <!-- 登录前显示用户跳转区域 -->

@@ -1,8 +1,8 @@
 <template>
-  <div id="singlec_body" class="singlec_body">
+  <div id="qudisplay_body" class="qudisplay_body">
     <!-- 分页 -->
     <el-pagination
-      id="singlec_pagination"
+      id="qudisplay_pagination"
       :total="displayCounter"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -28,15 +28,14 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" :selectable="ifSelectable" width="55"></el-table-column>
+      <el-table-column
+        type="selection"
+        :selectable="ifSelectable"
+        width="55"
+      ></el-table-column>
       <el-table-column type="expand">
         <template #default="props">
-          <el-descriptions
-            class="margin-top" 
-            column="2"
-            size="medium"
-            border
-          >
+          <el-descriptions class="margin-top" column="2" size="medium" border>
             <el-descriptions-item>
               <template #label>
                 <i class="el-icon-place"></i>
@@ -113,7 +112,7 @@
                 effect="plain"
                 v-for="(option, index) in props.row.payload.options"
                 :key="option"
-                >{{ optionIndex(index) + ": " + option }}</el-tag
+                >{{ optionIndex(index) + ": " + option.substr(0, 15) }}</el-tag
               >
             </el-descriptions-item>
           </el-descriptions>
@@ -151,11 +150,12 @@
 
 <script>
 export default {
-  name: "SingleChoice",
+  name: "QuestionDisplay",
   data() {
     return {
-      singlechoiceCounter: 0,
-      singlechoiceList: [],
+      targetType: "sc", // 初始进入初始化, 停在单选题题库界面
+      qudisplayCounter: 0,
+      qudisplayList: [],
       tableHeight: 600,
       bannedList: [],
       displayList: [],
@@ -182,10 +182,10 @@ export default {
     },
     // 动态设置table高度, 固定表头
     dynamicTableHeight: function () {
-      let bodyHeight = document.getElementById("singlec_body").clientHeight;
+      let bodyHeight = document.getElementById("qudisplay_body").clientHeight;
       let pagiHeight;
       !this.onlySinglePage
-        ? (pagiHeight = document.getElementById("singlec_pagination")
+        ? (pagiHeight = document.getElementById("qudisplay_pagination")
             .clientHeight)
         : (pagiHeight = 0);
       this.tableHeight = bodyHeight - pagiHeight - 10;
@@ -194,7 +194,7 @@ export default {
     keywordFilterGenerator: function (res) {
       let temp = [];
       res.forEach((element) => {
-        console.log(element);
+        // console.log(element);
         if (temp.indexOf(element.subject) == -1) {
           temp.push(element.subject);
           this.displayKeywordFilter.push({
@@ -214,7 +214,7 @@ export default {
       return indexLetter;
     },
     // 筛除已选择的, 并禁用复选框
-    
+
     // 暂存至tempList
     handleSelectionChange: function (val) {
       // 传入的为对象, JSON.toStringfy后在JSON.parse解析
@@ -229,7 +229,7 @@ export default {
         url: "/user/qubank/getquestionlist",
         data: {
           token: localStorage.getItem("token"),
-          type: "sc",
+          type: this.targetType,
         },
       })
         .then((response) => {
@@ -240,11 +240,11 @@ export default {
           let res = JSON.stringify(response.data);
           res = JSON.parse(res);
           // console.log(res);
-          this.singlechoiceList = res.questionlist;
-          this.singlechoiceCounter = res.counter;
+          this.qudisplayList = res.questionlist;
+          this.qudisplayCounter = res.counter;
           this.$nextTick(() => {
-            this.displayList = this.singlechoiceList;
-            this.displayCounter = this.singlechoiceCounter;
+            this.displayList = this.qudisplayList;
+            this.displayCounter = this.qudisplayCounter;
             // 若小于10项则单页显示, 隐藏分页按钮
             if (this.displayCounter < this.curtPageSize) {
               this.onlySinglePage = true;
@@ -258,9 +258,24 @@ export default {
         });
     },
   },
+  // 题库间跳转
+  beforeRouteUpdate(to, from, next) {
+    let tempType = to.params.type;
+    let typeList = ["sc", "mc", "tf", "gf", "sj"];
+    typeList.forEach((element) => {
+      if (tempType == element) {
+        this.$nextTick(() => {
+          this.targetType = tempType;
+        });
+        next();
+      }
+    });
+    next("/notfund");
+  },
   mounted() {
-    // 初始化获取数据singlechoicelist
+    // 初始化数据获取
     this.getSingleChoiceList();
+    // 初始化关键词filter
     this.keywordFilterGenerator(this.displayList);
     // 初始化窗口
     this.$nextTick(() => {
@@ -272,13 +287,19 @@ export default {
     };
   },
   watch: {
+    targetType: function () {
+      // 随导航栏跳转改变刷新
+      this.getSingleChoiceList();
+      //   关键词filter同理
+      this.keywordFilterGenerator(this.displayList);
+    },
     // 简单搜索
     searchingKey: function () {
       console.log(this.searchingKey);
       const search = this.searchingKey;
-      let filterList = Object.keys(this.singlechoiceList[0]);
+      let filterList = Object.keys(this.qudisplayList[0]);
       if (search) {
-        this.displayList = this.singlechoiceList.filter((v) => {
+        this.displayList = this.qudisplayList.filter((v) => {
           //some是一个为true，即结果为true
           return filterList.some((key) => {
             //要toString是因为对象里有id，id是int类型，要转为字符串类型
@@ -286,7 +307,7 @@ export default {
           });
         });
       } else {
-        this.displayList = this.singlechoiceList;
+        this.displayList = this.qudisplayList;
       }
       this.displayCounter = this.displayList.length;
       this.$emit("loading", false);
@@ -296,25 +317,25 @@ export default {
 </script>
 
 <style scoped>
-.singlec_body {
+.qudisplay_body {
   width: 100%;
   height: calc(100% - 10px);
 }
 
-:deep() .singlec_table_expand {
+:deep() .qudisplay_table_expand {
   font-size: 0;
 }
 
-:deep() .singlec_table_expand label {
+:deep() .qudisplay_table_expand label {
   width: 90px;
   color: #2566c2;
 }
 
-.singlec_table_expan_span {
+.qudisplay_table_expan_span {
   color: #d5a105;
 }
 
-:deep() .singlec_table_expand .el-form-item {
+:deep() .qudisplay_table_expand .el-form-item {
   margin-right: 0;
   margin-bottom: 0;
   width: 50%;

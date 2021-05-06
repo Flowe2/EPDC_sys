@@ -11,12 +11,19 @@
           ></el-col
         >
         <el-col :span="1.5" class="qElCol">
-          <el-button
-            class="qHeaderBtn"
-            icon="el-icon-delete-solid"
-            @click="dtDrawer = true"
-            >删 除</el-button
-          ></el-col
+          <el-badge
+            :value="deleteCounter"
+            :max="50"
+            type="warning"
+            :hidden="deleteCounter == 0 ? true : false"
+          >
+            <el-button
+              class="qHeaderBtn"
+              icon="el-icon-delete-solid"
+              @click="dtDrawer = true"
+              >删 除</el-button
+            >
+          </el-badge></el-col
         >
         <el-col :span="4" :offset="1" class="qElCol">
           <el-input
@@ -34,12 +41,18 @@
           ></el-button>
         </el-col>
         <el-col :span="2.5" :offset="6" class="qElCol">
-          <el-button class="qHeaderBtn" icon="el-icon-remove-outline" @click="addToDelete"
+          <el-button
+            class="qHeaderBtn"
+            icon="el-icon-remove-outline"
+            @click="addToDelete"
             >准备删除</el-button
           ></el-col
         >
         <el-col :span="2.5" class="qElCol">
-          <el-button class="qHeaderBtn" icon="el-icon-circle-plus-outline" @click="addToPaper"
+          <el-button
+            class="qHeaderBtn"
+            icon="el-icon-circle-plus-outline"
+            @click="addToPaper"
             >加入试卷</el-button
           ></el-col
         >
@@ -167,7 +180,10 @@
       <el-divider content-position="left"
         ><i class="el-icon-more-outline"></i
       ></el-divider>
-      <DeleteQuestion></DeleteQuestion>
+      <DeleteQuestion
+        :deleteCounter="deleteCounter"
+        :deleteList="deleteList"
+      ></DeleteQuestion>
     </el-drawer>
   </el-container>
 </template>
@@ -184,23 +200,23 @@ export default {
     return {
       indexList: [
         {
-          path: "/user/qubank/singlechoice",
+          path: "/user/qubank/questiondisplay/sc",
           name: " 单 选 题",
         },
         {
-          path: "/user/qubank/multiplechoice",
+          path: "/user/qubank/questiondisplay/mc",
           name: " 多 选 题",
         },
         {
-          path: "/user/qubank/truefalse",
+          path: "/user/qubank/questiondisplay/tf",
           name: " 判 断 题",
         },
         {
-          path: "/user/qubank/gapfilling",
+          path: "/user/qubank/questiondisplay/gf",
           name: " 填 空 题",
         },
         {
-          path: "/user/qubank/subjective",
+          path: "/user/qubank/questiondisplay/sj",
           name: " 主 观 题",
         },
       ],
@@ -216,7 +232,7 @@ export default {
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
       ulDrawer: false, // 上传drawer
-      keywordsList: ["HTML", "操作系统"],
+      keywordsList: [],
       dtDrawer: false, // 删除drawer
     };
   },
@@ -245,9 +261,9 @@ export default {
     },
     // 判断复选框是否可用
     ifSelectable: function (row) {
-      console.log(row._id);
-      this.bannedList.forEach(element => {
-        if (element._id == row._id){
+      // console.log(row._id);
+      this.bannedList.forEach((element) => {
+        if (element._id == row._id) {
           return false;
         }
       });
@@ -297,7 +313,7 @@ export default {
     },
     deleteList: function () {
       this.bannedList = this.composeList.concat(this.deleteList);
-    }
+    },
   },
 };
 </script>
@@ -321,7 +337,7 @@ export default {
 }
 
 :deep() .qElCol {
-  min-height: 40px;  
+  min-height: 40px;
 }
 
 .qHeaderBtn {
@@ -366,9 +382,9 @@ export default {
 
 /* 抽屉允许滚动 */
 :deep() .el-drawer__body {
-   overflow: auto;
+  overflow: auto;
 }
-:deep() .el-drawer__container ::-webkit-scrollbar{
+:deep() .el-drawer__container ::-webkit-scrollbar {
   display: none;
 }
 

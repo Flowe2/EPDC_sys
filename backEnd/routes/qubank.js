@@ -17,7 +17,7 @@ const questionsManage = require('../controller/questionsManage');
 // 拉取题目列表接口
 router.post('/getquestionlist', async (req, res, next) => {
     let data = req.body;
-    console.log("=== ~ receive POST : @ user - get" + data.type + "list");
+    console.log("=== ~ receive POST : @ user - get " + data.type + " list");
     let arr = await questionsManage.getQuestionsList(data);
     console.log("=== ~ ready to send");
     res.json(arr);

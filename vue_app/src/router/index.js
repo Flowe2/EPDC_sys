@@ -7,11 +7,12 @@ import UserLogin from '@/components/UserLogin.vue';
 import AdminLogin from '@/components/AdminLogin.vue';
 
 import QuBank from '@/components/QuBank.vue';
-import SingleChoice from '@/components/qubank_subcomp/SingleChoice.vue';      // 单选
-import MultipleChoice from '@/components/qubank_subcomp/MultipleChoice.vue';  // 多选
-import TrueFalse from '@/components/qubank_subcomp/TrueFalse.vue';            // 判断
-import GapFilling from '@/components/qubank_subcomp/GapFilling.vue';          // 填空
-import Subjective from '@/components/qubank_subcomp/Subjective.vue';          // 主观
+import QuestionDisplay from '@/components/qubank_subcomp/QuestionDisplay.vue';// 单选
+// import SingleChoice from '@/components/qubank_subcomp/SingleChoice.vue';      // 单选
+// import MultipleChoice from '@/components/qubank_subcomp/MultipleChoice.vue';  // 多选
+// import TrueFalse from '@/components/qubank_subcomp/TrueFalse.vue';            // 判断
+// import GapFilling from '@/components/qubank_subcomp/GapFilling.vue';          // 填空
+// import Subjective from '@/components/qubank_subcomp/Subjective.vue';          // 主观
 import ComposedPaper from '@/components/qubank_subcomp/ComposedPaper.vue';    // 组卷功能
 
 import Manage from '@/components/Manage.vue';
@@ -49,33 +50,34 @@ const routes = [
           {
             path: '',
             name: "RelaySingleChoice",
-            redirect: { name: "SingleChoice"}
+            redirect: { path: '/user/qubank/questiondisplay/sc' }
           },
           {
-            path: 'singlechoice',
-            name: 'SingleChoice',
-            component: SingleChoice,
+            // 动态匹配路由似乎只能使用绝对路径
+            path: '/user/qubank/questiondisplay/:type',
+            name: 'QuestionDisplay',
+            component: QuestionDisplay,
           },
-          {
-            path: 'multiplechoice',
-            name: 'MultipleChoice',
-            component: MultipleChoice,
-          },
-          {
-            path: 'truefalse',
-            name: 'TrueFalse',
-            component: TrueFalse,
-          },
-          {
-            path: 'gapfilling',
-            name: 'GapFilling',
-            component: GapFilling,
-          },
-          {
-            path: 'subjective',
-            name: 'Subjective',
-            component: Subjective,
-          },
+          // {
+          //   path: 'multiplechoice',
+          //   name: 'MultipleChoice',
+          //   component: MultipleChoice,
+          // },
+          // {
+          //   path: 'truefalse',
+          //   name: 'TrueFalse',
+          //   component: TrueFalse,
+          // },
+          // {
+          //   path: 'gapfilling',
+          //   name: 'GapFilling',
+          //   component: GapFilling,
+          // },
+          // {
+          //   path: 'subjective',
+          //   name: 'Subjective',
+          //   component: Subjective,
+          // },
           {
             path: 'composedpaper',
             name: 'ComposedPaper',
