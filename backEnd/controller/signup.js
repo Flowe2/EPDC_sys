@@ -13,7 +13,7 @@ exports.realtimeCheck = async function (data) {
     const query = { '_id': data.uemail };
     const options = { projection: { '_id': 1 } };
     try {
-        targetUser = await thDB.findUser(targetCol, query, options);
+        targetUser = await thDB.findData(targetCol, query, options);
         if (targetUser.length == 0) {
             console.log('=== ~ res: uemail has not been signed yet');
             arr.ifAvailable = true;
@@ -41,7 +41,7 @@ exports.signup = async function (data) {
         'lastlog': ''
     };
     try {
-        let insertRes = await thDB.insertUser(targetCol, insertDoc);
+        let insertRes = await thDB.insertOneData(targetCol, insertDoc);
         if (insertRes == 1) {
             console.log("=== ~ res: insert seccess");
             arr.ifSuccess = true;

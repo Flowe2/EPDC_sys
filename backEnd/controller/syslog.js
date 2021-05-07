@@ -20,7 +20,7 @@ exports.getSyslog = async function (data) {
     const query = { };
     const options = { projection: { 'timestamp': 1, 'role': 1, 'who': 1, 'operation': 1 } };
     try {
-        res.syslog = await thDB.findUser(targetCol, query, options);
+        res.syslog = await thDB.findData(targetCol, query, options);
         res.counter = res.syslog.length;
         return res;
     } catch (e) {
@@ -39,7 +39,7 @@ exports.addSyslog = async function (data) {
         'operation': data.operation,
     };
     try {
-        let insertRes = await thDB.insertUser(targetCol, insertDoc);
+        let insertRes = await thDB.insertOneData(targetCol, insertDoc);
         if (insertRes == 1) {
             console.log("=== ~ res: syslog insert seccess");
         } else {

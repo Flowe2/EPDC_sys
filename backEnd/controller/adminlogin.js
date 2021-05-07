@@ -16,7 +16,7 @@ async function adminlogin(data) {
     const options = { projection: { '_id': 1, 'apwd': 1 } };
     // 查询用户
     try {
-        targetAdmin = await thDB.findUser(targetCol, query, options);
+        targetAdmin = await thDB.findData(targetCol, query, options);
         if (targetAdmin.length != 0) {
             targetAdmin = targetAdmin[0];
             console.log("=== ~ res: admin exist");
@@ -33,7 +33,7 @@ async function adminlogin(data) {
         // 验证通过, 更新lastlog, 生成token
         const updateDoc = { $set: { 'lastlog': jwtutil.timeStamp() } };
         const updateOptions = { upsert: true };
-        await thDB.updateUser(targetCol, query, updateDoc, updateOptions)
+        await thDB.updateOneData(targetCol, query, updateDoc, updateOptions)
             .catch(console.dir)
             .then((res) => {
                 if (res == 1) {

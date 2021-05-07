@@ -23,7 +23,7 @@ exports.checkingList = async function (data) {
     const query = { 'pass': false };
     const options = { projection: { '_id': 1, 'uname': 1, 'postscript': 1, 'signup': 1 } };
     try {
-        res.userlist = await thDB.findUser(targetCol, query, options);
+        res.userlist = await thDB.findData(targetCol, query, options);
         res.userlist.forEach(element => {
             let temp = element._id;
             element._id = undefined;
@@ -51,7 +51,7 @@ exports.toPassApply = async function (data) {
     const updateDoc = { $set: { 'pass': true } };
     const options = { upsert: true };
     try {
-        let temp = await thDB.updateUser(targetCol, query, updateDoc, options);
+        let temp = await thDB.updateOneData(targetCol, query, updateDoc, options);
         if (temp === 1) {
             const logData = {
                 'role': verifyRes.payload.role,
@@ -83,7 +83,7 @@ exports.toRefuseApply = async function (data) {
     const targetCol = 'userlist';
     const query = { _id: data.uemail };
     try {
-        let temp = await thDB.deleteUser(targetCol, query);
+        let temp = await thDB.deleteOneData(targetCol, query);
         if (temp === 1) {
             const logData = {
                 'role': verifyRes.payload.role,

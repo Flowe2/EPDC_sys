@@ -14,6 +14,27 @@ const questionsManage = require('../controller/questionsManage');
 //     res.json(arr);
 // })
 
+
+// 拉取建议科目接口
+router.post('/suggestedsubjects', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ user - get subjects list");
+    let arr = await questionsManage.asyncQuerySubjects(data);
+    console.log("=== ~ ready to send");
+    res.json(arr);
+})
+
+
+// 拉取建议关键词接口
+router.post('/suggestedkeywords', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ user - get subjects list");
+    let arr = await questionsManage.asyncQueryKeywords(data);
+    console.log("=== ~ ready to send");
+    res.json(arr);
+})
+
+
 // 拉取题目列表接口
 router.post('/getquestionlist', async (req, res, next) => {
     let data = req.body;

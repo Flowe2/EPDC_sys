@@ -218,6 +218,8 @@
 </template>
 
 <script>
+import _ from "lodash";
+
 export default {
   name: "UploadQuestion",
   data() {
@@ -231,6 +233,7 @@ export default {
       showOptions: 0,
       luYear: "",
       luSemester: "",
+      subjectsList: [],
       keywordsList: [],
       semesters: [
         {
@@ -515,7 +518,7 @@ export default {
       });
     },
     resetFormSupply: function () {
-      this.$nextTick( () => {
+      this.$nextTick(() => {
         this.$refs["newQuForm"].resetFields();
         this.newQu.payload.src = "";
         this.newQu.payload.options = [];
@@ -575,6 +578,7 @@ export default {
           console.log(err);
         });
     },
+
     // axios - 拉取推荐科目
     // ulAsyncSubjectQuery: function () {
     //   this.axios({
@@ -585,30 +589,47 @@ export default {
     //     },
     //   })
     //     .then((response) => {
-    //       // 处理上传结果
-    //       // 返回:  {"subjects": ["", ""...""],
-    //       //        "counter": n}
+    //       // 处理拉取结果
+    //       // 返回:  ["", ""...""]
     //       let res = JSON.stringify(response.data);
     //       res = JSON.parse(res);
-    //       // console.log(res);
-    //       if (res.ifSuccess == true) {
-    //         this.newQuLoading = false;
-    //         // 上传成功重置表单
-    //         this.resetFormSupply();
-    //         alert("上传题目成功");
-    //       } else {
-    //         alert(res.err);
-    //       }
+    //       console.log(res);
+    //       this.subjectsList = res.subjects;
     //     })
     //     .catch((err) => {
     //       console.log(err);
     //     });
     // },
+
+    debounceKeywordsQuery: _.debounce(function () {
+      this.axios({
+        method: "POST",
+        url: "/user/qubank/suggestedkeywords",
+        data: {
+          token: localStorage.getItem("token"),
+          subject: this.newQu.subject
+        },
+      })
+        .then((response) => {
+          // 处理拉取结果
+          // 返回:  { "keywords": ["", ""...""] }
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          console.log(res.keywords);
+          this.keywordsList = res.keywords;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, 2500),
   },
   mounted() {
     this.getNowTimeStmp();
   },
   watch: {
+    "newQu.subject": function () {
+      this.debounceKeywordsQuery();
+    },
     "newQu.type": function () {
       if (this.newQu.type == "sc" || this.newQu.type == "mc") {
         this.showOptions = true;

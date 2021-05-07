@@ -121,7 +121,7 @@
       <!-- 主容器, 展示题库 -->
       <el-main name="qDisplay" class="qDisplay">
         <router-view
-          :searchingKey="debounceSearch"
+          :searchingKey="debounceSearchKey"
           :loading="loading"
           @loading="loading = $event"
           @addToTempList="addToTempList($event)"
@@ -221,7 +221,7 @@ export default {
       ],
       loading: false,
       searchingKey: "",
-      debounceSearch: "",
+      debounceSearchKey: "",
       composeCounter: 0, // 已选题目数量
       composeList: [], // 已选试题列表
       deleteCounter: 0, // 预删除题目数量
@@ -267,8 +267,8 @@ export default {
       });
       return true;
     },
-    testSearch: _.debounce(function () {
-      this.debounceSearch = this.searchingKey;
+    debounceSearch: _.debounce(function () {
+      this.debounceSearchKey = this.searchingKey;
       this.loading = true;
     }, 1000),
 
@@ -304,7 +304,7 @@ export default {
   watch: {
     // 搜索防抖, 1秒后传给router-view
     searchingKey: function () {
-      this.testSearch();
+      this.debounceSearch();
     },
     composeList: function () {
       this.bannedList = this.composeList.concat(this.deleteList);

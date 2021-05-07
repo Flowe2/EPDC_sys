@@ -35,7 +35,7 @@ exports.closeDb = async function () {
 
 /* =================================== find =================================== */
 // 账户查询
-exports.findUser = async function (targetCol, query, options) {
+exports.findData = async function (targetCol, query={}, options={}) {
     let res;
     try {
         const col = client.db('epdc_sys_db').collection(targetCol);
@@ -46,33 +46,9 @@ exports.findUser = async function (targetCol, query, options) {
     }
 };
 
-// 题目查询
-exports.pullQuestions = async function (targetCol, query) {
-    let res;
-    try {
-        const col = client.db('epdc_sys_db').collection(targetCol);
-        res = await col.find(query).toArray();
-        return res;
-    } finally {
-        console.log("=== ~ connection keeping");
-    }
-}
-
 /* ================================== insert ================================== */
 // 新增账户
-exports.insertUser = async function (targetCol, doc) {
-    let res;
-    try {
-        const col = client.db('epdc_sys_db').collection(targetCol);
-        res = await col.insertOne(doc);
-        return res.insertedCount;
-    } finally {
-        console.log("=== ~ connection keeping");
-    }
-}
-
-// 新增题目
-exports.insertQuestion = async function (targetCol, doc) {
+exports.insertOneData = async function (targetCol, doc) {
     let res;
     try {
         const col = client.db('epdc_sys_db').collection(targetCol);
@@ -96,7 +72,7 @@ exports.insertQuestion = async function (targetCol, doc) {
 // }
 
 /* ================================== delete ================================== */
-exports.deleteUser = async function (targetCol, query) {
+exports.deleteOneData = async function (targetCol, query) {
     let res;
     try {
         const col = client.db('epdc_sys_db').collection(targetCol);
@@ -108,7 +84,7 @@ exports.deleteUser = async function (targetCol, query) {
 }
 
 /* ================================== update ================================== */
-exports.updateUser = async function (targetCol, query, updateDoc, options) {
+exports.updateOneData = async function (targetCol, query, updateDoc, options={}) {
     let res;
     try {
         const userlist = client.db('epdc_sys_db').collection(targetCol);

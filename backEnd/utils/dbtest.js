@@ -152,7 +152,7 @@ const theDB = require('./theMongoDB');
 // const options1 = { projection: { '_id': 1, 'upwd': 1, 'pass': 1 } };
 // let res1;
 // theDB.initDb().then(()=>{
-//     theDB.findUser(userlist, query1, options1)
+//     theDB.findData(userlist, query1, options1)
 //         .catch(console.dir)
 //         .then((res) => {
 //             if (res.length != 0) {
@@ -207,262 +207,21 @@ const theDB = require('./theMongoDB');
 //         });
 // });
 
-// 单选测试数据
-const test = [
-        {
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
 
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-        {
-          
-          subject: "操作系统原理",
-          type: "sc",
-          keywords: ["系统", "交互性"],
-          question: "为了提高系统的交互性，人们设计了(__)",
-          payload: {
-            src: "",
-
-            options: [
-              "批处理系统",
-              "分时系统",
-              "实时系统",
-              "分布式系统",
-            ],
-            answer: ["B"],
-          },
-          additionTime: "2020-04-20",
-          lastUseTime: "2020-ss-me",
-        },
-      ];
+// 关键词追加测试   [OK]
+// let tempKeywords = ["作业", "共享变量", "地址重定位"]
+// const targetCol = 'suggestedsubject';
+// const query = { 'subject': "操作系统" };
+// const updateDoc = { $push: { "keywords": { $each: tempKeywords } } };
+// theDB.initDb().then(()=>{
+//   theDB.updateOneData(targetCol, query, updateDoc)
+//       .catch(console.dir)
+//       .then((res) => {
+//           if (res == 1) {
+//               console.log("ok");
+//           } else {
+//               console.log("no result");
+//           }
+//           theDB.closeDb();
+//       });
+// });

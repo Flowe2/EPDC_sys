@@ -22,7 +22,7 @@ exports.checkedUserlist = async function (data) {
     const query = { 'pass': true };
     const options = { projection: { '_id': 1, 'uname': 1, 'lastlog': 1 } };
     try {
-        res.userlist = await thDB.findUser(targetCol, query, options);
+        res.userlist = await thDB.findData(targetCol, query, options);
         res.userlist.forEach(element => {
             let temp = element._id;
             element._id = undefined;
@@ -50,7 +50,7 @@ exports.toModifyUPwd = async function (data) {
     const updateDoc = { $set: { 'upwd': data.newupwd } };
     const options = { upsert: true };
     try {
-        let temp = await thDB.updateUser(targetCol, query, updateDoc, options);
+        let temp = await thDB.updateOneData(targetCol, query, updateDoc, options);
         if (temp === 1) {
             const logData = {
                 'role': verifyRes.payload.role,
@@ -82,7 +82,7 @@ exports.toDeleteUser = async function (data) {
     const targetCol = 'userlist';
     const query = { _id: data.uemail };
     try {
-        let temp = await thDB.deleteUser(targetCol, query);
+        let temp = await thDB.deleteOneData(targetCol, query);
         if (temp === 1) {
             const logData = {
                 'role': verifyRes.payload.role,
