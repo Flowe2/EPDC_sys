@@ -27,6 +27,7 @@
       v-loading="loading"
       style="width: 100%"
       @selection-change="handleSelectionChange"
+      @filter-change="keywordFilter"
     >
       <el-table-column
         type="selection"
@@ -118,7 +119,11 @@
           </el-descriptions>
         </template>
       </el-table-column>
-      <el-table-column label="题目内容(前20字)" prop="question">
+      <el-table-column
+        label="题目内容(部分显示)"
+        prop="question"
+        show-overflow-tooltip
+      >
         <template #default="props"
           ><span>{{
             props.row.question.toString().substr(0, 20)
@@ -130,9 +135,11 @@
         label="科目"
         width="150"
         :filters="displayKeywordFilter"
-        :filter-method="keywordFilter"
+        :filter-multiple="false"
+        :column-key="'subject'"
         filter-placement="bottom-end"
       >
+        <!-- :filter-method="keywordFilter" -->
         <template #default="props">
           <el-tag :type="primary" disable-transitions>{{
             props.row.subject
@@ -191,9 +198,11 @@ export default {
       this.tableHeight = bodyHeight - pagiHeight - 10;
     },
     // 生成标签过滤器
-    keywordFilterGenerator: function (res) {
+    keywordFilterGenerator: function () {
+      // 每次重新清空
+      this.displayKeywordFilter = [];
       let temp = [];
-      res.forEach((element) => {
+      this.displayList.forEach((element) => {
         // console.log(element);
         if (temp.indexOf(element.subject) == -1) {
           temp.push(element.subject);
@@ -205,8 +214,24 @@ export default {
       });
     },
     // role标签过滤器
-    keywordFilter: function (value, row) {
-      return row.subject === value;
+    keywordFilter: function (filter) {
+      this.displayList = this.qudisplayList;
+      if (filter.subject != "") {
+        console.log("got filter");
+        this.$emit("loading", true);
+        let temp = this.displayList;
+        this.displayList = [];
+        temp.forEach((element) => {
+          if (element.subject == filter.subject) {
+            this.displayList.push(element);
+          }
+        });
+        this.displayCounter = this.displayList.length;
+      } else {
+        console.log("no filter");
+        this.displayCounter = this.displayList.length;
+      }
+      this.$emit("loading", false);
     },
     // 选项序号转字母处理
     optionIndex: function (index) {
@@ -245,6 +270,8 @@ export default {
           this.$nextTick(() => {
             this.displayList = this.qudisplayList;
             this.displayCounter = this.qudisplayCounter;
+            // 每次拉取题目列表后重新生成关键词过滤器
+            this.keywordFilterGenerator();
             // 若小于10项则单页显示, 隐藏分页按钮
             if (this.displayCounter < this.curtPageSize) {
               this.onlySinglePage = true;
@@ -275,8 +302,6 @@ export default {
   mounted() {
     // 初始化数据获取
     this.getSingleChoiceList();
-    // 初始化关键词filter
-    this.keywordFilterGenerator(this.displayList);
     // 初始化窗口
     this.$nextTick(() => {
       this.dynamicTableHeight();
@@ -290,8 +315,6 @@ export default {
     targetType: function () {
       // 随导航栏跳转改变刷新
       this.getSingleChoiceList();
-      //   关键词filter同理
-      this.keywordFilterGenerator(this.displayList);
     },
     // 简单搜索
     searchingKey: function () {

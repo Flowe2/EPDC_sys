@@ -164,7 +164,6 @@
         ><i class="el-icon-more-outline"></i
       ></el-divider>
       <UploadQuestion
-        :keywordsList="keywordsList"
         :ulDrawer="ulDrawer"
       ></UploadQuestion>
     </el-drawer>
@@ -232,7 +231,6 @@ export default {
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
       ulDrawer: false, // 上传drawer
-      keywordsList: [],
       dtDrawer: false, // 删除drawer
     };
   },

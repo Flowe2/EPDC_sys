@@ -231,6 +231,7 @@ export default {
       showOptions: 0,
       luYear: "",
       luSemester: "",
+      keywordsList: [],
       semesters: [
         {
           value: "fs",
@@ -304,7 +305,7 @@ export default {
       },
     };
   },
-  props: ["keywordsList", "ulDrawer"],
+  props: ["ulDrawer"],
   methods: {
     // 时间戳工具函数
     getNowTimeStmp: function () {
@@ -513,6 +514,15 @@ export default {
         }
       });
     },
+    resetFormSupply: function () {
+      this.$nextTick( () => {
+        this.$refs["newQuForm"].resetFields();
+        this.newQu.payload.src = "";
+        this.newQu.payload.options = [];
+        this.newQu.payload.answer = [];
+        this.newQu.lastUseTime = "";
+      });
+    },
     // 重置表单
     resetForm: function () {
       this.$confirm("表单内容不会 保存/上传, 请确认是否重置?", "重置确认", {
@@ -521,7 +531,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          this.$refs["newQuForm"].resetFields();
+          this.resetFormSupply();
           this.$message({
             type: "success",
             message: "上传题目表单已重置!",
@@ -555,7 +565,7 @@ export default {
           if (res.ifSuccess == true) {
             this.newQuLoading = false;
             // 上传成功重置表单
-            this.$refs["newQuForm"].resetFields();
+            this.resetFormSupply();
             alert("上传题目成功");
           } else {
             alert(res.err);
@@ -565,7 +575,7 @@ export default {
           console.log(err);
         });
     },
-    // axios - 拉去推荐科目
+    // axios - 拉取推荐科目
     // ulAsyncSubjectQuery: function () {
     //   this.axios({
     //     method: "POST",
@@ -584,7 +594,7 @@ export default {
     //       if (res.ifSuccess == true) {
     //         this.newQuLoading = false;
     //         // 上传成功重置表单
-    //         this.$refs["newQuForm"].resetFields();
+    //         this.resetFormSupply();
     //         alert("上传题目成功");
     //       } else {
     //         alert(res.err);
