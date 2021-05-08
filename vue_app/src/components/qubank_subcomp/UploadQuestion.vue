@@ -579,35 +579,53 @@ export default {
         });
     },
 
-    // axios - 拉取推荐科目
-    // ulAsyncSubjectQuery: function () {
-    //   this.axios({
-    //     method: "POST",
-    //     url: "/user/qubank/suggestedsubjects",
-    //     data: {
-    //       token: localStorage.getItem("token"),
-    //     },
-    //   })
-    //     .then((response) => {
-    //       // 处理拉取结果
-    //       // 返回:  ["", ""...""]
-    //       let res = JSON.stringify(response.data);
-    //       res = JSON.parse(res);
-    //       console.log(res);
-    //       this.subjectsList = res.subjects;
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //     });
-    // },
+    // 输入建议
+    ulAsyncSubjectQuery: _.debounce(function (queryString, cb) {
+      let results = [];
+      if (queryString) {
+        results = this.subjectsList.filter((v) => {
+          return v.value.toString().indexOf(queryString.toString()) > -1;
+        });
+      } else {
+        results = this.subjectsList;
+      }
+      // console.log(results);
+      cb(results);
+    }, 1000),
 
+    // axios - 拉取推荐科目
+    getSubjectsList: function () {
+      this.axios({
+        method: "POST",
+        url: "/user/qubank/suggestedsubjects",
+        data: {
+          token: localStorage.getItem("token"),
+        },
+      })
+        .then((response) => {
+          // 处理拉取结果
+          // 返回:  [ {'subject': '...'}, {'subject': '...'},..., {'subject': '...'}]
+          // 将所有 'subject' 替换为 'value', el-autocomplete只识别 'value' 字段
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          // console.log(res);
+          res.forEach( row => {
+            this.subjectsList.push(JSON.parse(JSON.stringify(row).replace("subject", "value")));
+          })
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    // axios - 根据科目拉取关键词列表
     debounceKeywordsQuery: _.debounce(function () {
       this.axios({
         method: "POST",
         url: "/user/qubank/suggestedkeywords",
         data: {
           token: localStorage.getItem("token"),
-          subject: this.newQu.subject
+          subject: this.newQu.subject,
         },
       })
         .then((response) => {
@@ -625,6 +643,7 @@ export default {
   },
   mounted() {
     this.getNowTimeStmp();
+    this.getSubjectsList();
   },
   watch: {
     "newQu.subject": function () {

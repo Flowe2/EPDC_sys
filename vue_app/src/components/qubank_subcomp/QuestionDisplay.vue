@@ -288,16 +288,15 @@ export default {
   // 题库间跳转
   beforeRouteUpdate(to, from, next) {
     let tempType = to.params.type;
-    let typeList = ["sc", "mc", "tf", "gf", "sj"];
-    typeList.forEach((element) => {
-      if (tempType == element) {
-        this.$nextTick(() => {
-          this.targetType = tempType;
-        });
-        next();
-      }
-    });
-    next("/notfund");
+    let typeList = new Set(["sc", "mc", "tf", "gf", "sj"]);
+    if (typeList.has(tempType)) {
+      this.$nextTick(() => {
+        this.targetType = tempType;
+      });
+      next();
+    } else {
+      next("/notfund");
+    }
   },
   mounted() {
     // 初始化数据获取
@@ -318,9 +317,10 @@ export default {
     },
     // 简单搜索
     searchingKey: function () {
-      console.log(this.searchingKey);
+      // console.log(this.searchingKey);
       const search = this.searchingKey;
       let filterList = Object.keys(this.qudisplayList[0]);
+      // console.log(filterList);
       if (search) {
         this.displayList = this.qudisplayList.filter((v) => {
           //some是一个为true，即结果为true
