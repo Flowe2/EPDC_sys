@@ -251,7 +251,7 @@ export default {
     // 暂存至tempList
     handleSelectionChange: function (val) {
       // 传入的为对象, JSON.toStringfy后在JSON.parse解析
-      this.$emit("addToTempList", JSON.parse(JSON.stringify(val)));
+      this.$emit("toTempList", "add", JSON.parse(JSON.stringify(val)));
     },
 
     // axios - 获取单选题列表

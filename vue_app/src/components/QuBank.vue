@@ -125,7 +125,7 @@
           :loading="loading"
           :bannedList="bannedList"
           @loading="loading = $event"
-          @addToTempList="addToTempList($event)"
+          @toTempList="toTempList"
         ></router-view>
       </el-main>
     </el-container>
@@ -155,7 +155,7 @@
           size="small"
           circle
           icon="el-icon-question"
-          class="ulHelpBtn"
+          class="drawerHelpBtn"
           title="上传提示"
           @click="ulHelpShow"
         ></el-button
@@ -163,25 +163,37 @@
       <el-divider content-position="left"
         ><i class="el-icon-more-outline"></i
       ></el-divider>
-      <UploadQuestion
-        :ulDrawer="ulDrawer"
-      ></UploadQuestion>
+      <UploadQuestion :ulDrawer="ulDrawer"></UploadQuestion>
     </el-drawer>
 
     <!-- 删除界面 -->
     <el-drawer
-      title="删 除 界 面"
       v-model="dtDrawer"
+      id="dtDrawer"
       class="dtDrawer"
       direction="ltr"
       size="40%"
     >
+      <template #title
+        ><span>删 除 界 面</span
+        ><el-button
+          size="small"
+          circle
+          icon="el-icon-question"
+          class="drawerHelpBtn"
+          title="删除提示"
+          @click="dtHelpShow"
+        ></el-button
+      ></template>
       <el-divider content-position="left"
         ><i class="el-icon-more-outline"></i
       ></el-divider>
       <DeleteQuestion
         :deleteCounter="deleteCounter"
         :deleteList="deleteList"
+        @toTempList="toTempList"
+        @delOneFromDQ="delFromTarget"
+        @delAllFromDQ="delFromTarget"
       ></DeleteQuestion>
     </el-drawer>
   </el-container>
@@ -222,7 +234,8 @@ export default {
       loading: false,
       searchingKey: "",
       debounceSearchKey: "",
-      tempList: [], // 暂存已选试题
+      tempAddList: [], // 暂存试题 - 加入到组卷或删除
+      tempDelList: [], // 暂存试题 - 从组卷或删除中移除
       bannedList: new Set(),
       composeCounter: 0, // 已选题目数量
       composeList: new Set(), // 已选试题列表
@@ -240,27 +253,75 @@ export default {
     DeleteQuestion,
   },
   methods: {
-    addToTempList: function (tempList) {
-      this.tempList = tempList;
+    // 加入到组卷或删除
+    toTempList: function (opt, tempList) {
+      if (opt == "add") {
+        this.tempAddList = tempList;
+      } else {
+        this.tempDelList = tempList;
+      }
     },
 
-    // 组卷/删除
+    // 加入组卷/删除
     addToTarget: function (target) {
       if (target == "add") {
-        this.tempList.forEach((element) => {
+        this.tempAddList.forEach((element) => {
           // 所选加入到组卷
           this.composeList.add(element);
         });
         this.composeCounter = this.composeList.size;
       } else {
-        this.tempList.forEach((element) => {
+        this.tempAddList.forEach((element) => {
           // 所选加入到删除
           this.deleteList.add(element);
         });
         this.deleteCounter = this.deleteList.size;
       }
       // 清除
-      this.tempList = [];
+      this.tempAddList = [];
+      this.bannedList = this.concatSet();
+    },
+
+    // 组卷/删除移除
+    delFromTarget: function (target) {
+      // let templist = this.tempDelList;
+      if (target == "add") {
+        // 所选从删除移除
+        let temp = Array.from(this.composeList);
+        temp = temp.filter((v) => {
+          let pass = true;
+          for (let i=0; i<this.tempDelList.length; i++) {
+            if (v._id == this.tempDelList[i]._id) {
+              pass = false;
+            }
+          }
+          return pass;
+        });
+        this.composeList = new Set(temp);
+        this.composeCounter = this.composeList.size;
+      } else if (target == "del") {
+        // 所选从删除移除
+        let temp = Array.from(this.deleteList);
+        temp = temp.filter((v) => {
+          let pass = true;
+          for (let i=0; i<this.tempDelList.length; i++) {
+            if (v._id == this.tempDelList[i]._id) {
+              pass = false;
+            }
+          }
+          return pass;
+        });
+        this.deleteList = new Set(temp);
+        this.deleteCounter = this.deleteList.size;
+      } else if (target == "addAll") {
+        this.composeList.clear();
+        this.composeCounter = this.composeList.size;
+      } else {
+        this.deleteList.clear();
+        this.deleteCounter = this.deleteList.size;
+      }
+      // 清除
+      this.tempDelList = [];
       this.bannedList = this.concatSet();
     },
 
@@ -270,7 +331,7 @@ export default {
       for (let val of this.deleteList) {
         _union.add(val);
       }
-      console.log(_union);
+      // console.log(_union);
       return _union;
     },
 
@@ -306,6 +367,18 @@ export default {
           <strong>最近使用(可选)</strong>\
           <p>若题目已试用过则请添加本项, 目前仅支持选择</p>",
         duration: 0,
+      });
+    },
+
+    // 删除提示
+    dtHelpShow: function () {
+      this.$notify({
+        type: "info",
+        title: "删除提示",
+        dangerouslyUseHTMLString: true,
+        message: "<strong>题目详情</strong>\
+          <p>点击对应题目的题面处, 即可查看详情</p>",
+        duration: 5000,
       });
     },
   },
@@ -400,7 +473,7 @@ export default {
 }
 
 /* 上传界面drawer */
-.ulHelpBtn {
+.drawerHelpBtn {
   border: 0;
 }
 
