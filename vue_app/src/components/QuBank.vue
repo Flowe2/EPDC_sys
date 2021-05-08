@@ -44,7 +44,7 @@
           <el-button
             class="qHeaderBtn"
             icon="el-icon-remove-outline"
-            @click="addToDelete"
+            @click="addToTarget('del')"
             >准备删除</el-button
           ></el-col
         >
@@ -52,7 +52,7 @@
           <el-button
             class="qHeaderBtn"
             icon="el-icon-circle-plus-outline"
-            @click="addToPaper"
+            @click="addToTarget('add')"
             >加入试卷</el-button
           ></el-col
         >
@@ -123,9 +123,9 @@
         <router-view
           :searchingKey="debounceSearchKey"
           :loading="loading"
+          :bannedList="bannedList"
           @loading="loading = $event"
           @addToTempList="addToTempList($event)"
-          :ifSelectable="ifSelectable"
         ></router-view>
       </el-main>
     </el-container>
@@ -222,12 +222,12 @@ export default {
       loading: false,
       searchingKey: "",
       debounceSearchKey: "",
-      composeCounter: 0, // 已选题目数量
-      composeList: [], // 已选试题列表
-      deleteCounter: 0, // 预删除题目数量
-      deleteList: [], // 预删除试题列表
-      bannedList: [],
       tempList: [], // 暂存已选试题
+      bannedList: new Set(),
+      composeCounter: 0, // 已选题目数量
+      composeList: new Set(), // 已选试题列表
+      deleteCounter: 0, // 预删除题目数量
+      deleteList: new Set(), // 预删除试题列表
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
       ulDrawer: false, // 上传drawer
@@ -243,30 +243,38 @@ export default {
     addToTempList: function (tempList) {
       this.tempList = tempList;
     },
-    addToPaper: function () {
-      this.tempList.forEach((element) => {
-        // 所选加入到组卷
-        this.composeList.push(element);
-        this.composeCounter++;
-      });
+
+    // 组卷/删除
+    addToTarget: function (target) {
+      if (target == "add") {
+        this.tempList.forEach((element) => {
+          // 所选加入到组卷
+          this.composeList.add(element);
+        });
+        this.composeCounter = this.composeList.size;
+      } else {
+        this.tempList.forEach((element) => {
+          // 所选加入到删除
+          this.deleteList.add(element);
+        });
+        this.deleteCounter = this.deleteList.size;
+      }
+      // 清除
+      this.tempList = [];
+      this.bannedList = this.concatSet();
     },
-    addToDelete: function () {
-      this.tempList.forEach((element) => {
-        // 所选加入到删除
-        this.deleteList.push(element);
-        this.deleteCounter++;
-      });
+
+    // 合并组卷和删除集合
+    concatSet: function () {
+      let _union = new Set(this.composeList);
+      for (let val of this.deleteList) {
+        _union.add(val);
+      }
+      console.log(_union);
+      return _union;
     },
-    // 判断复选框是否可用
-    ifSelectable: function (row) {
-      // console.log(row._id);
-      this.bannedList.forEach((element) => {
-        if (element._id == row._id) {
-          return false;
-        }
-      });
-      return true;
-    },
+
+    // 搜索 - 防抖
     debounceSearch: _.debounce(function () {
       this.debounceSearchKey = this.searchingKey;
       this.loading = true;
@@ -305,12 +313,6 @@ export default {
     // 搜索防抖, 1秒后传给router-view
     searchingKey: function () {
       this.debounceSearch();
-    },
-    composeList: function () {
-      this.bannedList = this.composeList.concat(this.deleteList);
-    },
-    deleteList: function () {
-      this.bannedList = this.composeList.concat(this.deleteList);
     },
   },
 };

@@ -5,7 +5,7 @@
       ><p>
         已选试题数: {{ composeCounter }}<br />
         <el-tag type="info" v-for="item in composeList" :key="item">{{
-          "ID: " + item.id
+          "ID: " + item._id
         }}</el-tag>
       </p>
       <el-button>按钮</el-button><el-button>按钮</el-button

@@ -164,7 +164,6 @@ export default {
       qudisplayCounter: 0,
       qudisplayList: [],
       tableHeight: 600,
-      bannedList: [],
       displayList: [],
       displayCounter: 0,
       displayKeywordFilter: [], // 过滤器
@@ -175,7 +174,7 @@ export default {
       onlySinglePage: false,
     };
   },
-  props: ["loading", "searchingKey", "ifSelectable"],
+  props: ["loading", "searchingKey", "bannedList"],
   methods: {
     // 改变分页大小
     handleSizeChange: function (size) {
@@ -238,7 +237,16 @@ export default {
       let indexLetter = String.fromCodePoint(65 + index);
       return indexLetter;
     },
-    // 筛除已选择的, 并禁用复选框
+    // 判断复选框是否可用
+    ifSelectable: function (row) {
+      // console.log(row._id);
+      for(let element of this.bannedList){
+        if (element._id == row._id) {
+          return false;
+        }
+      }
+      return true;
+    },
 
     // 暂存至tempList
     handleSelectionChange: function (val) {
