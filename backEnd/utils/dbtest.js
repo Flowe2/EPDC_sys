@@ -1,3 +1,4 @@
+const { ObjectID, ObjectId } = require('bson');
 const theDB = require('./theMongoDB');
 
 // 测试用户数据
@@ -208,6 +209,8 @@ const theDB = require('./theMongoDB');
 // });
 
 
+/*  =============================== 重构, 上方测试demo已失效 =============================== */
+
 // 关键词追加测试   [OK]
 // let tempKeywords = ["作业", "共享变量", "地址重定位"]
 // const targetCol = 'suggestedsubject';
@@ -225,3 +228,21 @@ const theDB = require('./theMongoDB');
 //           theDB.closeDb();
 //       });
 // });
+
+
+// 题目按_id查询查询  [OK]
+// let list = ["6098ca4aed7c0000c6007be9", "6098ca4aed7c0000c6007be9", "6098ca4aed7c0000c6007be9"]
+let query = { "_id": ObjectId("6098ca4aed7c0000c6007be9") };
+const targetCol = 'gapfilling';
+theDB.initDb().then(()=>{
+    theDB.findData(targetCol, query)
+    .catch(console.dir)
+    .then((res) => {
+        if (res.length != 0) {
+            console.log(res[0]);
+        } else {
+            console.log("no result");
+        }
+        theDB.closeDb();
+    });
+});

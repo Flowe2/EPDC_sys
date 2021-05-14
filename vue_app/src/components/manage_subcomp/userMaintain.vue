@@ -171,7 +171,7 @@ export default {
     handleDelete: function (row) {
       const self = this;
       console.log(row.uemail);
-      self.postDelete(row.uemail);
+      self.postDeleteUser(row.uemail);
     },
     // 改变分页大小
     handleSizeChange: function (size) {
@@ -227,7 +227,7 @@ export default {
     },
 
     // axios - 删除用户
-    postDelete: function (uemail) {
+    postDeleteUser: function (uemail) {
       this.axios({
         method: "POST",
         url: "/admin/manage/deleteuser",

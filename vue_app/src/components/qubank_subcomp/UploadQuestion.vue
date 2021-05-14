@@ -5,7 +5,7 @@
         ref="newQuForm"
         :model="newQu"
         :rules="newQuRules"
-        :v-loading="newQuLoading"
+        v-loading="newQuLoading"
         label-position="left"
         label-width="80px"
         class="ulForm"
@@ -197,9 +197,28 @@
       </el-form>
     </el-main>
     <el-header>
-      <el-row>
-        <el-col :span="6" :offset="14">
-          <el-button type="primary" @click="submitNewQu" icon="el-icon-upload2"
+      <el-row :gutter="10" type="flex" justify="end" align="middle">
+        <el-col :span="9">
+          <el-tooltip :content="dupliCheckRes" placement="top-end">
+            <el-button type="info" class="ulDupChkTag">
+              {{ dupliCheckRes }}
+            </el-button>
+          </el-tooltip>
+        </el-col>
+        <el-col :span="5">
+          <el-button
+            type="primary"
+            @click="preDupliCheck"
+            icon="el-icon-loading"
+            >预查重</el-button
+          >
+        </el-col>
+        <el-col :span="6"
+          ><el-button
+            type="primary"
+            @click="submitNewQu"
+            icon="el-icon-upload2"
+            :disabled="!dupliCheck"
             >立即创建</el-button
           >
         </el-col>
@@ -222,20 +241,21 @@ import _ from "lodash";
 
 export default {
   name: "UploadQuestion",
+  inject: ["reload"], //注入刷新依赖
   data() {
     return {
-      inputKeyword: "",
-      newQuLoading: false,
-      optionInputVisible: false,
-      optionInputValue: "",
-      answerInputVisible: false,
-      answerInputValue: "",
-      showOptions: 0,
-      luYear: "",
-      luSemester: "",
-      subjectsList: [],
-      keywordsList: [],
+      newQuLoading: false, // newQu表单加载标志
+      optionInputVisible: false, // 选项输入显示标志
+      optionInputValue: "", // 选项输入临时值
+      answerInputVisible: false, // 答案输入显示标志
+      answerInputValue: "", // 答案输入临时值
+      showOptions: 0, // 题型标志 - 0: 填空/判断/主观, 1: 单选,  2: 多选
+      luYear: "", // 学年输入临时值
+      luSemester: "", // 学期输入临时值
+      subjectsList: [], // 科目输入建议list
+      keywordsList: [], // 科目关键词输入建议list
       semesters: [
+        // 学期选项
         {
           value: "fs",
           label: "第一学期",
@@ -245,8 +265,9 @@ export default {
           label: "第二学期",
         },
       ],
-      luPeriod: "",
+      luPeriod: "", // 学期时段输入临时值
       periods: [
+        // 学期时段选项
         {
           value: "ct",
           label: "课堂测试",
@@ -265,10 +286,9 @@ export default {
         },
       ],
       uploadsrcs: [],
-      dialogVisible: false,
-      disabled: false,
-      // form data
+      dialogVisible: false, // 题目资源预览标志
       newQu: {
+        // 新题
         subject: "",
         type: "",
         keywords: [],
@@ -282,6 +302,7 @@ export default {
         lastUseTime: "",
       },
       newQuRules: {
+        // 新题表单验证规则(部分)
         subject: [
           { required: true, message: "请输入科目", trigger: "blur" },
           { min: 1, message: "科目不能为空", trigger: "blur" },
@@ -306,6 +327,8 @@ export default {
           { min: 1, message: "题目内容不能为空", trigger: "blur" },
         ],
       },
+      dupliCheck: false, // 预查重标志
+      dupliCheckRes: "上传前请先预查重", // 预查重结果
     };
   },
   props: ["ulDrawer"],
@@ -489,6 +512,28 @@ export default {
         return true;
       }
     },
+
+    // 重置表单按钮
+    resetForm: function () {
+      this.$confirm("表单内容不会 保存/上传, 请确认是否重置?", "重置确认", {
+        confirmButtonText: "确认",
+        cancelButtonText: "放弃",
+        type: "warning",
+      })
+        .then(() => {
+          this.resetFormSupply();
+          this.$message({
+            type: "success",
+            message: "上传题目表单已重置!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "重置操作已取消",
+          });
+        });
+    },
     // 提交表单
     submitNewQu: function () {
       console.log(this.newQu);
@@ -517,6 +562,7 @@ export default {
         }
       });
     },
+    // 重置表单
     resetFormSupply: function () {
       this.$nextTick(() => {
         this.$refs["newQuForm"].resetFields();
@@ -526,25 +572,107 @@ export default {
         this.newQu.lastUseTime = "";
       });
     },
-    // 重置表单
-    resetForm: function () {
-      this.$confirm("表单内容不会 保存/上传, 请确认是否重置?", "重置确认", {
-        confirmButtonText: "确认",
-        cancelButtonText: "放弃",
-        type: "warning",
+
+    // 输入科目建议
+    ulAsyncSubjectQuery: _.debounce(function (queryString, cb) {
+      let results = [];
+      if (queryString) {
+        results = this.subjectsList.filter((v) => {
+          return v.value.toString().indexOf(queryString.toString()) > -1;
+        });
+      } else {
+        results = this.subjectsList;
+      }
+      // console.log(results);
+      cb(results);
+    }, 1000),
+
+    // 预查重
+    preDupliCheck: function () {
+      this.newQuLoading = true;
+
+      setTimeout(() => {
+        this.dupliCheck = true;
+        this.dupliCheckRes = "查重率: Null";
+        this.newQuLoading = false;
+      }, 2000);
+    },
+
+    /************ axios ***************/
+
+    // axios - 拉取推荐科目
+    getSubjectsList: function () {
+      this.axios({
+        method: "POST",
+        url: "/user/qubank/suggestedsubjects",
+        data: {
+          token: localStorage.getItem("token"),
+        },
       })
-        .then(() => {
-          this.resetFormSupply();
-          this.$message({
-            type: "success",
-            message: "上传题目表单已重置!",
+        .then((response) => {
+          // 处理拉取结果
+          // 返回:  [ {'subject': '...'}, {'subject': '...'},..., {'subject': '...'}]
+          // 将所有 'subject' 替换为 'value', el-autocomplete只识别 'value' 字段
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          // console.log(res);
+          res.forEach((row) => {
+            this.subjectsList.push(
+              JSON.parse(JSON.stringify(row).replace("subject", "value"))
+            );
           });
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "重置操作已取消",
-          });
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    // axios - 根据科目拉取关键词列表
+    postKeywordsQuery: _.debounce(function () {
+      this.axios({
+        method: "POST",
+        url: "/user/qubank/suggestedkeywords",
+        data: {
+          token: localStorage.getItem("token"),
+          subject: this.newQu.subject,
+        },
+      })
+        .then((response) => {
+          // 处理拉取结果
+          // 返回:  { "keywords": ["", ""...""] }
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          console.log(res.keywords);
+          this.keywordsList = res.keywords;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, 2500),
+
+    // axios - 预查重
+    postDupCheck: function () {
+      this.axios({
+        method: "POST",
+        url: "/user/qubank/uploadduplicheck",
+        data: {
+          token: localStorage.getItem("token"),
+          newqu: this.newQu,
+        },
+      })
+        .then((response) => {
+          // 处理上传结果
+          // 返回:  {"duprate": "xx%",
+          //        "err": "undefined / err message"}
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          // console.log(res);
+          this.dupliCheckRes = "重复率: " + res.duprate;
+          this.dupliCheck = true;
+          this.newQuLoading = false;
+        })
+        .catch((err) => {
+          console.log(err);
         });
     },
 
@@ -570,6 +698,7 @@ export default {
             // 上传成功重置表单
             this.resetFormSupply();
             alert("上传题目成功");
+            this.reload();
           } else {
             alert(res.err);
           }
@@ -578,68 +707,6 @@ export default {
           console.log(err);
         });
     },
-
-    // 输入建议
-    ulAsyncSubjectQuery: _.debounce(function (queryString, cb) {
-      let results = [];
-      if (queryString) {
-        results = this.subjectsList.filter((v) => {
-          return v.value.toString().indexOf(queryString.toString()) > -1;
-        });
-      } else {
-        results = this.subjectsList;
-      }
-      // console.log(results);
-      cb(results);
-    }, 1000),
-
-    // axios - 拉取推荐科目
-    getSubjectsList: function () {
-      this.axios({
-        method: "POST",
-        url: "/user/qubank/suggestedsubjects",
-        data: {
-          token: localStorage.getItem("token"),
-        },
-      })
-        .then((response) => {
-          // 处理拉取结果
-          // 返回:  [ {'subject': '...'}, {'subject': '...'},..., {'subject': '...'}]
-          // 将所有 'subject' 替换为 'value', el-autocomplete只识别 'value' 字段
-          let res = JSON.stringify(response.data);
-          res = JSON.parse(res);
-          // console.log(res);
-          res.forEach( row => {
-            this.subjectsList.push(JSON.parse(JSON.stringify(row).replace("subject", "value")));
-          })
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-
-    // axios - 根据科目拉取关键词列表
-    debounceKeywordsQuery: _.debounce(function () {
-      this.axios({
-        method: "POST",
-        url: "/user/qubank/suggestedkeywords",
-        data: {
-          token: localStorage.getItem("token"),
-          subject: this.newQu.subject,
-        },
-      })
-        .then((response) => {
-          // 处理拉取结果
-          // 返回:  { "keywords": ["", ""...""] }
-          let res = JSON.stringify(response.data);
-          res = JSON.parse(res);
-          console.log(res.keywords);
-          this.keywordsList = res.keywords;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }, 2500),
   },
   mounted() {
     this.getNowTimeStmp();
@@ -647,13 +714,17 @@ export default {
   },
   watch: {
     "newQu.subject": function () {
-      this.debounceKeywordsQuery();
+      if (this.newQu.subject != "") {
+        this.postKeywordsQuery();
+      }
     },
     "newQu.type": function () {
-      if (this.newQu.type == "sc" || this.newQu.type == "mc") {
-        this.showOptions = true;
+      if (this.newQu.type == "mc") {
+        this.showOptions = 2;
+      } else if (this.newQu.type == "sc") {
+        this.showOptions = 1;
       } else {
-        this.showOptions = false;
+        this.showOptions = 0;
       }
     },
   },
@@ -713,5 +784,12 @@ export default {
 
 .ulDatePicker {
   width: 100px;
+}
+
+.ulDupChkTag {
+  width: 100%;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

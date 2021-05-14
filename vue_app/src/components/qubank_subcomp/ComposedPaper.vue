@@ -20,6 +20,7 @@
 <script>
 export default {
   name: "ComposedPaper",
+  inject:['reload'],  //注入刷新依赖
   data() {
     return {
       compList_sc: [],

@@ -1,10 +1,12 @@
 // 题库管理controller
 
 // 调用封装JWT工具
+const { ObjectId } = require('bson');
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
+const syslog = require('../controller/syslog');
 
 // 题型判断
 const questionTypeJudge = function (type) {
@@ -19,8 +21,6 @@ const questionTypeJudge = function (type) {
             return 'gapfilling';
         case "sj":
             return 'subjective';
-        default:
-            return undefined;
     }
 }
 
@@ -71,7 +71,7 @@ const updateSuggetList = async function (subject, keywords) {
 
 // 远程拉取科目(输入建议)
 exports.asyncQuerySubjects = async function (data) {
-    let res = { 'subjects': []};
+    let res;
     let verifyRes = jwtutil.verifyToken(data.token);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -92,7 +92,7 @@ exports.asyncQuerySubjects = async function (data) {
 
 // 远程拉取参考关键词(输入建议)
 exports.asyncQueryKeywords = async function (data) {
-    let res = { 'keywords': []};
+    let res = { 'keywords': [] };
     let verifyRes = jwtutil.verifyToken(data.token);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -105,7 +105,9 @@ exports.asyncQueryKeywords = async function (data) {
     const options = { projection: { '_id': 0, 'keywords': 1 } };
     try {
         let queryRes = await thDB.findData(targetCol, query, options);
-        res.keywords = queryRes[0].keywords;
+        if (queryRes.length > 0) {
+            res.keywords = queryRes[0].keywords;
+        }
         return res;
     } catch (e) {
         throw e;
@@ -144,19 +146,92 @@ exports.uploadNewQuestion = async function (data) {
     // 预处理查询参数
     const targetCol = questionTypeJudge(data.newqu.type);
     const insertDoc = data.newqu;
-    let arr = { 'ifSuccess': false, 'err': '' };
+    let res = { 'ifSuccess': false, 'err': '' };
     try {
         let insertRes = await thDB.insertOneData(targetCol, insertDoc);
         if (insertRes == 1) {
             console.log("=== ~ res: insert seccess");
+            const logData = {
+                'role': verifyRes.payload.role,
+                'who': verifyRes.payload.account,
+                'operation': 'upload new question [id: ' + data.newqu._id + ']'
+            }
+            await syslog.addSyslog(logData)
             await updateSuggetList(data.newqu.subject, data.newqu.keywords);
-            arr.ifSuccess = true;
-            arr.err = undefined;
+            res.ifSuccess = true;
+            res.err = undefined;
         } else {
             console.log("=== ! err");
-            arr.err = '插入题库时遇到一些意外';
+            res.err = '插入题库时遇到一些意外';
         }
-        return arr;
+        return res;
+    } catch (e) {
+        throw e;
+    }
+}
+
+// 删除题目
+exports.deleteQuestion = async function (data) {
+    let verifyRes = jwtutil.verifyToken(data.token);
+    if (verifyRes.pass == true) {
+        console.log("=== ~ token verify pass");
+    } else {
+        console.log("=== ! token verify failed, err: ", verifyRes.err);
+    }
+    // 预处理查询参数
+    let targetCol = ["singlechoice", "multiplechoice", "truefalse", "gapfilling", "subjective"];
+    let targetList = [[], [], [], [], []];
+    let res = { 'ifSuccess': false, 'err': '' };
+    data.deletelist.forEach(element => {
+        switch (element.type) {
+            case "sc":
+                targetList[0].push(ObjectId(element._id));
+                break;
+            case "mc":
+                targetList[1].push(ObjectId(element._id));
+                break;
+            case "tf":
+                targetList[2].push(ObjectId(element._id));
+                break;
+            case "gf":
+                targetList[3].push(ObjectId(element._id));
+                break;
+            case "sj":
+                targetList[4].push(ObjectId(element._id));
+                break;
+        }
+    })
+    try {
+        let failDelSum = 0;
+        let logSum = 0;
+        for (let i = 0; i < 5; i++) {
+            let delCounter = targetList[i].length;
+            if (delCounter > 0) {
+                let query = { _id: { $in: targetList[i] } };
+                let queryRes = await thDB.deleteManyData(targetCol[i], query);
+                if (queryRes == delCounter) {
+                    console.log("=== ~ deleted some questions.");
+                } else {
+                    failDelSum += (delCounter - queryRes);
+                }
+                logSum += queryRes;
+            }
+        }
+        if (failDelSum == 0) {
+            console.log("=== ~ res: delete seccess");
+            const logData = {
+                'role': verifyRes.payload.role,
+                'who': verifyRes.payload.account,
+                'operation': 'delete some questions [sum: ' + logSum + ']'
+            }
+            await syslog.addSyslog(logData)
+            res.ifSuccess = true;
+            res.err = undefined;
+        } else {
+            console.log("=== ! err");
+            res.err = "遇到一些意外, 共有 " + failDelSum + " 题删除失败";
+        }
+        return res;
     } catch (e) {
         throw e;
     }

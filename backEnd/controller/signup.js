@@ -6,6 +6,7 @@ const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
 
+// 实时用户名查重处理
 exports.realtimeCheck = async function (data) {
     let arr = { 'ifAvailable': false};
     // 预处理查询参数

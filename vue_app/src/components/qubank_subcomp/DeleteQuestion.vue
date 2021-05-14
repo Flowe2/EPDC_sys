@@ -25,7 +25,12 @@
           >
         </el-col>
         <el-col :span="4">
-          <el-button type="danger" :disabled="tableBtnDisabled">删除</el-button>
+          <el-button
+            type="danger"
+            :disabled="tableBtnDisabled"
+            @click="confirmDelete"
+            >删除</el-button
+          >
         </el-col>
       </el-row>
     </el-header>
@@ -90,10 +95,12 @@
 <script>
 export default {
   name: "DeleteQuestion",
+  inject:['reload'],  //注入刷新依赖
   data() {
     return {
       tableBtnDisabled: true,
       tableHeight: 100,
+      confirmedDeleteList: [],
     };
   },
   methods: {
@@ -103,7 +110,7 @@ export default {
         .clientHeight;
       this.tableHeight = containerHeight * 0.9;
     },
-    
+
     // 暂存至tempList
     handleSelectionChange: function (val) {
       // 传入的为对象, JSON.toStringfy后在JSON.parse解析
@@ -117,10 +124,72 @@ export default {
     delAllFromDQ: function () {
       this.$emit("delAllFromDQ", "delAll");
     },
+    // 确认删除
+    confirmDelete: function () {
+      this.$confirm(
+        "此操作不可撤回, 将永久删除所选题目, 确认操作?",
+        "删除确认",
+        {
+          confirmButtonText: "确认",
+          cancelButtonText: "放弃",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          this.deleteList.forEach((element) => {
+            this.confirmedDeleteList.push({
+              _id: element._id,
+              type: element.type,
+            });
+          });
+          this.$message({
+            type: "success",
+            message: "所选题目正在删除",
+          });
+          this.postDeleteQuestion();
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "删除操作已取消",
+          });
+        });
+    },
+
+    // axios - 删除所选题目请求
+    postDeleteQuestion: function () {
+      this.axios({
+        method: "POST",
+        url: "/user/qubank/deletequestion",
+        data: {
+          token: localStorage.getItem("token"),
+          deletelist: this.confirmedDeleteList,
+        },
+      })
+        .then((response) => {
+          // 处理删除结果
+          // 返回:  {"ifSuccess": "true / false",
+          //        "err": "undefined / err message"}
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          // console.log(res);
+          if (res.ifSuccess == true) {
+            // 删除成功移除所选
+            this.delOneFromDQ();
+            alert("删除题目成功");
+            this.reload();
+          } else {
+            alert(res.err);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
   props: ["deleteCounter", "deleteList"],
   mounted() {
-    this.deleteCounter>0 ? this.tableBtnDisabled = false : {};
+    this.deleteCounter > 0 ? (this.tableBtnDisabled = false) : {};
     // 初始化窗口
     this.$nextTick(() => {
       this.dynamicTableHeight();

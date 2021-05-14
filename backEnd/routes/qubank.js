@@ -14,26 +14,23 @@ const questionsManage = require('../controller/questionsManage');
 //     res.json(arr);
 // })
 
-
 // 拉取建议科目接口
 router.post('/suggestedsubjects', async (req, res, next) => {
     let data = req.body;
-    console.log("=== ~ receive POST : @ user - get subjects list");
+    console.log("=== ~ receive POST : @ user - get suggested subjects list");
     let arr = await questionsManage.asyncQuerySubjects(data);
     console.log("=== ~ ready to send");
     res.json(arr);
 })
 
-
 // 拉取建议关键词接口
 router.post('/suggestedkeywords', async (req, res, next) => {
     let data = req.body;
-    console.log("=== ~ receive POST : @ user - get subjects list");
+    console.log("=== ~ receive POST : @ user - get suggested keywords list");
     let arr = await questionsManage.asyncQueryKeywords(data);
     console.log("=== ~ ready to send");
     res.json(arr);
 })
-
 
 // 拉取题目列表接口
 router.post('/getquestionlist', async (req, res, next) => {
@@ -63,4 +60,11 @@ router.post('/uploadsrc', async (req, res, next) => {
     res.json({msg: 'add new question src'});
 })
 
+router.post('/deletequestion', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ user - upload quesion src");
+    let arr = await questionsManage.deleteQuestion(data);
+    console.log("=== ~ ready to send");
+    res.json(arr);
+})
 module.exports = router;

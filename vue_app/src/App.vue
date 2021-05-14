@@ -1,15 +1,29 @@
 <template>
-  <router-view></router-view>
+  <router-view v-if="isRouterAlive" @keydown.f5.prevent="reload"></router-view>
 </template>
 
 <script>
 export default {
   name: "App",
   data() {
-    return {};
+    return {
+      isRouterAlive: true,
+    };
+  },
+  provide() {
+    return {
+      reload: this.reload,
+    };
   },
   components: {},
-  methods: {},
+  methods: {
+    reload: function () {
+      this.isRouterAlive = false;
+      this.$nextTick(function () {
+        this.isRouterAlive = true;
+      });
+    },
+  },
 };
 </script>
 

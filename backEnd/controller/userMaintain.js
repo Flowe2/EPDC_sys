@@ -55,7 +55,7 @@ exports.toModifyUPwd = async function (data) {
             const logData = {
                 'role': verifyRes.payload.role,
                 'who': verifyRes.payload.account,
-                'operation': 'modify password [user:' + data.uemail + ']'
+                'operation': 'modify password [user: ' + data.uemail + ']'
             };
             await syslog.addSyslog(logData);
             res.ifSuccess = true;
@@ -87,7 +87,7 @@ exports.toDeleteUser = async function (data) {
             const logData = {
                 'role': verifyRes.payload.role,
                 'who': verifyRes.payload.account,
-                'operation': 'delete user [user:' + data.uemail + ']'
+                'operation': 'delete user [user: ' + data.uemail + ']'
             };
             await syslog.addSyslog(logData);
             res.ifSuccess = true;

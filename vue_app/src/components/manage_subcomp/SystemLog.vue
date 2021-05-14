@@ -45,6 +45,7 @@
         filter-placement="bottom-end"
       >
         <template #default="scope">
+          <i class="el-icon-guide"></i>
           <el-tag
             :type="scope.row.role === 'admin' ? 'success' : 'primary'"
             disable-transitions
@@ -54,13 +55,13 @@
       </el-table-column>
       <el-table-column prop="who" sortable label="帐号" width="200">
         <template #default="scope">
-          <i class="el-icon-time"></i>
+          <i class="el-icon-user-solid"></i>
           <span style="margin-left: 10px">{{ scope.row.who }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="operation" sortable label="具体操作" width="200">
+      <el-table-column prop="operation" label="具体操作" show-overflow-tooltip>
         <template #default="scope">
-          <i class="el-icon-time"></i>
+          <i class="el-icon-s-operation"></i>
           <span style="margin-left: 10px">{{ scope.row.operation }}</span>
         </template>
       </el-table-column>

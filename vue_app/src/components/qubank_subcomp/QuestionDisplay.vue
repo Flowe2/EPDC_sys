@@ -28,6 +28,7 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
       @filter-change="keywordFilter"
+      @sort-change="additionTimeSort"
     >
       <el-table-column
         type="selection"
@@ -36,7 +37,7 @@
       ></el-table-column>
       <el-table-column type="expand">
         <template #default="props">
-          <el-descriptions class="margin-top" column="2" size="medium" border>
+          <el-descriptions class="margin-top" column="2" size="mini" border>
             <el-descriptions-item>
               <template #label>
                 <i class="el-icon-place"></i>
@@ -91,30 +92,39 @@
               </template>
               {{ props.row.question }}
             </el-descriptions-item>
-            <el-descriptions-item>
-              <template #label>
-                <i class="el-icon-folder-checked"></i>
-                答案
-              </template>
-              <el-tag
-                type="success"
-                effect="dark"
-                v-for="answer in props.row.payload.answer"
-                :key="answer"
-                >{{ answer }}</el-tag
-              >
-            </el-descriptions-item>
-            <el-descriptions-item>
+            <el-descriptions-item v-if="showOptions">
               <template #label>
                 <i class="el-icon-folder-opened"></i>
                 题目选项
               </template>
-              <el-tag
-                effect="plain"
-                v-for="(option, index) in props.row.payload.options"
-                :key="option"
-                >{{ optionIndex(index) + ": " + option.substr(0, 15) }}</el-tag
-              >
+              <el-space direction="vertical" alignment="flex-start">
+                <el-tag
+                  effect="plain"
+                  v-for="(option, index) in props.row.payload.options"
+                  :key="option"
+                  >{{
+                    optionIndex(index) + ": " + option.substr(0, 15)
+                  }}</el-tag
+                >
+              </el-space>
+            </el-descriptions-item>
+            <el-descriptions-item v-else>
+              <el-skeleton rows="1" />
+            </el-descriptions-item>
+            <el-descriptions-item :span="2">
+              <template #label>
+                <i class="el-icon-folder-checked"></i>
+                答案
+              </template>
+              <el-space direction="vertical" alignment="flex-start">
+                <div
+                  class="qudisplay_answer"
+                  v-for="answer in props.row.payload.answer"
+                  :key="answer"
+                >
+                  {{ answer }}
+                </div>
+              </el-space>
             </el-descriptions-item>
           </el-descriptions>
         </template>
@@ -131,6 +141,16 @@
         >
       </el-table-column>
       <el-table-column
+        label="入库时间"
+        prop="additionTime"
+        sortable="'custom'"
+        width="150"
+      >
+        <template #default="props"
+          ><span>{{ props.row.additionTime.split(" ", 1).toString() }}</span></template
+        >
+      </el-table-column>
+      <el-table-column
         prop="subject"
         label="科目"
         width="150"
@@ -139,7 +159,6 @@
         :column-key="'subject'"
         filter-placement="bottom-end"
       >
-        <!-- :filter-method="keywordFilter" -->
         <template #default="props">
           <el-tag :type="primary" disable-transitions>{{
             props.row.subject
@@ -157,10 +176,11 @@
 
 <script>
 export default {
-  name: "QuestionDisplay",
+  inject:['reload'],  //注入刷新依赖
   data() {
     return {
       targetType: "sc", // 初始进入初始化, 停在单选题题库界面
+      showOptions: true,
       qudisplayCounter: 0,
       qudisplayList: [],
       tableHeight: 600,
@@ -178,12 +198,12 @@ export default {
   methods: {
     // 改变分页大小
     handleSizeChange: function (size) {
-      console.log(size + " per page.");
+      // console.log(size + " per page.");
       this.curtPageSize = size;
     },
     // 改变当前页码
     handleCurrentChange: function (currentPage) {
-      console.log("current page: " + currentPage);
+      // console.log("current page: " + currentPage);
       this.currentPage = currentPage;
     },
     // 动态设置table高度, 固定表头
@@ -232,6 +252,30 @@ export default {
       }
       this.$emit("loading", false);
     },
+    // 入库时间排序
+    additionTimeSort: function (col) {
+      // 每次改变排序返回第一页,
+      // this.currentPage = 1;
+      if (col.order == "descending") {
+        // 降序
+        this.displayList = this.displayList.sort( (a, b) => {
+          let timeA = new Date(a.additionTime.split(" ", 1).toString());
+          let timeB = new Date(b.additionTime.split(" ", 1).toString());
+          return (timeA>timeB ? -1 : (timeA<timeB ? 1 : 0));
+        })
+      } else if (col.order == "ascending") {
+        // 升序
+        this.displayList = this.displayList.sort( (a, b) => {
+          let timeA = new Date(a.additionTime.split(" ", 1).toString());
+          let timeB = new Date(b.additionTime.split(" ", 1).toString());
+          return (timeA>timeB ? 1 : (timeA<timeB ? -1 : 0));
+        })
+      } else {
+        // 恢复默认
+        console.log(col.order);
+        this.displayList = this.qudisplayList;
+      }
+    },
     // 选项序号转字母处理
     optionIndex: function (index) {
       let indexLetter = String.fromCodePoint(65 + index);
@@ -240,7 +284,7 @@ export default {
     // 判断复选框是否可用
     ifSelectable: function (row) {
       // console.log(row._id);
-      for(let element of this.bannedList){
+      for (let element of this.bannedList) {
         if (element._id == row._id) {
           return false;
         }
@@ -278,6 +322,8 @@ export default {
           this.$nextTick(() => {
             this.displayList = this.qudisplayList;
             this.displayCounter = this.qudisplayCounter;
+            this.showOptions =
+              this.targetType == "sc" || this.targetType == "mc" ? true : false;
             // 每次拉取题目列表后重新生成关键词过滤器
             this.keywordFilterGenerator();
             // 若小于10项则单页显示, 隐藏分页按钮
@@ -370,5 +416,16 @@ export default {
   margin-right: 0;
   margin-bottom: 0;
   width: 50%;
+}
+
+:deep() .el-descriptions__label {
+  width: 90px;
+}
+
+.qudisplay_answer {
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #ffffff;
+  background-color: #67c23a;
 }
 </style>
