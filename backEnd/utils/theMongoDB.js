@@ -42,9 +42,22 @@ exports.findData = async function (targetCol, query={}, options={}) {
         res = await col.find(query, options).toArray();
         return res;
     } finally {
-        console.log("=== ~ connection keeping");
+        console.log("=== ~ find data. connection keeping");
     }
 };
+
+// 统计
+exports.countData = async function (targetCol, query={}, option={}) {
+    let res;
+    try {
+        const col = client.db('epdc_sys_db').collection(targetCol);
+        res = await col.countDocuments(query, option);
+        // typeof(res) - number
+        return res;
+    } finally {
+        console.log("=== ~ count data. connection keeping");
+    }
+}
 
 /* ================================== insert ================================== */
 // 新增账户
@@ -55,7 +68,7 @@ exports.insertOneData = async function (targetCol, doc) {
         res = await col.insertOne(doc);
         return res.insertedCount;
     } finally {
-        console.log("=== ~ connection keeping");
+        console.log("=== ~ insert data. connection keeping");
     }
 }
 
@@ -80,7 +93,7 @@ exports.deleteOneData = async function (targetCol, query) {
         res = await col.deleteOne(query)
         return res.deletedCount;
     } finally {
-        console.log("=== ~ connection keeping");
+        console.log("=== ~ delete one data. connection keeping");
     }
 }
 
@@ -92,7 +105,7 @@ exports.deleteManyData = async function (targetCol, query) {
         res = await col.deleteMany(query)
         return res.deletedCount;
     } finally {
-        console.log("=== ~ connection keeping");
+        console.log("=== ~ delete some data. connection keeping");
     }
 }
 
@@ -104,6 +117,6 @@ exports.updateOneData = async function (targetCol, query, updateDoc, options={})
         res = await userlist.updateOne(query, updateDoc, options);
         return res.modifiedCount;
     } finally {
-        console.log("=== ~ connection keeping");
+        console.log("=== ~ update data. connection keeping");
     }
 }

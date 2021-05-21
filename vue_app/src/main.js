@@ -62,7 +62,7 @@ router.beforeEach(function (to, from, next) {
             console.log("a-l-check fail: no atoken yet");
             next("/admin/login");
         }
-    } else if ( to.meta.login ){
+    } else if (to.meta.login) {
         // 已登录后, 拦截跳转到 login 页面的路由
         if (localStorage.getItem("timeStamp") > validTime) {
             if (localStorage.getItem("token")) {
@@ -77,7 +77,7 @@ router.beforeEach(function (to, from, next) {
             }
         }
         next();
-    } 
+    }
     else {
         next();
     }

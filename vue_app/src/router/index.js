@@ -7,18 +7,14 @@ import UserLogin from '@/components/UserLogin.vue';
 import AdminLogin from '@/components/AdminLogin.vue';
 
 import QuBank from '@/components/QuBank.vue';
-import QuestionDisplay from '@/components/qubank_subcomp/QuestionDisplay.vue';// 单选
-// import SingleChoice from '@/components/qubank_subcomp/SingleChoice.vue';      // 单选
-// import MultipleChoice from '@/components/qubank_subcomp/MultipleChoice.vue';  // 多选
-// import TrueFalse from '@/components/qubank_subcomp/TrueFalse.vue';            // 判断
-// import GapFilling from '@/components/qubank_subcomp/GapFilling.vue';          // 填空
-// import Subjective from '@/components/qubank_subcomp/Subjective.vue';          // 主观
+import QuestionDisplay from '@/components/qubank_subcomp/QuestionDisplay.vue';// 题目展示(所有题型)
 import ComposedPaper from '@/components/qubank_subcomp/ComposedPaper.vue';    // 组卷功能
 
 import Manage from '@/components/Manage.vue';
 import UserMaintain from '@/components/manage_subcomp/UserMaintain.vue';      // 账号维护
 import SignupCheck from '@/components/manage_subcomp/SignupCheck.vue';        // 注册管理
 import SystemLog from '@/components/manage_subcomp/SystemLog.vue';            // 系统日志
+import QuestionStatistics from '@/components/manage_subcomp/QuestionStatistics.vue';// 题库统计展示
 import AdminSetting from '@/components/manage_subcomp/AdminSetting.vue';      // 系统设置
 
 import About from '@/views/About.vue';                                        // About
@@ -58,26 +54,6 @@ const routes = [
             name: 'QuestionDisplay',
             component: QuestionDisplay,
           },
-          // {
-          //   path: 'multiplechoice',
-          //   name: 'MultipleChoice',
-          //   component: MultipleChoice,
-          // },
-          // {
-          //   path: 'truefalse',
-          //   name: 'TrueFalse',
-          //   component: TrueFalse,
-          // },
-          // {
-          //   path: 'gapfilling',
-          //   name: 'GapFilling',
-          //   component: GapFilling,
-          // },
-          // {
-          //   path: 'subjective',
-          //   name: 'Subjective',
-          //   component: Subjective,
-          // },
           {
             path: 'composedpaper',
             name: 'ComposedPaper',
@@ -134,6 +110,11 @@ const routes = [
             path: 'systemlog',
             name: 'SystemLog',
             component: SystemLog,
+          },
+          {
+            path: 'questionstatistics',
+            name: 'QuestionStatistics',
+            component: QuestionStatistics,
           },
           {
             path: 'adminsetting',

@@ -1,4 +1,6 @@
 const { ObjectID, ObjectId } = require('bson');
+const JWT = require('./theJWT');
+const jwtutil = new JWT();
 const theDB = require('./theMongoDB');
 
 // 测试用户数据
@@ -232,17 +234,51 @@ const theDB = require('./theMongoDB');
 
 // 题目按_id查询查询  [OK]
 // let list = ["6098ca4aed7c0000c6007be9", "6098ca4aed7c0000c6007be9", "6098ca4aed7c0000c6007be9"]
-let query = { "_id": ObjectId("6098ca4aed7c0000c6007be9") };
-const targetCol = 'gapfilling';
+// let query = { "_id": ObjectId("6098ca4aed7c0000c6007be9") };
+// const targetCol = 'gapfilling';
+// theDB.initDb().then(()=>{
+//     theDB.findData(targetCol, query)
+//     .catch(console.dir)
+//     .then((res) => {
+//         if (res.length != 0) {
+//             console.log(res[0]);
+//         } else {
+//             console.log("no result");
+//         }
+//         theDB.closeDb();
+//     });
+// });
+
+
+// 统计测试 [OK]
+// const targetCol = 'gapfilling';
+// const query = {additionTime: {$gt: "2021-05-08"}};
+// theDB.initDb().then(()=>{
+//     theDB.countData(targetCol, query)
+//     .catch(console.dir)
+//     .then((res) => {
+//         console.log(typeof(res));
+//         console.log(res);
+//         theDB.closeDb();
+//     });
+// });
+
+
+// 条件统计测试 [OK]
+let in30d = new Date();
+    in30d.setDate(in30d.getDate() - 30);
+    in30d = in30d.getFullYear() + "-" + (in30d.getMonth() + 1) + "-" + in30d.getDate();
+let now = jwtutil.timeStamp();
+console.log(in30d<now?"y":"n");
+console.log(in30d + " " + now);
+const targetCol = 'syslog';
+const query = {role: "admin", operation: {$regex: "admin login"}, timestamp: {$gt: in30d}};
 theDB.initDb().then(()=>{
-    theDB.findData(targetCol, query)
+    theDB.countData(targetCol, query)
     .catch(console.dir)
     .then((res) => {
-        if (res.length != 0) {
-            console.log(res[0]);
-        } else {
-            console.log("no result");
-        }
+        console.log(typeof(res));
+        console.log(res);
         theDB.closeDb();
     });
 });

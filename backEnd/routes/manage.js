@@ -1,8 +1,6 @@
 // addr: ip:port/admin/manage
 const express = require('express');
 const router = express.Router();
-// syslog controller集合
-const syslog = require('../controller/syslog');
 
 // userMaintain controller集
 const userMaintain = require('../controller/userMaintain');
@@ -70,6 +68,27 @@ router.post('/refuseapply', async (req, res, next) => {
     res.json(arr);
 })
 
+// statistics controller集
+const statistics = require('../controller/statistics');
+// 各题型数量统计controller
+router.post('/quantitystatistic', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - get question statistics");
+    let arr = await statistics.getQuantityStatistic(data);
+    console.log("=== ~ ready to send");
+    res.json(arr);
+})
+// 近期操作统计controller
+router.post('/operationstatistic', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - get operation statistics");
+    let arr = await statistics.getOperationStatistic(data);
+    console.log("=== ~ ready to send");
+    res.json(arr);
+})
+
+// syslog controller集
+const syslog = require('../controller/syslog');
 // admin 获取系统日志
 router.post('/syslog', async (req, res, next) => {
     let data = req.body;

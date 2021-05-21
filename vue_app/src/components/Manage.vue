@@ -32,12 +32,16 @@
           </el-menu-item>
         </el-submenu>
         <el-menu-item class="mAsideMenuFont" :index="indexList[2].path">
-          <i class="el-icon-s-order"></i>
+          <i class="el-icon-s-data"></i>
           <template #title>{{ indexList[2].name }}</template>
         </el-menu-item>
         <el-menu-item class="mAsideMenuFont" :index="indexList[3].path">
-          <i class="el-icon-setting"></i>
+          <i class="el-icon-s-order"></i>
           <template #title>{{ indexList[3].name }}</template>
+        </el-menu-item>
+        <el-menu-item class="mAsideMenuFont" :index="indexList[4].path">
+          <i class="el-icon-setting"></i>
+          <template #title>{{ indexList[4].name }}</template>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -66,6 +70,10 @@ export default {
           name: "注册管理",
         },
         {
+          path: "/admin/manage/questionstatistics",
+          name: "题库统计",
+        },
+        {
           path: "/admin/manage/systemlog",
           name: "系统日志",
         },
@@ -74,7 +82,6 @@ export default {
           name: "设置",
         },
       ],
-      viewName: "",
     };
   },
   methods: {
@@ -141,10 +148,10 @@ export default {
 }
 
 /* 覆盖elemnt原生分页器样式, 增加圆角 */
-:deep() .el-pagination .btn-prev{
+:deep() .el-pagination .btn-prev {
   border-radius: 15px 0 0 15px;
 }
-:deep() .el-pagination .btn-next{
+:deep() .el-pagination .btn-next {
   border-radius: 0 15px 15px 0;
 }
 </style>
