@@ -1,6 +1,6 @@
 # EPCD sys
-> @author: 孔华钦
-> @git addr: `git@github.com:Flowe2/EPDC_sys.git`
+> @author: 孔华钦  
+> @git addr: `git@github.com:Flowe2/EQM_sys.git`
 
 ## Usage
 
