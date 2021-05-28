@@ -265,20 +265,54 @@ const theDB = require('./theMongoDB');
 
 
 // 条件统计测试 [OK]
-let in30d = new Date();
-    in30d.setDate(in30d.getDate() - 30);
-    in30d = in30d.getFullYear() + "-" + (in30d.getMonth() + 1) + "-" + in30d.getDate();
-let now = jwtutil.timeStamp();
-console.log(in30d<now?"y":"n");
-console.log(in30d + " " + now);
+// let in30d = new Date();
+//     in30d.setDate(in30d.getDate() - 30);
+//     in30d = in30d.getFullYear() + "-" + (in30d.getMonth() + 1) + "-" + in30d.getDate();
+// let now = jwtutil.timeStamp();
+// console.log(in30d<now?"y":"n");
+// console.log(in30d + " " + now);
+// const targetCol = 'syslog';
+// const query = {role: "admin", operation: {$regex: "admin login"}, timestamp: {$gt: in30d}};
+// theDB.initDb().then(()=>{
+//     theDB.countData(targetCol, query)
+//     .catch(console.dir)
+//     .then((res) => {
+//         console.log(typeof(res));
+//         console.log(res);
+//         theDB.closeDb();
+//     });
+// });
+
+
+// aggregate测试 []
+const match = {
+    "role": "admin",
+    "timestamp": {
+        $gt: "2020-5-24",
+        $lt: "2021-5-24"
+    }
+};
+const group = {
+    "_id": {
+        $dateToString: {
+            date: { $toDate: "$timestamp" },
+            format: "%Y-%m-%d"
+        }
+    },
+    count: {
+        $sum: 1
+    }
+}
+const sort = {
+    count: -1
+}
 const targetCol = 'syslog';
-const query = {role: "admin", operation: {$regex: "admin login"}, timestamp: {$gt: in30d}};
-theDB.initDb().then(()=>{
-    theDB.countData(targetCol, query)
-    .catch(console.dir)
-    .then((res) => {
-        console.log(typeof(res));
-        console.log(res);
-        theDB.closeDb();
-    });
+theDB.initDb().then(() => {
+    theDB.aggregateFind(targetCol, match, group, sort)
+        .catch(console.dir)
+        .then((res) => {
+            console.log(typeof (res));
+            console.log(res);
+            theDB.closeDb();
+        });
 });

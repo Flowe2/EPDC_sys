@@ -1,6 +1,9 @@
 <template>
-  <div>
-    AdminSetting page test <br />
+  <div id="as_mainbody" class="as_mainbody">
+    <h2 id="as_h2" class="as_h2">
+      <i class="el-icon-s-tools"></i>
+      系统设置
+    </h2>
     <el-divider content-position="right"
       ><i class="el-icon-more-outline"></i
     ></el-divider>
@@ -19,5 +22,11 @@ export default {
 </script>
 
 <style scoped>
+.as_mainbody {
+  height: 100%;
+}
 
+.as_h2 {
+  margin: 0;
+}
 </style>

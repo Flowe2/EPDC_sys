@@ -143,11 +143,13 @@
       <el-table-column
         label="入库时间"
         prop="additionTime"
-        sortable="'custom'"
+        :sortable="'custom'"
         width="150"
       >
         <template #default="props"
-          ><span>{{ props.row.additionTime.split(" ", 1).toString() }}</span></template
+          ><span>{{
+            props.row.additionTime.split(" ", 1).toString()
+          }}</span></template
         >
       </el-table-column>
       <el-table-column
@@ -176,7 +178,7 @@
 
 <script>
 export default {
-  inject:['reload'],  //注入刷新依赖
+  inject: ["reload"], //注入刷新依赖
   data() {
     return {
       targetType: "sc", // 初始进入初始化, 停在单选题题库界面
@@ -236,7 +238,7 @@ export default {
     keywordFilter: function (filter) {
       this.displayList = this.qudisplayList;
       if (filter.subject != "") {
-        console.log("got filter");
+        // console.log("got filter");
         this.$emit("loading", true);
         let temp = this.displayList;
         this.displayList = [];
@@ -247,7 +249,7 @@ export default {
         });
         this.displayCounter = this.displayList.length;
       } else {
-        console.log("no filter");
+        // console.log("no filter");
         this.displayCounter = this.displayList.length;
       }
       this.$emit("loading", false);
@@ -258,21 +260,21 @@ export default {
       // this.currentPage = 1;
       if (col.order == "descending") {
         // 降序
-        this.displayList = this.displayList.sort( (a, b) => {
+        this.displayList = this.displayList.sort((a, b) => {
           let timeA = new Date(a.additionTime.split(" ", 1).toString());
           let timeB = new Date(b.additionTime.split(" ", 1).toString());
-          return (timeA>timeB ? -1 : (timeA<timeB ? 1 : 0));
-        })
+          return timeA > timeB ? -1 : timeA < timeB ? 1 : 0;
+        });
       } else if (col.order == "ascending") {
         // 升序
-        this.displayList = this.displayList.sort( (a, b) => {
+        this.displayList = this.displayList.sort((a, b) => {
           let timeA = new Date(a.additionTime.split(" ", 1).toString());
           let timeB = new Date(b.additionTime.split(" ", 1).toString());
-          return (timeA>timeB ? 1 : (timeA<timeB ? -1 : 0));
-        })
+          return timeA > timeB ? 1 : timeA < timeB ? -1 : 0;
+        });
       } else {
         // 恢复默认
-        console.log(col.order);
+        // console.log(col.order);
         this.displayList = this.qudisplayList;
       }
     },
@@ -341,7 +343,7 @@ export default {
   },
   // 题库间跳转
   beforeRouteUpdate(to, from, next) {
-    let tempType = to.params.type;
+    let tempType = to.path.split("/").reverse()[0];
     let typeList = new Set(["sc", "mc", "tf", "gf", "sj"]);
     if (typeList.has(tempType)) {
       this.$nextTick(() => {

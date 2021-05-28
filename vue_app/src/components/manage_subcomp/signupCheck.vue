@@ -21,7 +21,7 @@
       stripe
       :height="tableHeight"
       style="width: 100%"
-      :default-sort="{ prop: 'signup', order: 'descending' }"
+      @sort-change="globalSort"
     >
       <el-table-column label="序号" width="80">
         <template #default="scope">
@@ -30,7 +30,7 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="uemail" sortable label="用户邮箱" width="150">
+      <el-table-column prop="uemail" label="用户邮箱" width="150" :sortable="'custom'" :column-key="'uemail'">
         <template #default="scope">
           <el-popover
             effect="light"
@@ -69,7 +69,7 @@
       <el-table-column min-width="80px">
         <!-- 占位 -->
       </el-table-column>
-      <el-table-column prop="signup" sortable label="申请注册日期" width="200">
+      <el-table-column prop="signup" label="申请注册日期" width="200"  :sortable="'custom'" :column-key="'signup'">
         <template #default="scope">
           <i class="el-icon-time"></i>
           <span style="margin-left: 10px">{{ scope.row.signup }}</span>
@@ -198,6 +198,48 @@ export default {
       let pagiHeight;
       (!this.onlySinglePage) ? (pagiHeight = document.getElementById("sc_pagination").clientHeight) : (pagiHeight = 0);
       this.tableHeight = bodyHeight - headHeight - 49*2 - pagiHeight;
+    },
+
+    // 全局排序
+    globalSort: function (col) {
+      if (col.prop == "signup") {
+        if (col.order == "descending") {
+          // 降序
+          this.displayList = this.displayList.sort((a, b) => {
+            let timeA = new Date(a.signup.split(" ", 1).toString());
+            let timeB = new Date(b.signup.split(" ", 1).toString());
+            return timeA > timeB ? -1 : timeA < timeB ? 1 : 0;
+          });
+        } else if (col.order == "ascending") {
+          // 升序
+          this.displayList = this.displayList.sort((a, b) => {
+            let timeA = new Date(a.signup.split(" ", 1).toString());
+            let timeB = new Date(b.signup.split(" ", 1).toString());
+            return timeA > timeB ? 1 : timeA < timeB ? -1 : 0;
+          });
+        } else {
+          // 恢复默认
+          // console.log(col.order);
+          this.displayList = this.checkingList;
+        }
+      } else if (col.prop == "uemail") {
+        if (col.order == "descending") {
+          // 降序
+          this.displayList = this.displayList.sort((a, b) => {
+            return a.uemail > b.uemail ? -1 : a.uemail < b.uemail ?  1 : 0;
+          });
+        } else if (col.order == "ascending") {
+          // 升序
+          this.displayList = this.displayList.sort((a, b) => {
+            return a.uemail > b.uemail ? 1 : a.uemail < b.uemail ?  -1 : 0;
+          });
+        } else {
+          // 恢复默认
+          this.displayList = this.checkingList;
+        }
+      } else {
+        this.displayList = this.checkingList;
+      }
     },
 
     // axios - 通过注册申请

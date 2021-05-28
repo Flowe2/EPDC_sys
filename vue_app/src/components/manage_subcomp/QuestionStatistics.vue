@@ -1,23 +1,36 @@
 <template>
-  <el-container class="qs_container">
-    <!-- 题目统计 chart -->
-    <el-main class="qs_main" style="width: 65%">
-      <div
-        id="qdChart"
-        class="qs_chart qs_quantityChart"
-        v-loading="qdLoading"
-      ></div>
-    </el-main>
-    <el-divider direction="vertical" style="height: 100%"></el-divider>
-    <!-- 操作统计 chart -->
-    <el-main class="qs_main" style="width: 35%">
-      <div
-        id="odChart"
-        class="qs_chart qs_operationChart"
-        v-loading="odLoading"
-      ></div>
-    </el-main>
-  </el-container>
+  <div id="qs_mainbody" class="qs_mainbody">
+    <h2 id="qs_h2" class="qs_h2">
+      <i class="el-icon-s-data"></i>
+      题库统计
+    </h2>
+
+    <el-divider content-position="right"
+      ><i class="el-icon-more-outline"></i
+    ></el-divider>
+    <el-container class="qs_container">
+      <!-- 题目统计 chart -->
+      <el-main class="qs_main" style="width: 65%">
+        <div
+          id="qdChart"
+          class="qs_chart qs_quantityChart"
+          v-loading="qdLoading"
+        ></div>
+      </el-main>
+      <el-divider direction="vertical" style="height: 100%"></el-divider>
+      <!-- 操作统计 chart -->
+      <el-main class="qs_main" style="width: 35%">
+        <div
+          id="hmChart"
+          class="qs_chart qs_userHeatMap"
+          v-loading="hmLoading"
+        ></div>
+      </el-main>
+    </el-container>
+    <el-divider content-position="right"
+      ><i class="el-icon-more-outline"></i
+    ></el-divider>
+  </div>
 </template>
 
 <script>
@@ -26,7 +39,7 @@ import * as echarts from "echarts/core";
 // 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
 import { CanvasRenderer } from "echarts/renderers";
 // 引入柱状图、饼图，图表后缀都为 Chart
-import { BarChart, PieChart } from "echarts/charts";
+import { HeatmapChart, PieChart } from "echarts/charts";
 import {
   CalendarComponent,
   GridComponent,
@@ -39,16 +52,16 @@ import {
 } from "echarts/components";
 
 echarts.use([
-  CanvasRenderer,
-  BarChart,
-  PieChart,
   CalendarComponent,
+  CanvasRenderer,
   GridComponent,
+  HeatmapChart,
   LegendComponent,
   TimelineComponent,
   TitleComponent,
   ToolboxComponent,
   TooltipComponent,
+  PieChart,
   VisualMapComponent,
 ]);
 
@@ -57,9 +70,9 @@ export default {
   data() {
     return {
       qdLoading: true,
-      odLoading: true,
+      hmLoading: true,
       qdChart: "",
-      odChart: "",
+      hmChart: "",
       quantityData: {
         title: {
           show: true,
@@ -80,6 +93,7 @@ export default {
           top: "5%",
           left: "center",
         },
+        backgroundColor: "rgba(52,58,63, 0.05)",
         series: [
           {
             name: "各题型数量统计",
@@ -112,28 +126,67 @@ export default {
           },
         ],
       },
-      OperationData: {
+      HeatmapData: {
         title: {
           show: true,
-          text: "题库操作统计",
+          text: "用户活跃热力图",
           textStyle: {
             fontSize: 23,
           },
+          subtext: "近6月",
+          subtextStyle: {
+            fontSize: 13,
+            fontWeight: "normal",
+          },
         },
-        xAxis: {
-          type: "category",
-          data: ["新增操作", "删除操作"],
+        tooltip: {
+          position: "top",
+          formatter: function (p) {
+            var format = echarts.format.formatTime("yyyy-MM-dd", p.data[0]);
+            return format + ": " + p.data[1] + " times";
+          },
         },
-        yAxis: {
-          type: "value",
+        visualMap: {
+          min: 0,
+          max: 200,
+          type: "continuous",
+          calculable: true,
+          orient: "vertical",
+          left: 20,
+          backgroundColor: "rgba(52,58,63, 0.1)",
         },
+        backgroundColor: "rgba(52,58,63, 0.05)",
+        calendar: [
+          {
+            orient: "vertical",
+            left: "middle",
+            range: [],
+            cellSize: [20, "auto"],
+            monthLabel: {
+              nameMap: "en",
+            },
+            dayLabel: {
+              nameMap: "cn",
+            },
+            splitLine: {
+              show: true,
+              lineStyle: {
+                color: "rgba(52,58,63, 1)",
+                width: 2,
+              },
+            },
+            itemStyle: {
+              color: "rgba(52,58,63, 0.4)",
+            },
+          },
+        ],
         series: [
           {
-            data: [120, 200],
-            type: "bar",
-            showBackground: true,
-            backgroundStyle: {
-              color: "rgba(180, 180, 180, 0.3)",
+            type: "heatmap",
+            coordinateSystem: "calendar",
+            data: [],
+            emphasis: {
+              focus: "series",
             },
           },
         ],
@@ -168,24 +221,27 @@ export default {
         });
     },
     // axios - get 近期操作统计
-    getOperationStatistic: function () {
+    getHeatmapStatistic: function () {
       this.axios({
         method: "POST",
-        url: "/admin/manage/operationstatistic",
+        url: "/admin/manage/getuserheatstatistic",
         data: {
           atoken: localStorage.getItem("atoken"),
         },
       })
         .then((response) => {
           // 处理登录结果
-          // 返回:  {data: [ addNum, delNum ] }
+          // 返回:  { startEnd: [starttime, endtime], data: [ addNum, delNum ] }
           let res = JSON.stringify(response.data);
           res = JSON.parse(res);
           console.log(res.data);
           this.$nextTick(() => {
-            this.OperationData.series[0].data = res.data;
-            this.odChart = echarts.init(document.getElementById("odChart"));
-            this.odChart.setOption(this.OperationData);
+            this.HeatmapData.calendar[0].range = res.startEnd;
+            this.HeatmapData.title.subtext =
+              "近六月:\n" + res.startEnd[0] + " ~ " + res.startEnd[1];
+            this.HeatmapData.series[0].data = res.data;
+            this.hmChart = echarts.init(document.getElementById("hmChart"));
+            this.hmChart.setOption(this.HeatmapData);
             this.odLoading = false;
           });
         })
@@ -196,14 +252,26 @@ export default {
   },
   mounted() {
     this.getQuantityStatistic();
-    this.getOperationStatistic();
+    this.getHeatmapStatistic();
+    window.onresize = () => {
+      this.qdChart.setOption(this.quantityData);
+      this.hmChart.setOption(this.HeatmapData);
+    };
   },
 };
 </script>
 
 <style scoped>
-.qs_container {
+.qs_mainbody {
   height: 100%;
+}
+
+.qs_h2 {
+  margin: 0;
+}
+
+.qs_container {
+  height: 80%;
 }
 
 .qs_main {
@@ -214,5 +282,6 @@ export default {
 .qs_chart {
   height: 100%;
   width: 100%;
+  border-radius: 20px;
 }
 </style>

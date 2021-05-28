@@ -4,9 +4,18 @@
     <el-header class="cp_header">
       <el-space size="small">
         <el-row :gutter="20">
-          <el-col :span="8"><el-button>按钮</el-button></el-col>
-          <el-col :span="8"><el-button>按钮</el-button></el-col>
-          <el-col :span="8"><el-button>按钮</el-button></el-col>
+          <el-col :span="6"><el-button>按钮</el-button></el-col>
+          <el-col :span="6"><el-button>按钮</el-button></el-col>
+          <el-col :span="6"><el-button>按钮</el-button></el-col>
+          <el-col :span="6"
+            ><el-badge
+              :value="composeCounter"
+              :max="50"
+              type="warning"
+              :hidden="composeCounter == 0 ? true : false"
+              ><el-button @click="showPieSwitch">按钮</el-button>
+            </el-badge></el-col
+          >
         </el-row>
         <div id="cpCounterChart" class="cp_chart"></div>
       </el-space>
@@ -43,6 +52,7 @@ export default {
   data() {
     return {
       cpChart: "",
+      cpChartVisible: false,
       cpChartOption: {
         title: {
           text: "已选题目统计",
@@ -86,12 +96,36 @@ export default {
     };
   },
   props: ["composeCounter", "composeList"],
+  methods: {
+    showPieSwitch: function () {
+      this.cpChartVisible =! this.cpChartVisible;
+      if (this.cpChartVisible == false) {
+        console.log("to show");
+      } else {
+        console.log("to close");
+      }
+    },
+
+    // 加载echarts
+    initPie: function () {
+      console.log("init pie");
+      this.cpChart.setOption(this.cpChartOption);
+    },
+  },
   mounted() {
-    this.cpChart = echarts.init(document.getElementById("cpCounterChart"));
-    this.cpChart.setOption(this.cpChartOption);
+      this.cpChart = echarts.init(document.getElementById("cpCounterChart"));
   },
   watch: {
-    compList_sc: function () {},
+    composeCounter: function () {
+      console.log("change");
+      console.log(this.$route.path.toString().split("/").pop());
+      this.initPie();
+      // this.composeList.foreach( qu => {
+      //   if (qu.type == )
+      // })
+    },
+    cpChartVisible: function () {
+    },
   },
 };
 </script>

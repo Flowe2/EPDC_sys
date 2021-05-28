@@ -5,6 +5,8 @@ const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
+// 系统日志controller
+const syslog = require('../controller/syslog');
 
 // 用户登录处理
 async function login(data) {
@@ -43,6 +45,12 @@ async function login(data) {
                         console.log("=== ! update lastlog err");
                     };
                 });
+            const logData = {
+                'role': false,
+                'who': data.uemail,
+                'operation': 'user login'
+            }
+            await syslog.addSyslog(logData)
             // 预处理给JWT的data
             data = { 'account': data.uemail, 'role': false };
             arr.ifPass = true;

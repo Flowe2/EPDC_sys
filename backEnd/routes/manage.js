@@ -86,6 +86,14 @@ router.post('/operationstatistic', async (req, res, next) => {
     console.log("=== ~ ready to send");
     res.json(arr);
 })
+// 用户热力统计controller
+router.post('/getuserheatstatistic', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - get heatmap statistics");
+    let arr = await statistics.getUserHeatStatistic(data);
+    console.log("=== ~ ready to send");
+    res.json(arr);
+})
 
 // syslog controller集
 const syslog = require('../controller/syslog');

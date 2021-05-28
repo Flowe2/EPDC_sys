@@ -35,7 +35,7 @@ exports.closeDb = async function () {
 
 /* =================================== find =================================== */
 // 账户查询
-exports.findData = async function (targetCol, query={}, options={}) {
+exports.findData = async function (targetCol, query = {}, options = {}) {
     let res;
     try {
         const col = client.db('epdc_sys_db').collection(targetCol);
@@ -47,7 +47,7 @@ exports.findData = async function (targetCol, query={}, options={}) {
 };
 
 // 统计
-exports.countData = async function (targetCol, query={}, option={}) {
+exports.countData = async function (targetCol, query = {}, option = {}) {
     let res;
     try {
         const col = client.db('epdc_sys_db').collection(targetCol);
@@ -56,6 +56,17 @@ exports.countData = async function (targetCol, query={}, option={}) {
         return res;
     } finally {
         console.log("=== ~ count data. connection keeping");
+    }
+}
+
+exports.aggregateFind = async function (targetCol, match, group, sort = {}) {
+    let res;
+    try {
+        const col = client.db('epdc_sys_db').collection(targetCol);
+        res = await col.aggregate([{ $match: match }, { $group: group }, { $sort: sort }]).toArray();
+        return res;
+    } finally {
+        console.log("=== ~ aggregate data. connection keeping");
     }
 }
 
@@ -110,7 +121,7 @@ exports.deleteManyData = async function (targetCol, query) {
 }
 
 /* ================================== update ================================== */
-exports.updateOneData = async function (targetCol, query, updateDoc, options={}) {
+exports.updateOneData = async function (targetCol, query, updateDoc, options = {}) {
     let res;
     try {
         const userlist = client.db('epdc_sys_db').collection(targetCol);

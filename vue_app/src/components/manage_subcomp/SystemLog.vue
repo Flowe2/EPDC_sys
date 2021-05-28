@@ -21,7 +21,8 @@
       stripe
       :height="tableHeight"
       style="width: 100%"
-      :default-sort="{ prop: 'timestamp', order: 'descending' }"
+      @filter-change="roleFilter"
+      @sort-change="globalSort"
     >
       <el-table-column label="序号" width="80">
         <template #default="scope">
@@ -30,7 +31,13 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="timestamp" sortable label="时间戳" width="200">
+      <el-table-column
+        prop="timestamp"
+        label="时间戳"
+        width="200"
+        :sortable="'custom'"
+        :column-key="'timestamp'"
+      >
         <template #default="scope">
           <i class="el-icon-time"></i>
           <span style="margin-left: 10px">{{ scope.row.timestamp }}</span>
@@ -41,7 +48,8 @@
         label="身份"
         width="100"
         :filters="displayRoleFilter"
-        :filter-method="roleFilter"
+        :filter-multiple="false"
+        :column-key="'role'"
         filter-placement="bottom-end"
       >
         <template #default="scope">
@@ -53,7 +61,13 @@
           >
         </template>
       </el-table-column>
-      <el-table-column prop="who" sortable label="帐号" width="200">
+      <el-table-column
+        prop="who"
+        label="帐号"
+        width="200"
+        :sortable="'custom'"
+        :column-key="'who'"
+      >
         <template #default="scope">
           <i class="el-icon-user-solid"></i>
           <span style="margin-left: 10px">{{ scope.row.who }}</span>
@@ -123,14 +137,17 @@ export default {
       // divider margin-top=margin-bottom=24, height=1
       let headHeight = document.getElementById("sl_h2").clientHeight;
       let pagiHeight;
-      (!this.onlySinglePage) ? (pagiHeight = document.getElementById("sl_pagination").clientHeight) : (pagiHeight = 0);
+      !this.onlySinglePage
+        ? (pagiHeight = document.getElementById("sl_pagination").clientHeight)
+        : (pagiHeight = 0);
       this.tableHeight = bodyHeight - headHeight - 49 * 2 - pagiHeight;
     },
 
     // 生成过滤器
-    roleFilterGenerator: function (res) {
+    roleFilterGenerator: function () {
+      this.displayRoleFilter = [];
       let temp = [];
-      res.forEach((element) => {
+      this.syslog.forEach((element) => {
         if (temp.indexOf(element.role) == -1) {
           temp.push(element.role);
           this.displayRoleFilter.push({
@@ -141,8 +158,65 @@ export default {
       });
     },
     // role标签过滤器
-    roleFilter: function (value, row) {
-      return row.role === value;
+    roleFilter: function (filter) {
+      // console.log(filter);
+      this.displayList = this.syslog;
+      if (filter.role != "") {
+        // console.log("got filter");
+        let temp = this.displayList;
+        this.displayList = [];
+        temp.forEach((element) => {
+          if (element.role == filter.role) {
+            this.displayList.push(element);
+          }
+        });
+        this.displayCounter = this.displayList.length;
+      } else {
+        // console.log("no filter");
+        this.displayCounter = this.displayList.length;
+      }
+    },
+
+    // 全局排序
+    globalSort: function (col) {
+      if (col.prop == "timestamp") {
+        if (col.order == "descending") {
+          // 降序
+          this.displayList = this.displayList.sort((a, b) => {
+            let timeA = new Date(a.timestamp.split(" ", 1).toString());
+            let timeB = new Date(b.timestamp.split(" ", 1).toString());
+            return timeA > timeB ? -1 : timeA < timeB ? 1 : 0;
+          });
+        } else if (col.order == "ascending") {
+          // 升序
+          this.displayList = this.displayList.sort((a, b) => {
+            let timeA = new Date(a.timestamp.split(" ", 1).toString());
+            let timeB = new Date(b.timestamp.split(" ", 1).toString());
+            return timeA > timeB ? 1 : timeA < timeB ? -1 : 0;
+          });
+        } else {
+          // 恢复默认
+          // console.log(col.order);
+          this.displayList = this.syslog;
+        }
+      } else if (col.prop == "who") {
+        if (col.order == "descending") {
+          // 降序
+          this.displayList = this.displayList.sort((a, b) => {
+            return a.who > b.who ? -1 : a.who < b.who ?  1 : 0;
+          });
+        } else if (col.order == "ascending") {
+          // 升序
+          this.displayList = this.displayList.sort((a, b) => {
+            return a.who > b.who ? 1 : a.who < b.who ?  -1 : 0;
+          });
+        } else {
+          // 恢复默认
+          this.displayList = this.syslog;
+        }
+      } else {
+        this.displayList = this.syslog;
+      }
     },
 
     // axios - 获取用户
@@ -170,6 +244,7 @@ export default {
           this.$nextTick(() => {
             this.displayList = this.syslog;
             this.displayCounter = this.syslogCounter;
+            this.roleFilterGenerator();
             // 若小于10项则单页显示, 隐藏分页按钮
             if (this.displayCounter < this.curtPageSize) {
               this.onlySinglePage = true;
@@ -182,17 +257,13 @@ export default {
         });
     },
   },
-  watch: {
-    displayList: function () {
-      this.roleFilterGenerator(this.syslog);
-    },
-  },
+  watch: {},
   mounted() {
     this.getSyslog();
     // 初始化窗口
-    this.$nextTick( () => {
+    this.$nextTick(() => {
       this.dynamicTableHeight();
-    })
+    });
     // 窗口大小改变时
     window.onresize = () => {
       this.dynamicTableHeight();

@@ -21,7 +21,7 @@
       stripe
       :height="tableHeight"
       style="width: 100%"
-      :default-sort="{ prop: 'lastlog', order: 'descending' }"
+      @sort-change="globalSort"
     >
       <el-table-column label="序号" width="80">
         <template #default="scope">
@@ -30,7 +30,7 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="uemail" sortable label="用户邮箱" width="150">
+      <el-table-column prop="uemail" :sortable="'custom'" label="用户邮箱" width="150" :column-key="'uemail'">
         <template #default="scope">
           <el-popover
             effect="light"
@@ -62,7 +62,7 @@
       <el-table-column min-width="80px">
         <!-- 占位 -->
       </el-table-column>
-      <el-table-column prop="lastlog" sortable label="最后登录日期" width="200">
+      <el-table-column prop="lastlog" :sortable="'custom'" label="最后登录日期" width="200" :column-key="'lastlog'">
         <template #default="scope">
           <i class="el-icon-time"></i>
           <span style="margin-left: 10px">{{ scope.row.lastlog }}</span>
@@ -191,6 +191,49 @@ export default {
       let pagiHeight;
       (!this.onlySinglePage) ? (pagiHeight = document.getElementById("um_pagination").clientHeight) : (pagiHeight = 0);
       this.tableHeight = bodyHeight - headHeight - 49 * 2 - pagiHeight;
+    },
+
+    // 全局排序
+    globalSort: function (col) {
+      console.log(col.prop);
+      console.log(col.order);
+      if (col.prop == "lastlog") {
+        if (col.order == "descending") {
+          // 降序
+          this.displayList = this.displayList.sort((a, b) => {
+            let timeA = new Date(a.lastlog.split(" ", 1).toString());
+            let timeB = new Date(b.lastlog.split(" ", 1).toString());
+            return timeA > timeB ? -1 : timeA < timeB ? 1 : 0;
+          });
+        } else if (col.order == "ascending") {
+          // 升序
+          this.displayList = this.displayList.sort((a, b) => {
+            let timeA = new Date(a.lastlog.split(" ", 1).toString());
+            let timeB = new Date(b.lastlog.split(" ", 1).toString());
+            return timeA > timeB ? 1 : timeA < timeB ? -1 : 0;
+          });
+        } else {
+          // 恢复默认
+          this.displayList = this.checkedList;
+        }
+      } else if (col.prop == "uemail") {
+        if (col.order == "descending") {
+          // 降序
+          this.displayList = this.displayList.sort((a, b) => {
+            return a.uemail > b.uemail ? -1 : a.uemail < b.uemail ?  1 : 0;
+          });
+        } else if (col.order == "ascending") {
+          // 升序
+          this.displayList = this.displayList.sort((a, b) => {
+            return a.uemail > b.uemail ? 1 : a.uemail < b.uemail ?  -1 : 0;
+          });
+        } else {
+          // 恢复默认
+          this.displayList = this.checkedList;
+        }
+      } else {
+        this.displayList = this.checkedList;
+      }
     },
 
     // axios - 修改密码

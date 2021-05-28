@@ -4,7 +4,7 @@
     <el-aside class="mAside" width="auto">
       <!-- 导航栏内容 -->
       <el-menu
-        :default-active="indexList[0].path"
+        :default-active="$route.path"
         class="mAsideMenu"
         :collapse="isCollapse"
         router
@@ -40,7 +40,7 @@
           <template #title>{{ indexList[3].name }}</template>
         </el-menu-item>
         <el-menu-item class="mAsideMenuFont" :index="indexList[4].path">
-          <i class="el-icon-setting"></i>
+          <i class="el-icon-s-tools"></i>
           <template #title>{{ indexList[4].name }}</template>
         </el-menu-item>
       </el-menu>
@@ -79,7 +79,7 @@ export default {
         },
         {
           path: "/admin/manage/adminsetting",
-          name: "设置",
+          name: "系统设置",
         },
       ],
     };
