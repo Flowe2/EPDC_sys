@@ -1,5 +1,5 @@
 <template>
-  <el-container class="qubankLayout">
+  <el-container id="qubankLayout" class="qubankLayout">
     <el-header name="qActionBar" class="qHeader" height="auto">
       <el-row :gutter="10">
         <el-col :span="1.5" class="qElCol">
@@ -79,7 +79,7 @@
       <!-- 侧边栏, 题型选择 -->
       <el-aside name="qFilterBar" class="qAside" width="200px">
         <el-menu
-          :default-active="indexList[0].path"
+          :default-active="$route.path"
           class="qAsideMenu"
           text-color="#FFD7BA"
           active-text-color="#E9B006"
@@ -144,6 +144,8 @@
       <ComposedPaper
         :composeCounter="composeCounter"
         :composeList="composeList"
+        :cpDrawer="cpDrawer"
+        @chartAffix="chartAffix"
       ></ComposedPaper>
     </el-drawer>
 
@@ -196,6 +198,9 @@
         @delAllFromDQ="delFromTarget"
       ></DeleteQuestion>
     </el-drawer>
+    <el-affix class="cpChartAffix" target=".qAside" v-show="chartAffixVisible">
+      <div id="cpCounterChart" class="cp_chart"></div>
+    </el-affix>
   </el-container>
 </template>
 
@@ -205,8 +210,29 @@ import ComposedPaper from "@/components/qubank_subcomp/ComposedPaper.vue";
 import UploadQuestion from "@/components/qubank_subcomp/UploadQuestion.vue";
 import DeleteQuestion from "@/components/qubank_subcomp/DeleteQuestion.vue";
 
+// 按需引入 ECharts 各模块来减小打包体积
+import * as echarts from "echarts/core";
+// 引入 Canvas 渲染器，注意引入 CanvasRenderer 或者 SVGRenderer 是必须的一步
+import { CanvasRenderer } from "echarts/renderers";
+// 引入柱状图、饼图，图表后缀都为 Chart
+import { PieChart } from "echarts/charts";
+import {
+  TitleComponent,
+  ToolboxComponent,
+  TooltipComponent,
+} from "echarts/components";
+
+echarts.use([
+  CanvasRenderer,
+  PieChart,
+  TitleComponent,
+  ToolboxComponent,
+  TooltipComponent,
+]);
+
 export default {
   name: "QuBank",
+  inject: ["reload"], //注入刷新依赖
   data() {
     return {
       indexList: [
@@ -241,10 +267,58 @@ export default {
       composeList: new Set(), // 已选试题列表
       deleteCounter: 0, // 预删除题目数量
       deleteList: new Set(), // 预删除试题列表
+      composeFirstSignal: false, // 初次点击加入试卷按钮触发设定预期题目数量
+      composeCounterExp: 50, // 预期题目数量 - default=50
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
       ulDrawer: false, // 上传drawer
       dtDrawer: false, // 删除drawer
+      chartAffixVisible: false, // 固钉状态
+      cpChart: "",
+      cpChartOption: {
+        tooltip: {
+          trigger: "item",
+          position: "top",
+        },
+        series: [
+          {
+            name: "已选题目",
+            type: "pie",
+            radius: ["40%", "70%"],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 10,
+              borderColor: "#fff",
+              borderWidth: 2,
+            },
+            label: {
+              show: true,
+              position: "inner",
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontWeight: "bold",
+              },
+            },
+            labelLine: {
+              show: false,
+            },
+            data: [
+              { value: 0, name: "单选题" },
+              { value: 0, name: "多选题" },
+              { value: 0, name: "判断题" },
+              { value: 0, name: "填空题" },
+              { value: 0, name: "主观题" },
+            ],
+          },
+        ],
+      },
+      compList_sc: [],
+      compList_mc: [],
+      compList_tf: [],
+      compList_gf: [],
+      compList_sj: [],
     };
   },
   components: {
@@ -265,6 +339,9 @@ export default {
     // 加入组卷/删除
     addToTarget: function (target) {
       if (target == "add") {
+        // if (this.composeFirstSignal == false) {
+
+        // }
         this.tempAddList.forEach((element) => {
           // 所选加入到组卷
           this.composeList.add(element);
@@ -290,7 +367,7 @@ export default {
         let temp = Array.from(this.composeList);
         temp = temp.filter((v) => {
           let pass = true;
-          for (let i=0; i<this.tempDelList.length; i++) {
+          for (let i = 0; i < this.tempDelList.length; i++) {
             if (v._id == this.tempDelList[i]._id) {
               pass = false;
             }
@@ -304,7 +381,7 @@ export default {
         let temp = Array.from(this.deleteList);
         temp = temp.filter((v) => {
           let pass = true;
-          for (let i=0; i<this.tempDelList.length; i++) {
+          for (let i = 0; i < this.tempDelList.length; i++) {
             if (v._id == this.tempDelList[i]._id) {
               pass = false;
             }
@@ -376,10 +453,68 @@ export default {
         type: "info",
         title: "删除提示",
         dangerouslyUseHTMLString: true,
-        message: "<strong>题目详情</strong>\
+        message:
+          "<strong>题目详情</strong>\
           <p>点击对应题目的题面处, 即可查看详情</p>",
         duration: 5000,
       });
+    },
+
+    // pie chart init
+    cpPieInit: function () {
+      this.cpChart = echarts.init(document.getElementById("cpCounterChart"));
+      this.cpChart.setOption(this.cpChartOption);
+    },
+
+    // 题目分类 & 更新pie chart
+    clasifyQuestion: function () {
+      this.compList_sc = [];
+      this.compList_mc = [];
+      this.compList_tf = [];
+      this.compList_gf = [];
+      this.compList_sj = [];
+      this.composeList.forEach((qu) => {
+        switch (qu.type) {
+          case "sc":
+            this.compList_sc.push(qu);
+            break;
+          case "mc":
+            this.compList_mc.push(qu);
+            break;
+          case "tf":
+            this.compList_tf.push(qu);
+            break;
+          case "gf":
+            this.compList_gf.push(qu);
+            break;
+          case "sj":
+            this.compList_sj.push(qu);
+            break;
+        }
+      });
+      this.cpChartOption.series[0].data = [
+        { value: this.compList_sc.length, name: "单选题" },
+        { value: this.compList_mc.length, name: "多选题" },
+        { value: this.compList_tf.length, name: "判断题" },
+        { value: this.compList_gf.length, name: "填空题" },
+        { value: this.compList_sj.length, name: "主观题" },
+      ];
+      if (this.chartAffixVisible == true) {
+        this.cpChart.setOption(this.cpChartOption);
+      }
+    },
+    // pie固钉
+    chartAffix: function (state) {
+      this.chartAffixVisible = state;
+    },
+
+    // 阻止unload事件提示
+    preReload: function (e) {
+      e = e || window.event;
+      if (e && (this.composeCounter > 0 || this.deleteCounter > 0)) {
+        e.returnValue = "关闭提示";
+      }
+      return "关闭";
     },
   },
   watch: {
@@ -387,6 +522,23 @@ export default {
     searchingKey: function () {
       this.debounceSearch();
     },
+    composeCounter: function () {
+      console.log("update");
+      this.clasifyQuestion();
+    },
+  },
+  mounted() {
+    this.cpPieInit();
+    // 刷新&关闭窗口都会触发
+    window.addEventListener("beforeunload", this.preReload);
+  },
+  unmounted() {
+    // 离开后销毁
+    window.removeEventListener("beforeunload", this.preReload);
+  },
+  beforeRouteUpdate(to, from) {
+    console.log(to.path);
+    console.log(from.path);
   },
 };
 </script>
@@ -451,6 +603,18 @@ export default {
   padding: 0;
   border-radius: 10px;
   background-color: #394045;
+}
+
+.cpChartAffix {
+  width: auto;
+  height: auto;
+  position: fixed;
+  bottom: 20px;
+}
+
+.cp_chart {
+  height: 200px;
+  width: 200px;
 }
 
 /* 抽屉允许滚动 */

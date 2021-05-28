@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="userBase">
     <particles-bg v-show="bgSwticher" type="circle" bg />
     <div id="bgSwitcher">
       <el-tooltip
@@ -15,7 +15,8 @@
         :bgSwticher="bgSwticher"
         :logged="logged"
         :role="role"
-        v-on:ulog="ulog($event)"
+        :user="user"
+        @ulog="ulog($event)"
       >
       </UserHeadBar>
     </div>
@@ -26,7 +27,7 @@
     <!-- router result -->
     <div id="display">
       <!-- 监听登录成功emit的ulog事件 -->
-      <router-view v-on:ulog="ulog($event)"></router-view>
+      <router-view @ulog="ulog($event)"></router-view>
     </div>
   </div>
 </template>
@@ -42,11 +43,13 @@ export default {
       bgSwticher: true,
       role: false,
       logged: false,
+      user: "",
     };
   },
   methods: {
     ulog: function (status) {
       this.logged = status;
+      this.user = localStorage.getItem("user");
     },
   },
   components: {
@@ -70,5 +73,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

@@ -15,6 +15,7 @@
         :bgSwticher="bgSwticher"
         :logged="logged"
         :role="role"
+        :user="user"
         v-on:alog="alog($event)"
         v-on:bgSwitch="test"
       ></UserHeadBar>
@@ -42,11 +43,13 @@ export default {
       bgSwticher: true,
       role: true,
       logged: false,
+      user: "",
     };
   },
   methods: {
     alog: function (status) {
       this.logged = status;
+      this.user = localStorage.getItem("user");
     },
   },
   components: {
@@ -70,5 +73,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

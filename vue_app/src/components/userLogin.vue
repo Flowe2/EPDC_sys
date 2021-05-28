@@ -215,11 +215,11 @@ export default {
     to_log_in: function () {
       const self = this;
       if (self.u_login.remb == true) {
-        console.log("remb == true");
+        // console.log("记住账号");
         //传入账号名，密码，和保存天数
         self.setCookie(self.u_login.uemail, 7);
       } else {
-        console.log("清空Cookie");
+        // console.log("清空Cookie");
         //清空Cookie
         self.clearCookie();
       }
@@ -285,6 +285,7 @@ export default {
             // 登录成功, 储存token, 跳转至quBank界面
             localStorage.setItem("timeStamp", res.timeStamp);
             localStorage.setItem("token", res.token);
+            localStorage.setItem("user", email);
             alert("☺ 登录成功");
             this.$emit("ulog", true);
             this.$router.push("/user/quBank");

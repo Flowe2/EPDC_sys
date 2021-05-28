@@ -4,7 +4,7 @@
     <div id="user" v-if="logged && !role">
       <el-popover
         placement="right-end"
-        title="用户"
+        :title="'用户: ' + user"
         :width="200"
         trigger="hover"
         content="点击头像退出登录"
@@ -25,7 +25,7 @@
     <div id="admin" v-if="logged && role">
       <el-popover
         placement="right-end"
-        title="管理员"
+        :title="'管理员: ' + user"
         :width="200"
         trigger="hover"
         content="点击头像退出登录"
@@ -78,12 +78,13 @@ export default {
       ],
     };
   },
-  props: ["logged", "role"],
+  props: ["logged", "role", "user"],
   methods: {
     alogout: function () {
       console.log("admin logged out");
       localStorage.removeItem("atoken");
       localStorage.removeItem("timeStamp");
+      localStorage.removeItem("user");
       this.$emit("alog", false);
       this.$router.push("/admin/login");
     },
@@ -91,6 +92,7 @@ export default {
       console.log("user logged out");
       localStorage.removeItem("token");
       localStorage.removeItem("timeStamp");
+      localStorage.removeItem("user");
       this.$emit("ulog", false);
       this.$router.push("/user/login");
     },
@@ -100,6 +102,8 @@ export default {
     toAdmin: function () {
       this.$router.replace("/admin/login");
     },
+  },
+  mounted() { 
   },
 };
 </script>

@@ -77,6 +77,7 @@ export default {
           // 登录成功, 储存token, 跳转至quBank界面
           localStorage.setItem("timeStamp", res.timeStamp);
           localStorage.setItem("atoken", res.atoken);
+          localStorage.setItem("user", account);
           alert("☺ 登录成功");
           this.$emit('alog', true);
           this.$router.push('/admin/manage');
