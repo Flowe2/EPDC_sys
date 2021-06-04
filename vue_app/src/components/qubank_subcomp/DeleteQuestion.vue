@@ -95,7 +95,7 @@
 <script>
 export default {
   name: "DeleteQuestion",
-  inject:['reload'],  //注入刷新依赖
+  inject: ["reload"], //注入刷新依赖
   data() {
     return {
       tableBtnDisabled: true,
@@ -189,7 +189,10 @@ export default {
   },
   props: ["deleteCounter", "deleteList"],
   mounted() {
-    this.deleteCounter > 0 ? (this.tableBtnDisabled = false) : {};
+    // 初次打开时检查待删除列表是否非零, 非零则修改按钮可用性
+    if (this.deleteCounter > 0) {
+      this.tableBtnDisabled = false;
+    }
     // 初始化窗口
     this.$nextTick(() => {
       this.dynamicTableHeight();
@@ -200,6 +203,7 @@ export default {
     };
   },
   watch: {
+    // 检查待删除列表是否非零, 非零则修改按钮可用性
     deleteCounter: function () {
       if (this.deleteCounter > 0) {
         this.tableBtnDisabled = false;

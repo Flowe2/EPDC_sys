@@ -8,7 +8,7 @@ import AdminLogin from '@/components/AdminLogin.vue';
 
 import QuBank from '@/components/QuBank.vue';
 import QuestionDisplay from '@/components/qubank_subcomp/QuestionDisplay.vue';// 题目展示(所有题型)
-import ComposedPaper from '@/components/qubank_subcomp/ComposedPaper.vue';    // 组卷功能
+import ComposeHistory from '@/components/qubank_subcomp/ComposeHistory.vue';    // 组卷功能
 
 import Manage from '@/components/Manage.vue';
 import UserMaintain from '@/components/manage_subcomp/UserMaintain.vue';      // 账号维护
@@ -54,12 +54,12 @@ const routes = [
             name: 'QuestionDisplay',
             component: QuestionDisplay,
           },
-          {
-            path: 'composedpaper',
-            name: 'ComposedPaper',
-            component: ComposedPaper,
-          },
         ]
+      },
+      {
+        path: 'composehistory',
+        name: 'ComposeHistory',
+        component: ComposeHistory,
       },
       {
         path: 'login',

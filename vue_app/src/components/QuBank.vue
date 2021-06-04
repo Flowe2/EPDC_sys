@@ -3,27 +3,31 @@
     <el-header name="qActionBar" class="qHeader" height="auto">
       <el-row :gutter="10">
         <el-col :span="1.5" class="qElCol">
-          <el-button
-            class="qHeaderBtn qHeaderUpNDel"
-            icon="el-icon-upload"
-            @click="ulDrawer = true"
-            >上 传</el-button
-          ></el-col
+          <el-tooltip content="上传题目界面" placement="top">
+            <el-button
+              class="qHeaderBtn qHeaderUpNDel"
+              icon="el-icon-upload"
+              @click="ulDrawer = true"
+              >上 传</el-button
+            >
+          </el-tooltip></el-col
         >
         <el-col :span="1.5" class="qElCol">
-          <el-badge
-            :value="deleteCounter"
-            :max="50"
-            type="warning"
-            :hidden="deleteCounter == 0 ? true : false"
-          >
-            <el-button
-              class="qHeaderBtn"
-              icon="el-icon-delete-solid"
-              @click="dtDrawer = true"
-              >删 除</el-button
+          <el-tooltip content="删除题目界面" placement="top">
+            <el-badge
+              :value="deleteCounter"
+              :max="50"
+              type="warning"
+              :hidden="deleteCounter == 0 ? true : false"
             >
-          </el-badge></el-col
+              <el-button
+                class="qHeaderBtn"
+                icon="el-icon-delete-solid"
+                @click="dtDrawer = true"
+                >删 除</el-button
+              >
+            </el-badge>
+          </el-tooltip></el-col
         >
         <el-col :span="4" :offset="1" class="qElCol">
           <el-input
@@ -33,47 +37,90 @@
             placeholder="输入后请稍等"
           ></el-input>
         </el-col>
-        <el-col :span="1" class="qElCol"
-          ><el-button
-            class="qHeaderBtn qHeaderUpNDel"
-            title="更多条件筛选"
-            icon="el-icon-more-outline"
-          ></el-button>
+        <el-col :span="1" class="qElCol">
+          <el-popover
+            placement="bottom-start"
+            :width="400"
+            trigger="click"
+          >
+            <template #reference>
+              <el-button
+                class="qHeaderBtn qHeaderUpNDel"
+                title="更多条件筛选"
+                icon="el-icon-more-outline"
+              ></el-button>
+            </template>
+            <el-date-picker
+              v-model="searchingDate"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              unlink-panels
+              :default-date="new Date()"
+            >
+            </el-date-picker>
+          </el-popover>
         </el-col>
-        <el-col :span="2.5" :offset="6" class="qElCol">
-          <el-button
-            class="qHeaderBtn"
-            icon="el-icon-remove-outline"
-            @click="addToTarget('del')"
-            >准备删除</el-button
+        <el-col :span="2.5" :offset="5" class="qElCol">
+          <el-tooltip content="将所选题目加入待删除列表" placement="top">
+            <el-button
+              class="qHeaderBtn"
+              icon="el-icon-remove-outline"
+              @click="addToTarget('del')"
+              >准备删除</el-button
+            ></el-tooltip
           ></el-col
         >
         <el-col :span="2.5" class="qElCol">
-          <el-button
-            class="qHeaderBtn"
-            icon="el-icon-circle-plus-outline"
-            @click="addToTarget('add')"
-            >加入试卷</el-button
-          ></el-col
-        >
-        <el-col :span="2.5" :offset="1" class="qElCol">
-          <el-badge
-            :value="composeCounter"
-            :max="50"
-            type="warning"
-            :hidden="composeCounter == 0 ? true : false"
-          >
+          <el-tooltip content="将所选题目加入组卷列表" placement="top">
             <el-button
               class="qHeaderBtn"
-              icon="iconfont icon-shijuanguanli"
-              @click="cpDrawer = true"
+              icon="el-icon-circle-plus-outline"
+              @click="addToTarget('add')"
+              >加入试卷</el-button
+            ></el-tooltip
+          ></el-col
+        >
+        <el-col :span="1">
+          <el-tooltip content="设置组卷题目数量阈值" placement="top">
+            <el-button
+              class="qHeaderBtn"
+              icon="el-icon-set-up"
+              @click="seteExpectNumVisible = true"
             >
-              组 卷 界 面</el-button
+            </el-button
+          ></el-tooltip>
+        </el-col>
+        <el-col :span="2.5" :offset="1" class="qElCol">
+          <el-tooltip content="组卷界面" placement="top">
+            <el-badge
+              :value="composeCounter"
+              :max="50"
+              type="warning"
+              :hidden="composeCounter == 0 ? true : false"
             >
-          </el-badge></el-col
+              <el-button
+                class="qHeaderBtn"
+                icon="iconfont icon-shijuanguanli"
+                @click="cpDrawer = true"
+              >
+                组 卷 界 面</el-button
+              >
+            </el-badge></el-tooltip
+          ></el-col
         >
       </el-row>
     </el-header>
+
+    <el-dialog title="试卷题目数量阈值" v-model="seteExpectNumVisible">
+      <span class="dialog-footer">
+        <el-button @click="seteExpectNumVisible = false">取 消</el-button>
+        <el-button type="primary" @click="seteExpectNumVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
 
     <el-container class="qMain">
       <!-- 侧边栏, 题型选择 -->
@@ -116,6 +163,13 @@
             <i class="iconfont icon-zhuguanti"></i>
             <template #title>{{ indexList[4].name }}</template>
           </el-menu-item>
+          <el-menu-item
+            class="qAsideMenuFont qAsideBottom"
+            :index="indexList[5].path"
+          >
+            <i class="el-icon-time"></i>
+            <template #title>{{ indexList[5].name }}</template>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <!-- 主容器, 展示题库 -->
@@ -131,13 +185,18 @@
     </el-container>
 
     <!-- 组卷子组件 -->
-    <el-drawer
-      title="组 卷 界 面"
-      v-model="cpDrawer"
-      class="cpDrawer"
-      direction="rtl"
-      size="60%"
-    >
+    <el-drawer v-model="cpDrawer" class="cpDrawer" direction="rtl" size="60%">
+      <template #title
+        ><span>组 卷 界 面</span
+        ><el-button
+          size="small"
+          circle
+          icon="el-icon-question"
+          class="drawerHelpBtn"
+          title="组卷提示"
+          @click="cpHelpShow"
+        ></el-button
+      ></template>
       <el-divider content-position="right"
         ><i class="el-icon-more-outline"></i
       ></el-divider>
@@ -145,6 +204,11 @@
         :composeCounter="composeCounter"
         :composeList="composeList"
         :cpDrawer="cpDrawer"
+        :compList_sc="compList_sc"
+        :compList_mc="compList_mc"
+        :compList_tf="compList_tf"
+        :compList_gf="compList_gf"
+        :compList_sj="compList_sj"
         @chartAffix="chartAffix"
       ></ComposedPaper>
     </el-drawer>
@@ -256,10 +320,15 @@ export default {
           path: "/user/qubank/questiondisplay/sj",
           name: " 主 观 题",
         },
+        {
+          path: "/user/composehistory",
+          name: "组 卷 历 史",
+        },
       ],
       loading: false,
       searchingKey: "",
       debounceSearchKey: "",
+      searchingDate: [],
       tempAddList: [], // 暂存试题 - 加入到组卷或删除
       tempDelList: [], // 暂存试题 - 从组卷或删除中移除
       bannedList: new Set(),
@@ -267,7 +336,7 @@ export default {
       composeList: new Set(), // 已选试题列表
       deleteCounter: 0, // 预删除题目数量
       deleteList: new Set(), // 预删除试题列表
-      composeFirstSignal: false, // 初次点击加入试卷按钮触发设定预期题目数量
+      seteExpectNumVisible: false, // 设置题目数量阈值dialog
       composeCounterExp: 50, // 预期题目数量 - default=50
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
@@ -339,9 +408,6 @@ export default {
     // 加入组卷/删除
     addToTarget: function (target) {
       if (target == "add") {
-        // if (this.composeFirstSignal == false) {
-
-        // }
         this.tempAddList.forEach((element) => {
           // 所选加入到组卷
           this.composeList.add(element);
@@ -423,6 +489,7 @@ export default {
       this.$notify({
         type: "info",
         title: "上传提示",
+        offset: 100,
         dangerouslyUseHTMLString: true,
         message:
           "<strong>科目</strong>\
@@ -452,10 +519,32 @@ export default {
       this.$notify({
         type: "info",
         title: "删除提示",
+        offset: 100,
         dangerouslyUseHTMLString: true,
         message:
           "<strong>题目详情</strong>\
-          <p>点击对应题目的题面处, 即可查看详情</p>",
+          <p>点击对应题目的题面处, 即可查看详情</p>\
+          <strong>清空 和 移除</strong>\
+          <p>勾选题目点击移除可将其移除待删除列表, 也可使用清空重置待删除列表</p>\
+          <strong>删除</strong>\
+          <p style='color: red'>删除操作不可撤回, 请主动确认</p>",
+        duration: 5000,
+      });
+    },
+
+    // 删除提示
+    cpHelpShow: function () {
+      this.$notify({
+        type: "info",
+        title: "组卷提示",
+        position: "top-left",
+        offset: 100,
+        dangerouslyUseHTMLString: true,
+        message:
+          "<strong>选题提示</strong>\
+          <p>选题提示按钮右上角会显示已选题目数量, 单击可开关可视化饼图提示</p>\
+          <strong>清空 和 移除</strong>\
+          <p>勾选题目点击移除可将其移除预组卷列表, 也可使用清空重置待预组卷列表</p>",
         duration: 5000,
       });
     },
@@ -506,6 +595,7 @@ export default {
     // pie固钉
     chartAffix: function (state) {
       this.chartAffixVisible = state;
+      this.cpChart.setOption(this.cpChartOption);
     },
 
     // 阻止unload事件提示
@@ -575,7 +665,7 @@ export default {
 }
 
 .qAside {
-  height: 60%;
+  height: 70%;
   margin-right: 20px;
   border-radius: 10px;
 }
@@ -590,6 +680,12 @@ export default {
 }
 
 .qAsideSubMenuFont {
+}
+
+.qAsideBottom {
+  width: 100%;
+  position: absolute;
+  bottom: 5px;
 }
 
 .qMain {

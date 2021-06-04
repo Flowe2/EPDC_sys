@@ -36,6 +36,7 @@ export default {
 }
 body {
   margin: 0;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
   cursor: url(https://blog-static.cnblogs.com/files/lucas--liu/cat6.ico), auto;
 }
 
