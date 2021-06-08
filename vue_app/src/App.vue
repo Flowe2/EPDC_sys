@@ -8,20 +8,164 @@ export default {
   data() {
     return {
       isRouterAlive: true,
+      // el-date-picker - 快捷选项
+      dateRanges: [
+        {
+          text: "今天",
+          value: (() => {
+            const end = new Date();
+            const start = new Date();
+            end.setHours(0,0,0,0);
+            start.setHours(0,0,0,0);
+            return [start, end];
+          })(),
+        },{
+          text: "最近一周",
+          value: (() => {
+            const end = new Date();
+            const start = new Date();
+            end.setHours(0,0,0,0);
+            start.setHours(0,0,0,0);
+            start.setDate(start.getDate() - 6);
+            return [start, end];
+          })(),
+        },
+        {
+          text: "最近一个月",
+          value: (() => {
+            const end = new Date();
+            const start = new Date();
+            end.setHours(0,0,0,0);
+            start.setHours(0,0,0,0);
+            start.setMonth(start.getMonth() - 1);
+            return [start, end];
+          })(),
+        },
+        {
+          text: "最近三个月",
+          value: (() => {
+            const end = new Date();
+            const start = new Date();
+            end.setHours(0,0,0,0);
+            start.setHours(0,0,0,0);
+            start.setMonth(start.getMonth() - 3);
+            return [start, end];
+          })(),
+        },
+        {
+          text: "最近半年",
+          value: (() => {
+            const end = new Date();
+            const start = new Date();
+            end.setHours(0,0,0,0);
+            start.setHours(0,0,0,0);
+            start.setMonth(start.getMonth() - 6);
+            return [start, end];
+          })(),
+        },
+        {
+          text: "最近一年",
+          value: (() => {
+            const end = new Date();
+            const start = new Date();
+            end.setHours(0,0,0,0);
+            start.setHours(0,0,0,0);
+            start.setFullYear(start.getFullYear() - 1);
+            return [start, end];
+          })(),
+        },
+      ],
     };
   },
+  // 全局inject后可用函数
   provide() {
     return {
       reload: this.reload,
+      frontendSearch: this.frontendSearch,
+      frontendDateSort: this.frontendDateSort,
+      frontendOtherSort: this.frontendOtherSort,
+      frontendDateSift: this.frontendDateSift,
+      dateRanges: this.dateRanges,
     };
   },
   components: {},
   methods: {
+    // 刷新
     reload: function () {
       this.isRouterAlive = false;
       this.$nextTick(function () {
         this.isRouterAlive = true;
       });
+    },
+    // 模糊检索
+    frontendSearch: function (searchkey, origin, display) {
+      let filterList = Object.keys(display[0]);
+      if (searchkey) {
+        display = display.filter((v) => {
+          return filterList.some((key) => {
+            return v[key].toString().indexOf(searchkey) > -1;
+          });
+        });
+      } else {
+        display = origin;
+      }
+      return [display, display.length];
+    },
+    // table日期排序
+    frontendDateSort: function (order, colname, display, origin) {
+      if (order == "descending") {
+        // 降序
+        display = display.sort((a, b) => {
+          let timeA = new Date(a[colname]);
+          let timeB = new Date(b[colname]);
+          return timeA > timeB ? -1 : timeA < timeB ? 1 : 0;
+        });
+      } else if (order == "ascending") {
+        // 升序
+        display = display.sort((a, b) => {
+          let timeA = new Date(a[colname]);
+          let timeB = new Date(b[colname]);
+          return timeA > timeB ? 1 : timeA < timeB ? -1 : 0;
+        });
+      } else {
+        // 源数据默认
+        display = origin;
+      }
+      return display;
+    },
+    // table非日期排序(string排序)
+    frontendOtherSort: function (order, colname, display, origin) {
+      if (order == "descending") {
+        // 降序
+        display = display.sort((a, b) => {
+          return a[colname] > b[colname] ? -1 : a[colname] < b[colname] ? 1 : 0;
+        });
+      } else if (order == "ascending") {
+        // 升序
+        display = display.sort((a, b) => {
+          return a[colname] > b[colname] ? 1 : a[colname] < b[colname] ? -1 : 0;
+        });
+      } else {
+        // 恢复默认
+        display = origin;
+      }
+      return display;
+    },
+    // table日期筛选
+    frontendDateSift: function (daterange, colname, display, origin) {
+      if (daterange && daterange.length > 0) {
+        daterange[1].setDate(daterange[1].getDate() + 1);
+        display = origin.filter((v) => {
+          return (
+            new Date(v[colname]) >= daterange[0] &&
+            new Date(v[colname]) <= daterange[1]
+          );
+        });
+      } else {
+        display = origin;
+      }
+      // console.log(daterange);
+      return [display, display.length];
     },
   },
 };
@@ -36,7 +180,8 @@ export default {
 }
 body {
   margin: 0;
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   cursor: url(https://blog-static.cnblogs.com/files/lucas--liu/cat6.ico), auto;
 }
 

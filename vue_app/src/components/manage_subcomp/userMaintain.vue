@@ -1,9 +1,55 @@
 <template>
   <div id="um_mainbody" class="um_mainbody">
-    <h2 id="um_h2" class="um_h2">
-      <i class="el-icon-edit"></i>
-      账号维护
-    </h2>
+    <el-space alignment="center" size="large">
+      <h2 id="um_h2" class="um_h2">
+        <i class="el-icon-edit"></i>
+        账号维护
+      </h2>
+      <el-divider direction="vertical"></el-divider>
+      <el-tooltip content="帐号检索" placement="right">
+        <el-input
+          prefix-icon="el-icon-search"
+          size="small"
+          v-model="inputSearchKey"
+          @keydown.enter="toSearch"
+          clearable
+          @clear="toSearch"
+          placeholder="输入后请回车"
+        >
+        </el-input
+      ></el-tooltip>
+      <el-divider direction="vertical"></el-divider>
+      <el-popover placement="bottom-start" width="auto" trigger="click">
+        <template #reference>
+          <el-button
+            class="qHeaderBtn qHeaderUpNDel"
+            title="更多条件筛选"
+            icon="el-icon-more-outline"
+            size="mini"
+          ></el-button>
+        </template>
+        <el-space>
+          <el-date-picker
+            v-model="searchingDate"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            unlink-panels
+            :default-value="[
+              new Date(new Date() - 1000 * 60 * 60 * 24 * 365),
+              new Date(),
+            ]"
+            :shortcuts="dateRanges"
+          >
+          </el-date-picker>
+          <el-divider direction="vertical"></el-divider>
+          <el-tooltip content="按最后登录筛选" placement="top">
+            <el-button type="primary" @click="dateSift">筛选</el-button>
+          </el-tooltip>
+        </el-space>
+      </el-popover>
+    </el-space>
 
     <el-divider content-position="right"
       ><i class="el-icon-more-outline"></i
@@ -30,7 +76,13 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="uemail" :sortable="'custom'" label="用户邮箱" width="150" :column-key="'uemail'">
+      <el-table-column
+        prop="uemail"
+        :sortable="'custom'"
+        label="用户邮箱"
+        width="150"
+        :column-key="'uemail'"
+      >
         <template #default="scope">
           <el-popover
             effect="light"
@@ -62,7 +114,13 @@
       <el-table-column min-width="80px">
         <!-- 占位 -->
       </el-table-column>
-      <el-table-column prop="lastlog" :sortable="'custom'" label="最后登录日期" width="200" :column-key="'lastlog'">
+      <el-table-column
+        prop="lastlog"
+        :sortable="'custom'"
+        label="最后登录日期"
+        width="200"
+        :column-key="'lastlog'"
+      >
         <template #default="scope">
           <i class="el-icon-time"></i>
           <span style="margin-left: 10px">{{ scope.row.lastlog }}</span>
@@ -144,9 +202,18 @@
 <script>
 export default {
   name: "UserMaintain",
+  inject: [
+    "dateRanges",
+    "frontendSearch",
+    "frontendDateSort",
+    "frontendOtherSort",
+    "frontendDateSift",
+  ],
   data() {
     return {
       loading: true,
+      inputSearchKey: "", // 模糊查询
+      searchingDate: [], // 日期筛选
       displayList: [],
       displayCounter: 0,
       checkedList: [], // { uemail: "", uname: "", lastlog: ""  }
@@ -161,6 +228,32 @@ export default {
     };
   },
   methods: {
+    // 前端搜索
+    toSearch: function () {
+      this.loading = true;
+      let res = this.frontendSearch(
+        this.inputSearchKey,
+        this.checkedList,
+        this.displayList
+      );
+      this.displayList = res[0];
+      this.displayCounter = res[1];
+      this.loading = false;
+    },
+    // 日期筛选
+    dateSift: function () {
+      this.loading = true;
+      let res = this.frontendDateSift(
+        this.searchingDate,
+        "lastlog",
+        this.displayList,
+        this.checkedList
+      );
+      this.displayList = res[0];
+      this.displayCounter = res[1];
+      this.loading = false;
+    },
+
     // 修改密码
     handleEdit: function (row) {
       const self = this;
@@ -173,6 +266,7 @@ export default {
       console.log(row.uemail);
       self.postDeleteUser(row.uemail);
     },
+
     // 改变分页大小
     handleSizeChange: function (size) {
       console.log(size + " per page.");
@@ -183,54 +277,35 @@ export default {
       console.log("current page: " + currentPage);
       this.currentPage = currentPage;
     },
+
     // 动态设置table高度, 固定表头
     dynamicTableHeight: function () {
       let bodyHeight = document.getElementById("um_mainbody").clientHeight;
       // divider margin-top=margin-bottom=24, height=1
       let headHeight = document.getElementById("um_h2").clientHeight;
       let pagiHeight;
-      (!this.onlySinglePage) ? (pagiHeight = document.getElementById("um_pagination").clientHeight) : (pagiHeight = 0);
+      !this.onlySinglePage
+        ? (pagiHeight = document.getElementById("um_pagination").clientHeight)
+        : (pagiHeight = 0);
       this.tableHeight = bodyHeight - headHeight - 49 * 2 - pagiHeight;
     },
 
     // 全局排序
     globalSort: function (col) {
-      console.log(col.prop);
-      console.log(col.order);
       if (col.prop == "lastlog") {
-        if (col.order == "descending") {
-          // 降序
-          this.displayList = this.displayList.sort((a, b) => {
-            let timeA = new Date(a.lastlog.split(" ", 1).toString());
-            let timeB = new Date(b.lastlog.split(" ", 1).toString());
-            return timeA > timeB ? -1 : timeA < timeB ? 1 : 0;
-          });
-        } else if (col.order == "ascending") {
-          // 升序
-          this.displayList = this.displayList.sort((a, b) => {
-            let timeA = new Date(a.lastlog.split(" ", 1).toString());
-            let timeB = new Date(b.lastlog.split(" ", 1).toString());
-            return timeA > timeB ? 1 : timeA < timeB ? -1 : 0;
-          });
-        } else {
-          // 恢复默认
-          this.displayList = this.checkedList;
-        }
+        this.displayList = this.frontendDateSort(
+          col.order,
+          "lastlog",
+          this.displayList,
+          this.checkedList
+        );
       } else if (col.prop == "uemail") {
-        if (col.order == "descending") {
-          // 降序
-          this.displayList = this.displayList.sort((a, b) => {
-            return a.uemail > b.uemail ? -1 : a.uemail < b.uemail ?  1 : 0;
-          });
-        } else if (col.order == "ascending") {
-          // 升序
-          this.displayList = this.displayList.sort((a, b) => {
-            return a.uemail > b.uemail ? 1 : a.uemail < b.uemail ?  -1 : 0;
-          });
-        } else {
-          // 恢复默认
-          this.displayList = this.checkedList;
-        }
+        this.displayList = this.frontendOtherSort(
+          col.order,
+          "uemail",
+          this.displayList,
+          this.checkedList
+        );
       } else {
         this.displayList = this.checkedList;
       }

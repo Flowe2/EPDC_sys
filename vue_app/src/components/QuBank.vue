@@ -33,16 +33,14 @@
           <el-input
             prefix-icon="el-icon-search"
             clearable
-            v-model="searchingKey"
-            placeholder="输入后请稍等"
+            v-model="inputSearchKey"
+            @keydown.enter="toSearch"
+            @clear="toSearch"
+            placeholder="输入后请回车"
           ></el-input>
         </el-col>
         <el-col :span="1" class="qElCol">
-          <el-popover
-            placement="bottom-start"
-            :width="400"
-            trigger="click"
-          >
+          <el-popover placement="bottom-start" width="auto" trigger="click">
             <template #reference>
               <el-button
                 class="qHeaderBtn qHeaderUpNDel"
@@ -50,16 +48,30 @@
                 icon="el-icon-more-outline"
               ></el-button>
             </template>
-            <el-date-picker
-              v-model="searchingDate"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              unlink-panels
-              :default-date="new Date()"
-            >
-            </el-date-picker>
+            <el-space>
+              <el-date-picker
+                v-model="searchingDate"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                unlink-panels
+                :default-value="[
+                  new Date(new Date() - 1000 * 60 * 60 * 24 * 365),
+                  new Date(),
+                ]"
+                :shortcuts="dateRanges"
+              >
+              </el-date-picker>
+              <el-divider direction="vertical"></el-divider>
+              <el-tooltip content="按入库时间筛选" placement="top">
+                <el-button
+                  style="background-color: #394045; color: #fff"
+                  @click="dateSift"
+                  >筛选</el-button
+                >
+              </el-tooltip>
+            </el-space>
           </el-popover>
         </el-col>
         <el-col :span="2.5" :offset="5" class="qElCol">
@@ -87,7 +99,7 @@
             <el-button
               class="qHeaderBtn"
               icon="el-icon-set-up"
-              @click="seteExpectNumVisible = true"
+              @click="setExpectNumVisible = true"
             >
             </el-button
           ></el-tooltip>
@@ -113,10 +125,30 @@
       </el-row>
     </el-header>
 
-    <el-dialog title="试卷题目数量阈值" v-model="seteExpectNumVisible">
+    <el-dialog title="试卷题目数量阈值" v-model="setExpectNumVisible">
+      <el-form label-position="right" label-width="80px" :model="setExpect">
+        <el-form-item label="SUM">
+          <el-slider v-model="setExpect.sum.num" show-input> </el-slider>
+        </el-form-item>
+        <el-form-item label="单选题">
+          <el-slider v-model="setExpect.sc.num" show-input> </el-slider>
+        </el-form-item>
+        <el-form-item label="多选题">
+          <el-slider v-model="setExpect.mc.num" show-input> </el-slider>
+        </el-form-item>
+        <el-form-item label="判断题">
+          <el-slider v-model="setExpect.tf.num" show-input> </el-slider>
+        </el-form-item>
+        <el-form-item label="填空题">
+          <el-slider v-model="setExpect.gf.num" show-input> </el-slider>
+        </el-form-item>
+        <el-form-item label="主观题">
+          <el-slider v-model="setExpect.sj.num" show-input> </el-slider>
+        </el-form-item>
+      </el-form>
       <span class="dialog-footer">
-        <el-button @click="seteExpectNumVisible = false">取 消</el-button>
-        <el-button type="primary" @click="seteExpectNumVisible = false"
+        <el-button @click="setExpectNumVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setExpectNumVisible = false"
           >确 定</el-button
         >
       </span>
@@ -176,6 +208,7 @@
       <el-main name="qDisplay" class="qDisplay">
         <router-view
           :searchingKey="debounceSearchKey"
+          :searchingDate="debounceSearchDate"
           :loading="loading"
           :bannedList="bannedList"
           @loading="loading = $event"
@@ -269,7 +302,6 @@
 </template>
 
 <script>
-import _ from "lodash";
 import ComposedPaper from "@/components/qubank_subcomp/ComposedPaper.vue";
 import UploadQuestion from "@/components/qubank_subcomp/UploadQuestion.vue";
 import DeleteQuestion from "@/components/qubank_subcomp/DeleteQuestion.vue";
@@ -296,7 +328,7 @@ echarts.use([
 
 export default {
   name: "QuBank",
-  inject: ["reload"], //注入刷新依赖
+  inject: ["reload", "dateRanges"], //注入刷新依赖
   data() {
     return {
       indexList: [
@@ -326,9 +358,10 @@ export default {
         },
       ],
       loading: false,
-      searchingKey: "",
+      inputSearchKey: "",
       debounceSearchKey: "",
       searchingDate: [],
+      debounceSearchDate: [],
       tempAddList: [], // 暂存试题 - 加入到组卷或删除
       tempDelList: [], // 暂存试题 - 从组卷或删除中移除
       bannedList: new Set(),
@@ -336,7 +369,7 @@ export default {
       composeList: new Set(), // 已选试题列表
       deleteCounter: 0, // 预删除题目数量
       deleteList: new Set(), // 预删除试题列表
-      seteExpectNumVisible: false, // 设置题目数量阈值dialog
+      setExpectNumVisible: false, // 设置题目数量阈值dialog
       composeCounterExp: 50, // 预期题目数量 - default=50
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
@@ -382,6 +415,14 @@ export default {
             ],
           },
         ],
+      },
+      setExpect: {
+        sum: { num: 0, point: 0 },
+        sc: { num: 0, point: 0 },
+        mc: { num: 0, point: 0 },
+        tf: { num: 0, point: 0 },
+        gf: { num: 0, point: 0 },
+        sj: { num: 0, point: 0 },
       },
       compList_sc: [],
       compList_mc: [],
@@ -478,11 +519,15 @@ export default {
       return _union;
     },
 
-    // 搜索 - 防抖
-    debounceSearch: _.debounce(function () {
-      this.debounceSearchKey = this.searchingKey;
-      this.loading = true;
-    }, 1000),
+    // 搜索
+    toSearch: function () {
+      this.debounceSearchKey = this.inputSearchKey;
+    },
+
+    // 更多条件过滤 - 日期过虑
+    dateSift: function () {
+      this.debounceSearchDate = this.searchingDate;
+    },
 
     // 上传界面帮助
     ulHelpShow: function () {
@@ -608,10 +653,6 @@ export default {
     },
   },
   watch: {
-    // 搜索防抖, 1秒后传给router-view
-    searchingKey: function () {
-      this.debounceSearch();
-    },
     composeCounter: function () {
       console.log("update");
       this.clasifyQuestion();

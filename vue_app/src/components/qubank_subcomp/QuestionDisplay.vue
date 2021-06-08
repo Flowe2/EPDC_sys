@@ -178,7 +178,7 @@
 
 <script>
 export default {
-  inject: ["reload"], //注入刷新依赖
+  inject: ["reload", "frontendSearch", "frontendDateSort", "frontendDateSift"], //注入刷新依赖
   data() {
     return {
       targetType: "sc", // 初始进入初始化, 停在单选题题库界面
@@ -196,7 +196,7 @@ export default {
       onlySinglePage: false,
     };
   },
-  props: ["loading", "searchingKey", "bannedList"],
+  props: ["loading", "searchingKey", "searchingDate", "bannedList"],
   methods: {
     // 改变分页大小
     handleSizeChange: function (size) {
@@ -213,8 +213,9 @@ export default {
       let bodyHeight = document.getElementById("qudisplay_body").clientHeight;
       let pagiHeight;
       !this.onlySinglePage
-        ? (pagiHeight = document.getElementById("qudisplay_pagination")
-            .clientHeight)
+        ? (pagiHeight = document.getElementById(
+            "qudisplay_pagination"
+          ).clientHeight)
         : (pagiHeight = 0);
       this.tableHeight = bodyHeight - pagiHeight - 10;
     },
@@ -258,25 +259,12 @@ export default {
     additionTimeSort: function (col) {
       // 每次改变排序返回第一页,
       // this.currentPage = 1;
-      if (col.order == "descending") {
-        // 降序
-        this.displayList = this.displayList.sort((a, b) => {
-          let timeA = new Date(a.additionTime.split(" ", 1).toString());
-          let timeB = new Date(b.additionTime.split(" ", 1).toString());
-          return timeA > timeB ? -1 : timeA < timeB ? 1 : 0;
-        });
-      } else if (col.order == "ascending") {
-        // 升序
-        this.displayList = this.displayList.sort((a, b) => {
-          let timeA = new Date(a.additionTime.split(" ", 1).toString());
-          let timeB = new Date(b.additionTime.split(" ", 1).toString());
-          return timeA > timeB ? 1 : timeA < timeB ? -1 : 0;
-        });
-      } else {
-        // 恢复默认
-        // console.log(col.order);
-        this.displayList = this.qudisplayList;
-      }
+      this.displayList = this.frontendDateSort(
+        col.order,
+        "additionTime",
+        this.displayList,
+        this.qudisplayList
+      );
     },
     // 选项序号转字母处理
     optionIndex: function (index) {
@@ -371,24 +359,30 @@ export default {
       // 随导航栏跳转改变刷新
       this.getSingleChoiceList();
     },
-    // 简单搜索
+    // table简单搜索
     searchingKey: function () {
-      // console.log(this.searchingKey);
-      const search = this.searchingKey;
-      let filterList = Object.keys(this.qudisplayList[0]);
-      // console.log(filterList);
-      if (search) {
-        this.displayList = this.qudisplayList.filter((v) => {
-          //some是一个为true，即结果为true
-          return filterList.some((key) => {
-            //要toString是因为对象里有id，id是int类型，要转为字符串类型
-            return v[key].toString().indexOf(search) > -1;
-          });
-        });
-      } else {
-        this.displayList = this.qudisplayList;
-      }
-      this.displayCounter = this.displayList.length;
+      this.$emit("loading", true);
+      let res = this.frontendSearch(
+        this.searchingKey,
+        this.qudisplayList,
+        this.displayList
+      );
+      this.displayList = res[0];
+      this.displayCounter = res[1];
+      this.$emit("loading", false);
+    },
+    // table日期筛选
+    searchingDate: function () {
+      // console.log(this.searchingDate);
+      this.$emit("loading", true);
+      let res = this.frontendDateSift(
+        this.searchingDate,
+        "additionTime",
+        this.displayList,
+        this.qudisplayList
+      );
+      this.displayList = res[0];
+      this.displayCounter = res[1];
       this.$emit("loading", false);
     },
   },
