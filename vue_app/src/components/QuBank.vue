@@ -95,7 +95,7 @@
           ></el-col
         >
         <el-col :span="1">
-          <el-tooltip content="设置组卷题目数量阈值" placement="top">
+          <el-tooltip content="设置组卷题目数量上限" placement="top">
             <el-button
               class="qHeaderBtn"
               icon="el-icon-set-up"
@@ -125,30 +125,45 @@
       </el-row>
     </el-header>
 
-    <el-dialog title="试卷题目数量阈值" v-model="setExpectNumVisible">
+    <el-dialog title="试卷题目数量上限" v-model="setExpectNumVisible">
       <el-form label-position="right" label-width="80px" :model="setExpect">
         <el-form-item label="SUM">
-          <el-slider v-model="setExpect.sum.num" show-input> </el-slider>
+          <el-row>
+            <el-col :span="17">
+              <el-progress
+                :text-inside="true"
+                :stroke-width="40"
+                :percentage="setProportion"
+              ></el-progress>
+            </el-col>
+            <el-col :span="5" :offset="2">
+              <el-input-number
+                v-model="setLimitNum"
+                :min="0"
+                size="small"
+              ></el-input-number>
+            </el-col>
+          </el-row>
         </el-form-item>
-        <el-form-item label="单选题">
-          <el-slider v-model="setExpect.sc.num" show-input> </el-slider>
-        </el-form-item>
-        <el-form-item label="多选题">
-          <el-slider v-model="setExpect.mc.num" show-input> </el-slider>
-        </el-form-item>
-        <el-form-item label="判断题">
-          <el-slider v-model="setExpect.tf.num" show-input> </el-slider>
-        </el-form-item>
-        <el-form-item label="填空题">
-          <el-slider v-model="setExpect.gf.num" show-input> </el-slider>
-        </el-form-item>
-        <el-form-item label="主观题">
-          <el-slider v-model="setExpect.sj.num" show-input> </el-slider>
+        <el-form-item
+          v-for="(value, key) in setExpect"
+          :key="key"
+          :label="value.title"
+        >
+          <el-slider
+            v-model="value.num"
+            :max="setLimitNum"
+            :disabled="setToLimit"
+            show-input
+          ></el-slider>
         </el-form-item>
       </el-form>
-      <span class="dialog-footer">
-        <el-button @click="setExpectNumVisible = false">取 消</el-button>
-        <el-button type="primary" @click="setExpectNumVisible = false"
+      <span style="width: 100%; height: 100%; margin-top: 20px">
+        <el-button @click="setLimitCheck">test</el-button>
+        <el-button
+          style="position: absolute; right: 10px; bottom: 10px"
+          type="primary"
+          @click="setExpectNumVisible = false"
           >确 定</el-button
         >
       </span>
@@ -369,7 +384,7 @@ export default {
       composeList: new Set(), // 已选试题列表
       deleteCounter: 0, // 预删除题目数量
       deleteList: new Set(), // 预删除试题列表
-      setExpectNumVisible: false, // 设置题目数量阈值dialog
+      setExpectNumVisible: false, // 设置题目数量上限dialog
       composeCounterExp: 50, // 预期题目数量 - default=50
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
@@ -380,26 +395,68 @@ export default {
       cpChartOption: {
         tooltip: {
           trigger: "item",
+          formatter: "{a} <br/><hr>{b}: {c} ({d}%)",
           position: "top",
         },
         series: [
           {
-            name: "已选题目",
+            name: "待选题目",
             type: "pie",
-            radius: ["40%", "70%"],
-            avoidLabelOverlap: false,
+            selectedMode: "single",
+            radius: [0, "50%"],
             itemStyle: {
-              borderRadius: 10,
-              borderColor: "#fff",
+              borderRadius: 5,
+              borderColor: "#CFCFCF",
               borderWidth: 2,
             },
             label: {
               show: true,
+              fontSize: 14,
+              color: "#B68D10",
+              fontWeight: "bold",
               position: "inner",
             },
             emphasis: {
               label: {
                 show: true,
+                fontSize: 16,
+                color: "#D5A105",
+                fontWeight: "bold",
+              },
+            },
+            labelLine: {
+              show: false,
+            },
+            data: [
+              { value: 0, name: "单选" },
+              { value: 0, name: "多选" },
+              { value: 0, name: "判断" },
+              { value: 0, name: "填空" },
+              { value: 0, name: "主观" },
+            ],
+          },
+          {
+            name: "已选题目",
+            type: "pie",
+            radius: ["60%", "80%"],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 5,
+              borderColor: "#CFCFCF",
+              borderWidth: 2,
+            },
+            label: {
+              show: true,
+              fontSize: 16,
+              color: "#B68D10",
+              fontWeight: "bold",
+              position: "inner",
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: 18,
+                color: "#D5A105",
                 fontWeight: "bold",
               },
             },
@@ -415,14 +472,17 @@ export default {
             ],
           },
         ],
+        // color: ["#D9ED92", "#99D98C", "#52B69A", "#168AAD", "#1E6091"],
+        color: ["#2F3E46", "#354F52", "#52796F", "#84A98C", "#CAD2C5"],
       },
+      setLimitNum: 0, // 题目总数
+      setToLimit: true, // 达到总数
       setExpect: {
-        sum: { num: 0, point: 0 },
-        sc: { num: 0, point: 0 },
-        mc: { num: 0, point: 0 },
-        tf: { num: 0, point: 0 },
-        gf: { num: 0, point: 0 },
-        sj: { num: 0, point: 0 },
+        sc: { title: "单选题", num: 0, point: 0 },
+        mc: { title: "多选题", num: 0, point: 0 },
+        tf: { title: "判断题", num: 0, point: 0 },
+        gf: { title: "填空题", num: 0, point: 0 },
+        sj: { title: "主观题", num: 0, point: 0 },
       },
       compList_sc: [],
       compList_mc: [],
@@ -446,14 +506,45 @@ export default {
       }
     },
 
+    // 题量上限检查
+    setLimitCheck: function () {
+      let crtPath = this.$route.path.split("/").reverse()[0];
+      switch (crtPath) {
+        case "sc":
+          return this.tempAddList.length>(this.setExpect.sc.num - this.compList_sc.length) ? true : false;
+        case "mc":
+          return this.tempAddList.length>(this.setExpect.mc.num - this.compList_mc.length) ? true : false;
+        case "tf":
+          return this.tempAddList.length>(this.setExpect.tf.num - this.compList_tf.length) ? true : false;
+        case "gf":
+          return this.tempAddList.length>(this.setExpect.gf.num - this.compList_gf.length) ? true : false;
+        case "sj":
+          return this.tempAddList.length>(this.setExpect.sj.num - this.compList_sj.length) ? true : false;
+      }
+    },
+
     // 加入组卷/删除
     addToTarget: function (target) {
       if (target == "add") {
-        this.tempAddList.forEach((element) => {
-          // 所选加入到组卷
-          this.composeList.add(element);
-        });
-        this.composeCounter = this.composeList.size;
+        if (this.setLimitNum == 0) {
+          this.$message({
+            message: "请先设置题目数量上限",
+            type: "error",
+          });
+          this.setExpectNumVisible = true;
+        } else if (this.setLimitCheck()) {
+          this.$message({
+            message: "当前题目数量上限不足或已达上限",
+            type: "error",
+          });
+        } 
+        else {
+          this.tempAddList.forEach((element) => {
+            // 所选加入到组卷
+            this.composeList.add(element);
+          });
+          this.composeCounter = this.composeList.size;
+        }
       } else {
         this.tempAddList.forEach((element) => {
           // 所选加入到删除
@@ -600,6 +691,39 @@ export default {
       this.cpChart.setOption(this.cpChartOption);
     },
 
+    // set pie chart
+    cpPieUpdate: function () {
+      this.cpChartOption.series[1].data = [
+        { value: this.compList_sc.length, name: "单选题" },
+        { value: this.compList_mc.length, name: "多选题" },
+        { value: this.compList_tf.length, name: "判断题" },
+        { value: this.compList_gf.length, name: "填空题" },
+        { value: this.compList_sj.length, name: "主观题" },
+      ];
+      this.cpChartOption.series[0].data = [
+        {
+          value: this.setExpect.sc.num - this.compList_sc.length,
+          name: "单选",
+        },
+        {
+          value: this.setExpect.mc.num - this.compList_mc.length,
+          name: "多选",
+        },
+        {
+          value: this.setExpect.tf.num - this.compList_tf.length,
+          name: "判断",
+        },
+        {
+          value: this.setExpect.gf.num - this.compList_gf.length,
+          name: "填空",
+        },
+        {
+          value: this.setExpect.sj.num - this.compList_sj.length,
+          name: "主观",
+        },
+      ];
+    },
+
     // 题目分类 & 更新pie chart
     clasifyQuestion: function () {
       this.compList_sc = [];
@@ -626,13 +750,7 @@ export default {
             break;
         }
       });
-      this.cpChartOption.series[0].data = [
-        { value: this.compList_sc.length, name: "单选题" },
-        { value: this.compList_mc.length, name: "多选题" },
-        { value: this.compList_tf.length, name: "判断题" },
-        { value: this.compList_gf.length, name: "填空题" },
-        { value: this.compList_sj.length, name: "主观题" },
-      ];
+      this.cpPieUpdate();
       if (this.chartAffixVisible == true) {
         this.cpChart.setOption(this.cpChartOption);
       }
@@ -652,10 +770,43 @@ export default {
       return "关闭";
     },
   },
+  computed: {
+    expectSumNum: function () {
+      let res = 0;
+      let self = this.setExpect;
+      for (let v in self) {
+        res += self[v]["num"];
+      }
+      return res;
+    },
+    expectSumPoint: function () {
+      let res = 0;
+      let self = this.setExpect;
+      for (let v in self) {
+        res += self[v]["point"];
+      }
+      return res;
+    },
+    setProportion: function () {
+      return this.setLimitNum
+        ? Math.floor((this.expectSumNum / this.setLimitNum) * 100)
+        : 100;
+    },
+  },
   watch: {
     composeCounter: function () {
-      console.log("update");
+      // console.log("update");
       this.clasifyQuestion();
+    },
+    setProportion: function () {
+      if (this.setProportion > 100) {
+        this.setLimitNum = this.expectSumNum;
+        this.setToLimit = true;
+      } else if (this.setProportion == 100) {
+        this.setToLimit = true;
+      } else {
+        this.setToLimit = false;
+      }
     },
   },
   mounted() {
@@ -667,10 +818,10 @@ export default {
     // 离开后销毁
     window.removeEventListener("beforeunload", this.preReload);
   },
-  beforeRouteUpdate(to, from) {
-    console.log(to.path);
-    console.log(from.path);
-  },
+  // beforeRouteUpdate(to, from) {
+  //   console.log(to.path);
+  //   console.log(from.path);
+  // },
 };
 </script>
 

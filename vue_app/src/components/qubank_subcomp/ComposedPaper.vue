@@ -34,7 +34,7 @@
             type="primary"
             :disabled="cpBtnDisabled"
             @click="cpCheckedCpCheck"
-            >查重</el-button
+            >赋分值</el-button
           ></el-col
         >
         <el-col :span="8">
@@ -64,74 +64,39 @@
     </el-steps>
     <!-- 试卷预览 -->
     <el-main class="cp_main">
-      <el-collapse v-model="activeQuestionType">
-        <el-collapse-item name="sc">
-          <template #title>
-            <i class="iconfont icon-danxuankuang"></i>&nbsp;
-            <el-button type="info" size="mini" round plain>{{
-              compList_sc.length
-            }}</el-button
-            >&nbsp;
-            <span class="cpCollapseTitle">单选题 SINGLE CHOICE</span>
-          </template>
-          <div>单选题</div>
-        </el-collapse-item>
-        <el-collapse-item name="mc">
-          <template #title>
-            <i class="iconfont icon-duoxuankuang"></i>&nbsp;
-            <el-button type="info" size="mini" round plain>{{
-              compList_mc.length
-            }}</el-button
-            >&nbsp;
-            <span class="cpCollapseTitle">多选题 MULTIPLE CHOICE</span>
-          </template>
-          <div>多选题</div>
-        </el-collapse-item>
-        <el-collapse-item name="tf">
-          <template #title>
-            <i class="iconfont icon-panduan"></i>&nbsp;<el-button
-              type="info"
-              size="mini"
-              round
-              plain
-              >{{ compList_tf.length }}</el-button
-            >&nbsp;<span class="cpCollapseTitle">判断题 TRUE OF FALSE</span>
-          </template>
-          <div>判断题</div>
-        </el-collapse-item>
-        <el-collapse-item name="gf">
-          <template #title>
-            <i class="iconfont icon-tiankongti"></i>&nbsp;<el-button
-              type="info"
-              size="mini"
-              round
-              plain
-              >{{ compList_gf.length }}</el-button
-            >&nbsp;<span class="cpCollapseTitle">填空题 GAP FILLING</span>
-          </template>
-          <div>填空题</div>
-        </el-collapse-item>
-        <el-collapse-item name="sj">
-          <template #title>
-            <i class="iconfont icon-zhuguanti"></i>&nbsp;<el-button
-              type="info"
-              size="mini"
-              round
-              plain
-              >{{ compList_sj.length }}</el-button
-            >&nbsp;<span class="cpCollapseTitle">主观题 SUBJECTIVE</span>
-          </template>
-          <div>主观题</div>
-        </el-collapse-item>
-      </el-collapse>
+      <draggable
+        tag="el-collapse"
+        :list="displayList"
+        :component-data="collapseComponentData"
+        item-key="id"
+      >
+        <template #item="{ element }">
+          <el-collapse-item :name="element.name">
+            <template #title>
+              <i :class="element.icon"></i>&nbsp;
+              <el-button type="info" size="mini" round plain disabled>{{
+                element.data.length
+              }}</el-button
+              >&nbsp;
+              <span class="cpCollapseTitle">{{ element.title }}</span>
+            </template>
+            <div>table</div>
+          </el-collapse-item>
+        </template>
+      </draggable>
     </el-main>
   </el-container>
 </template>
 
 <script>
+import draggable from "vuedraggable";
+
 export default {
   name: "ComposedPaper",
   inject: ["reload"], //注入刷新依赖
+  components: {
+    draggable,
+  },
   data() {
     return {
       cpBtnDisabled: true, // 按钮禁用标志
@@ -148,13 +113,43 @@ export default {
       cpType: "json", // 输出文件类型
       cpChartVisible: false, // 饼图显示开关
       cpChecked: false, // 查重标志
-      scCounter: 0,
-      mcCounter: 0,
-      tfCounter: 0,
-      gfCounter: 0,
-      sjCounter: 0,
       cpCheckRes: [], // 查重结果
+      displayList: [
+        {
+          name: "sc",
+          title: "单选题 SINGLE CHOICE",
+          icon: "iconfont icon-danxuankuang",
+          data: [],
+        },
+        {
+          name: "mc",
+          title: "多选题 MULTIPLE CHOICE",
+          icon: "iconfont icon-duoxuankuang",
+          data: [],
+        },
+        {
+          name: "tf",
+          title: "判断题 TRUE OF FALSE",
+          icon: "iconfont icon-panduan",
+          data: [],
+        },
+        {
+          name: "gf",
+          title: "填空题 GAP FILLING",
+          icon: "iconfont icon-tiankongti",
+          data: [],
+        },
+        {
+          name: "sj",
+          title: "主观题 SUBJECTIVE",
+          icon: "iconfont icon-zhuguanti",
+          data: [],
+        },
+      ],
       activeQuestionType: [],
+      collapseComponentData: {
+        modelValue: this.activeQuestionType,
+      },
     };
   },
   props: [
@@ -193,6 +188,11 @@ export default {
       this.composeList.forEach((qu) => {
         this.cpCheckRes.push({ _id: qu._id, dup: Math.random() * 100 + "%" });
       });
+    },
+
+    // 赋分值
+    cpSetPoints: function () {
+
     },
   },
   mounted() {
