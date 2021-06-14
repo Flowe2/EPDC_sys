@@ -19,7 +19,7 @@ testSC: [
             answer: ["B"],
         },
         additionTime: "2020-04-20",
-        lastUseTime: "2020-ss-me",
+        lastUseTime: "2020-ss-me-A",
     },
 ]
 
@@ -41,7 +41,7 @@ testMC: [
             answer: ["B", "C", "E"]
         },
         additionTime: "2020-04-20",
-        lastUseTime: "2020-ss-me"
+        lastUseTime: "2020-ss-me-A"
     }
 ]
 
@@ -59,7 +59,7 @@ testTF: [
             answer: ["F"]
         },
         additionTime: "2020-04-20",
-        lastUseTime: "2020-ss-me"
+        lastUseTime: "2020-ss-me-A"
     }
 ]
 
@@ -77,7 +77,7 @@ testGF: [
             answer: ["2", "m"]
         },
         additionTime: "2020-04-20",
-        lastUseTime: "2020-ss-me"
+        lastUseTime: "2020-ss-me-A"
     }
 ]
 
@@ -95,6 +95,6 @@ testSJ: [
             answer: ["answer...(latex formula)..."]
         },
         additionTime: "2020-04-20",
-        lastUseTime: "2020-ss-me"
+        lastUseTime: "2020-ss-me-A"
     }
 ]

@@ -284,35 +284,91 @@ const theDB = require('./theMongoDB');
 // });
 
 
-// aggregate测试 []
-const match = {
-    "role": "admin",
-    "timestamp": {
-        $gt: "2020-5-24",
-        $lt: "2021-5-24"
-    }
-};
-const group = {
-    "_id": {
-        $dateToString: {
-            date: { $toDate: "$timestamp" },
-            format: "%Y-%m-%d"
-        }
-    },
-    count: {
-        $sum: 1
-    }
+// aggregate测试 [OK]
+// const match = {
+//     "role": "admin",
+//     "timestamp": {
+//         $gt: "2020-5-24",
+//         $lt: "2021-5-24"
+//     }
+// };
+// const group = {
+//     "_id": {
+//         $dateToString: {
+//             date: { $toDate: "$timestamp" },
+//             format: "%Y-%m-%d"
+//         }
+//     },
+//     count: {
+//         $sum: 1
+//     }
+// }
+// const sort = {
+//     count: -1
+// }
+// const targetCol = 'syslog';
+// theDB.initDb().then(() => {
+//     theDB.aggregateFind(targetCol, match, group, sort)
+//         .catch(console.dir)
+//         .then((res) => {
+//             console.log(typeof (res));
+//             console.log(res);
+//             theDB.closeDb();
+//         });
+// });
+
+
+// 系统背景图片测试-存 [OK]
+// const fs = require("fs");
+// const filepath = "C:\\Users\\Flowe2\\Desktop\\05.jpg";
+// let outpath = "/images/loginbkg";
+// let base64buffer;
+// let fileName = filepath.split("\\").reverse()[0];
+// let fileType = fileName.split(".")[1];
+// outpath = outpath+"/"+fileName;
+// console.log(outpath);
+// fs.readFile(filepath, "binary", function(err, data){
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         base64buffer = Buffer.from(data, "binary");
+//         console.log("read fs [ok]")
+//         fs.writeFileSync("C:/Users/Flowe2/Desktop/EQM_sys/backEnd/public"+outpath, base64buffer);
+//     }
+// })
+// const targetCol = "loginbkg";
+// const doc = {
+//     "name": fileName,
+//     "type": fileType,
+//     "path": outpath
+// }
+// theDB.initDb().then(() => {
+//         theDB.insertOneData(targetCol, doc)
+//             .catch(console.dir)
+//             .then((res) => {
+//                 console.log(typeof (res));
+//                 console.log(res);
+//                 theDB.closeDb();
+//             });
+//     });
+
+
+// 系统背景图片测试-取 [OK]
+const targetCol = "loginbkg";
+const query = {
 }
-const sort = {
-    count: -1
-}
-const targetCol = 'syslog';
+let bkgs = {paths: [], counter: 0};
 theDB.initDb().then(() => {
-    theDB.aggregateFind(targetCol, match, group, sort)
-        .catch(console.dir)
-        .then((res) => {
-            console.log(typeof (res));
-            console.log(res);
-            theDB.closeDb();
-        });
-});
+        theDB.findData(targetCol, query)
+            .catch(console.dir)
+            .then((res) => {
+                console.log(typeof (res));
+                console.log(res);
+                res.forEach(v => {
+                    bkgs.paths.push(v.path);
+                });
+                bkgs.counter = res.length;
+                theDB.closeDb();
+                console.log(bkgs);
+            });
+    });

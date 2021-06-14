@@ -4,7 +4,7 @@
       <ul class="ul_ul">
         <li class="ul_li" v-for="(pic, index) in pic_list" :key="index">
           <transition name="el-fade-in-linear">
-            <img v-show="index == pic_num" class="login_bkg" :src="pic.url" />
+            <img v-show="index == pic_num" class="login_bkg" :src="pic" />
           </transition>
         </li>
       </ul>
@@ -24,7 +24,7 @@
       ></el-button>
 
       <ul class="ul_ul">
-        <li class="ul_li" v-for="item in 5" :key="item">
+        <li class="ul_li" v-for="item in pic_list.length" :key="item">
           <el-button
             class="bkg_btn_bottom"
             :class="{ actvieBtn: item - 1 == pic_num }"
@@ -200,13 +200,7 @@ export default {
       cpwd: "",
       checkPwd: false,
       checkEmail: false,
-      pic_list: [
-        { url: require("@/assets/login_bkg/01.jpg") },
-        { url: require("@/assets/login_bkg/02.jpg") },
-        { url: require("@/assets/login_bkg/03.jpg") },
-        { url: require("@/assets/login_bkg/04.jpg") },
-        { url: require("@/assets/login_bkg/05.jpg") },
-      ],
+      pic_list: [],
       pic_num: 0,
     };
   },
@@ -262,6 +256,18 @@ export default {
     // 清理cookie
     clearCookie: function () {
       this.setCookie("", -1); //修改2值都为空，天数为负1天就好了
+    },
+
+    // axios - get背景图片
+    getBgksList: function () {
+      this.axios({
+        method: "GET",
+        url: "/user/bkglist",
+      }).then((response) => {
+        let res = JSON.stringify(response.data);
+        res = JSON.parse(res);
+        this.pic_list = res.paths;
+      });
     },
 
     // axios - 发送login信息到后端, 并处理返回信息
@@ -369,9 +375,9 @@ export default {
     // 图片切换
     changePic: function (fob) {
       if (fob == -2) {
-        this.pic_num = (this.pic_num + 4) % 5;
+        this.pic_num = (this.pic_num + 4) % this.pic_list.length;
       } else if (fob == -1) {
-        this.pic_num = (this.pic_num + 1) % 5;
+        this.pic_num = (this.pic_num + 1) % this.pic_list.length;
       } else {
         this.pic_num = fob;
       }
@@ -395,6 +401,8 @@ export default {
     },
   },
   mounted: function () {
+    // 拉取背景图片
+    this.getBgksList();
     // 获取缓存, 记住用户
     this.getCookie();
     // 自动下一张背景

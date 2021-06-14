@@ -10,6 +10,7 @@ router.post('/login', async (req, res, next) => {
   console.log("=== ~ receive POST : @ admin " + data.account + " @ login");
   let arr = await adminlogin(data);
   console.log("=== ~ ready to send");
+  res.type("json");
   res.json(arr);
 })
 

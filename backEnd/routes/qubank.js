@@ -11,6 +11,7 @@ const questionsManage = require('../controller/questionsManage');
 //     console.log("=== ~ receive POST : @ user - lazy pull qustion src");
 //     let arr = await questionsManage.getQuestionsSrc(data);
 //     console.log("=== ~ ready to send");
+//     res.type("json");
 //     res.json(arr);
 // })
 
@@ -20,6 +21,7 @@ router.post('/suggestedsubjects', async (req, res, next) => {
     console.log("=== ~ receive POST : @ user - get suggested subjects list");
     let arr = await questionsManage.asyncQuerySubjects(data);
     console.log("=== ~ ready to send");
+    res.type("json");
     res.json(arr);
 })
 
@@ -29,6 +31,7 @@ router.post('/suggestedkeywords', async (req, res, next) => {
     console.log("=== ~ receive POST : @ user - get suggested keywords list");
     let arr = await questionsManage.asyncQueryKeywords(data);
     console.log("=== ~ ready to send");
+    res.type("json");
     res.json(arr);
 })
 
@@ -38,6 +41,7 @@ router.post('/getquestionlist', async (req, res, next) => {
     console.log("=== ~ receive POST : @ user - get " + data.type + " list");
     let arr = await questionsManage.getQuestionsList(data);
     console.log("=== ~ ready to send");
+    res.type("json");
     res.json(arr);
 })
 
@@ -47,6 +51,7 @@ router.post('/uploadquestion', async (req, res, next) => {
     console.log("=== ~ receive POST : @ user - upload new quesion");
     let arr = await questionsManage.uploadNewQuestion(data);
     console.log("=== ~ ready to send");
+    res.type("json");
     res.json(arr);
 })
 
@@ -65,6 +70,7 @@ router.post('/deletequestion', async (req, res, next) => {
     console.log("=== ~ receive POST : @ user - upload quesion src");
     let arr = await questionsManage.deleteQuestion(data);
     console.log("=== ~ ready to send");
+    res.type("json");
     res.json(arr);
 })
 module.exports = router;

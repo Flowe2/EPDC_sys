@@ -155,10 +155,10 @@
             type="year"
             size="small"
             clearable
+            style="width: 90px"
             placeholder="学年"
           >
           </el-date-picker>
-          <span> - </span>
           <el-select
             v-model="luSemester"
             @blur="setLastUseTime('semester')"
@@ -176,7 +176,6 @@
             >
             </el-option>
           </el-select>
-          <span> - </span>
           <el-select
             v-model="luPeriod"
             size="small"
@@ -190,6 +189,22 @@
               :key="period.value"
               :label="period.label"
               :value="period.value"
+            >
+            </el-option>
+          </el-select>
+          <el-select
+            v-model="luVolume"
+            size="small"
+            filterable
+            placeholder="A/B卷"
+            style="width: 90px"
+            ref="ulDateVolume"
+          >
+            <el-option
+              v-for="volume in volumes"
+              :key="volume.value"
+              :label="volume.label"
+              :value="volume.value"
             >
             </el-option>
           </el-select>
@@ -250,10 +265,10 @@ export default {
       answerInputVisible: false, // 答案输入显示标志
       answerInputValue: "", // 答案输入临时值
       showOptions: 0, // 题型标志 - 0: 填空/判断/主观, 1: 单选,  2: 多选
-      luYear: "", // 学年输入临时值
-      luSemester: "", // 学期输入临时值
       subjectsList: [], // 科目输入建议list
       keywordsList: [], // 科目关键词输入建议list
+      luYear: "", // 学年输入临时值
+      luSemester: "", // 学期输入临时值
       semesters: [
         // 学期选项
         {
@@ -283,6 +298,18 @@ export default {
         {
           value: "fe",
           label: "期末考试",
+        },
+      ],
+      luVolume: "", // A/B卷临时输入值
+      volumes: [
+        // A/B卷选项
+        {
+          value: "a",
+          label: "A卷",
+        },
+        {
+          value: "b",
+          label: "B卷",
         },
       ],
       uploadsrcs: [],
@@ -478,9 +505,19 @@ export default {
         setTimeout(() => {
           this.$refs.ulDatePeriod.focus();
         }, 500);
+      } else if (param == "period") {
+        setTimeout(() => {
+          this.$refs.ulDateVolume.focus();
+        }, 500);
       } else {
         this.newQu.lastUseTime =
-          this.luYear + "-" + this.luSemester + "-" + this.luPeriod;
+          this.luYear +
+          "-" +
+          this.luSemester +
+          "-" +
+          this.luPeriod +
+          "-" +
+          this.luVolume;
       }
     },
 

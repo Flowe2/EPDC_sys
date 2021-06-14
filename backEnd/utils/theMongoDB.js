@@ -59,6 +59,7 @@ exports.countData = async function (targetCol, query = {}, option = {}) {
     }
 }
 
+// 聚合
 exports.aggregateFind = async function (targetCol, match, group, sort = {}) {
     let res;
     try {
