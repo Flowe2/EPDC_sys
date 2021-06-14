@@ -11,15 +11,15 @@
     <el-container class="as_container">
       <el-main class="as_main" v-loading="fullscreenLoading">
         <el-space wrap alignment="flex-start">
-          <el-card class="as_card">
+          <el-card :class="modifyCardVisible[0] ? 'as_card' : 'as_card_fold'">
             <template #header>
               <div class="as_card_header">
                 <i class="el-icon-edit"></i>
                 <span>修改密码</span>
                 <el-button
-                  @click="modifyCardVisible = !modifyCardVisible"
+                  @click="modifyCardVisible[0] = !modifyCardVisible[0]"
                   :icon="
-                    modifyCardVisible
+                    modifyCardVisible[0]
                       ? 'el-icon-caret-top'
                       : 'el-icon-caret-bottom'
                   "
@@ -29,7 +29,7 @@
               </div>
             </template>
             <el-collapse-transition>
-              <div class="as_card_modify_pwd" v-show="modifyCardVisible">
+              <div class="as_card_modify_pwd" v-show="modifyCardVisible[0]">
                 <el-form
                   label-width="80px"
                   :model="modifyApwd"
@@ -64,6 +64,27 @@
               </div>
             </el-collapse-transition>
           </el-card>
+          <el-card :class="modifyCardVisible[1] ? 'as_card' : 'as_card_fold'">
+            <template #header>
+              <div class="as_card_header">
+                <i class="el-icon-picture-outline"></i>
+                <span>背景管理</span>
+                <el-button
+                  @click="modifyCardVisible[1] = !modifyCardVisible[1]"
+                  :icon="
+                    modifyCardVisible[1]
+                      ? 'el-icon-caret-top'
+                      : 'el-icon-caret-bottom'
+                  "
+                  size="mini"
+                  round
+                ></el-button>
+              </div>
+            </template>
+            <el-collapse-transition>
+              <div v-show="modifyCardVisible[1]">主页图片管理card</div>
+            </el-collapse-transition>
+          </el-card>
         </el-space></el-main
       >
       <el-divider content-position="right"
@@ -80,7 +101,7 @@ export default {
   data() {
     return {
       fullscreenLoading: false,
-      modifyCardVisible: true,
+      modifyCardVisible: [true, true],
       modifyApwd: {
         oldPwd: "",
         newPwd: "",
@@ -257,6 +278,10 @@ export default {
 }
 
 .as_card {
-  width: 350px;
+  width: 340px;
+}
+
+.as_card_fold {
+  width: 170px;
 }
 </style>
