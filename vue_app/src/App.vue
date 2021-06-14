@@ -15,17 +15,18 @@ export default {
           value: (() => {
             const end = new Date();
             const start = new Date();
-            end.setHours(0,0,0,0);
-            start.setHours(0,0,0,0);
+            end.setHours(0, 0, 0, 0);
+            start.setHours(0, 0, 0, 0);
             return [start, end];
           })(),
-        },{
+        },
+        {
           text: "最近一周",
           value: (() => {
             const end = new Date();
             const start = new Date();
-            end.setHours(0,0,0,0);
-            start.setHours(0,0,0,0);
+            end.setHours(0, 0, 0, 0);
+            start.setHours(0, 0, 0, 0);
             start.setDate(start.getDate() - 6);
             return [start, end];
           })(),
@@ -35,8 +36,8 @@ export default {
           value: (() => {
             const end = new Date();
             const start = new Date();
-            end.setHours(0,0,0,0);
-            start.setHours(0,0,0,0);
+            end.setHours(0, 0, 0, 0);
+            start.setHours(0, 0, 0, 0);
             start.setMonth(start.getMonth() - 1);
             return [start, end];
           })(),
@@ -46,8 +47,8 @@ export default {
           value: (() => {
             const end = new Date();
             const start = new Date();
-            end.setHours(0,0,0,0);
-            start.setHours(0,0,0,0);
+            end.setHours(0, 0, 0, 0);
+            start.setHours(0, 0, 0, 0);
             start.setMonth(start.getMonth() - 3);
             return [start, end];
           })(),
@@ -57,8 +58,8 @@ export default {
           value: (() => {
             const end = new Date();
             const start = new Date();
-            end.setHours(0,0,0,0);
-            start.setHours(0,0,0,0);
+            end.setHours(0, 0, 0, 0);
+            start.setHours(0, 0, 0, 0);
             start.setMonth(start.getMonth() - 6);
             return [start, end];
           })(),
@@ -68,8 +69,8 @@ export default {
           value: (() => {
             const end = new Date();
             const start = new Date();
-            end.setHours(0,0,0,0);
-            start.setHours(0,0,0,0);
+            end.setHours(0, 0, 0, 0);
+            start.setHours(0, 0, 0, 0);
             start.setFullYear(start.getFullYear() - 1);
             return [start, end];
           })(),
@@ -180,10 +181,11 @@ export default {
 }
 body {
   margin: 0;
+  width: 100%;
+  height: 100%;
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   cursor: url(https://blog-static.cnblogs.com/files/lucas--liu/cat6.ico), auto;
-  /* background-color: grey; */
 }
 
 #headbar {

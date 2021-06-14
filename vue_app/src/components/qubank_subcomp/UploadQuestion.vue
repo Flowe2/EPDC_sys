@@ -552,7 +552,7 @@ export default {
 
     // 重置表单按钮
     resetForm: function () {
-      this.$confirm("表单内容不会 保存/上传, 请确认是否重置?", "重置确认", {
+      this.$confirm("表单内容不会保存/上传, 请确认是否重置?", "重置确认", {
         confirmButtonText: "确认",
         cancelButtonText: "放弃",
         type: "warning",
@@ -571,9 +571,9 @@ export default {
           });
         });
     },
-    // 提交表单
+    // 提交表单按钮
     submitNewQu: function () {
-      console.log(this.newQu);
+      // console.log(this.newQu);
       let validateAnO;
       if (this.validateOA()) {
         validateAnO = true;
@@ -599,7 +599,7 @@ export default {
         }
       });
     },
-    // 重置表单
+    // 重置表单补充
     resetFormSupply: function () {
       this.$nextTick(() => {
         this.$refs["newQuForm"].resetFields();

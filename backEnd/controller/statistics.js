@@ -28,7 +28,7 @@ exports.getQuantityStatistic = async function (data) {
             let queryRes = await thDB.countData(targetCol[i], query);
             res[i].value = queryRes
         } catch (e) {
-            throw (e);
+            res = { err: e.message };
         }
     }
     return res;
@@ -112,6 +112,7 @@ exports.getUserHeatStatistic = async function (data) {
         })
         return res;
     } catch (e) {
-        throw (e);
+        res = { err: e.message };
+        return res;
     }
 }

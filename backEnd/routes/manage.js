@@ -116,4 +116,18 @@ router.post('/syslog', async (req, res, next) => {
     res.json(arr);
 })
 
+// admingsetting controller集
+const addmingsetting = require('../controller/adminsetting');
+// admin 修改当前管理员密码
+router.post('/modifyapwd', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - to modify pwd of admin: ", data.modifyform.admin);
+    let arr = await addmingsetting.toModifyAPwd(data);
+    console.log("=== ~ ready to send");
+    res.type("json");
+    res.json(arr);
+})
+
+
+
 module.exports = router;

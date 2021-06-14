@@ -32,7 +32,8 @@ exports.checkingList = async function (data) {
         res.counter = res.userlist.length;
         return res;
     } catch (e) {
-        throw (e);
+        res = { err: e.message };
+        return res;
     }
 }
 
@@ -66,7 +67,8 @@ exports.toPassApply = async function (data) {
         }
         return res;
     } catch (e) {
-        throw (e);
+        res = { err: e.message };
+        return res;
     }
 }
 
@@ -98,6 +100,7 @@ exports.toRefuseApply = async function (data) {
         }
         return res;
     } catch (e) {
-        throw (e);
+        res.err = e.message;
+        return res;
     }
 }

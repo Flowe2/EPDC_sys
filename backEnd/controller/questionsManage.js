@@ -47,10 +47,10 @@ const updateSuggetList = async function (subject, keywords) {
             if (temp === 1) {
                 console.log("=== ~ suggestedList update success.");
             } else {
-                console.log("=== ~ suggestedList update failed.");
+                console.log("=== ! suggestedList update failed.");
             }
         } catch (e) {
-            throw (e);
+            console.log("=== ! suggestedList update failed. err: " + e.message);
         }
     } else {
         // 科目不存在则插入新的科目及关键词
@@ -131,7 +131,8 @@ exports.getQuestionsList = async function (data) {
         res.counter = qureyRes.length;
         return res;
     } catch (e) {
-        throw (e);
+        res = { err: e.message };
+        return res;
     }
 }
 

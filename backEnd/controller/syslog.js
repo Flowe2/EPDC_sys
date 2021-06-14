@@ -24,7 +24,8 @@ exports.getSyslog = async function (data) {
         res.counter = res.syslog.length;
         return res;
     } catch (e) {
-        throw (e);
+        res = { err: e.message };
+        return res;
     }
 }
 

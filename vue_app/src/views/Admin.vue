@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="adminBase" class="adminBase">
     <particles-bg v-show="bgSwticher" type="circle" bg />
     <div id="bgSwitcher">
       <el-tooltip
@@ -64,6 +64,7 @@ export default {
     ) {
       // 已登录
       this.logged = true;
+      this.user = localStorage.getItem("user");
     } else {
       // 未登录
       this.logged = false;
