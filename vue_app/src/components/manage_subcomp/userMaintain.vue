@@ -140,12 +140,19 @@
               ></el-input>
             </p>
             <div style="text-align: center">
-              <el-button
-                type="primary"
-                size="mini"
-                @click="handleEdit(scope.row)"
-                >确定</el-button
+              <el-tooltip
+                class="item"
+                effect="dark"
+                content="确认前请仔细检查"
+                placement="bottom"
               >
+                <el-button
+                  type="primary"
+                  size="mini"
+                  @click="handleEdit(scope.row)"
+                  >确定</el-button
+                >
+              </el-tooltip>
             </div>
             <template #reference>
               <el-button size="mini" type="warning" @click="visible = false"
@@ -153,28 +160,19 @@
               >
             </template>
           </el-popover>
-          <el-popover placement="left" :width="200" trigger="click">
-            <p>
-              <el-alert
-                title="确认删除?"
-                type="error"
-                :closable="false"
-                center
-                show-icon
-              ></el-alert>
-            </p>
-            <div style="text-align: center">
-              <el-button
-                type="danger"
-                size="mini"
-                @click="handleDelete(scope.row)"
-                >确定</el-button
-              >
-            </div>
+          <el-popconfirm
+            confirmButtonText="确定"
+            confirmButtonType="danger"
+            cancelButtonText="不了"
+            @confirm="handleDelete(scope.row)"
+            icon="el-icon-info"
+            iconColor="red"
+            :title="'确定删除 ' + scope.row.uemail + ' 吗?'"
+          >
             <template #reference>
               <el-button size="mini" type="danger">删除用户</el-button>
             </template>
-          </el-popover>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>

@@ -10,7 +10,7 @@ const syslog = require('../controller/syslog');
 
 // 账户维护 - 查询处理
 exports.checkedUserlist = async function (data) {
-    let res = { userlist: [], counter: 0 };
+    let res = { 'userlist': [], 'counter': 0 };
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -38,7 +38,7 @@ exports.checkedUserlist = async function (data) {
 
 // 账户维护 - 修改账户
 exports.toModifyUPwd = async function (data) {
-    let res = { userlist: [], counter: 0 };
+    let res = { 'userlist': [], 'counter': 0 };
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -84,12 +84,12 @@ exports.toDeleteUser = async function (data) {
     const targetCol = 'userlist';
     const query = { _id: data.uemail };
     try {
-        let temp = await thDB.deleteOneData(targetCol, query);
-        if (temp === 1) {
+        let queryRes = await thDB.deleteWithReturn(targetCol, query);
+        if (queryRes) {
             const logData = {
                 'role': verifyRes.payload.role,
                 'who': verifyRes.payload.account,
-                'operation': 'delete user [user: ' + data.uemail + ']'
+                'operation': 'delete user [user: ' + queryRes.uemail + ']'
             };
             await syslog.addSyslog(logData);
             res.ifSuccess = true;

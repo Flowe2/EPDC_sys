@@ -97,13 +97,13 @@ exports.insertOneData = async function (targetCol, doc) {
 // }
 
 /* ================================== delete ================================== */
-// 单个删除 - 删除用户
-exports.deleteOneData = async function (targetCol, query) {
+// 单个删除 - 删除用户/
+exports.deleteWithReturn = async function (targetCol, query) {
     let res;
     try {
         const col = client.db('epdc_sys_db').collection(targetCol);
-        res = await col.deleteOne(query)
-        return res.deletedCount;
+        res = await col.findOneAndDelete(query)
+        return res.value
     } finally {
         console.log("=== ~ delete one data. connection keeping");
     }

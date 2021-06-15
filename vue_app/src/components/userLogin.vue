@@ -264,6 +264,7 @@ export default {
         method: "GET",
         url: "/user/bkglist",
       }).then((response) => {
+        // res: { paths: ['/images/loginbkg/**.**', '...'], counter: n}
         let res = JSON.stringify(response.data);
         res = JSON.parse(res);
         this.pic_list = res.paths;

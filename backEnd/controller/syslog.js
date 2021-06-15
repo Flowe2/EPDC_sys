@@ -8,7 +8,7 @@ const thDB = require('../utils/theMongoDB');
 
 // 获取日志
 exports.getSyslog = async function (data) {
-    let res = { syslog: [], counter: 0 };
+    let res = { 'syslog': [], 'counter': 0 };
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");

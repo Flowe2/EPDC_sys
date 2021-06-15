@@ -124,7 +124,7 @@ exports.getQuestionsList = async function (data) {
     }
     let targetCol = questionTypeJudge(data.type);
     const query = { 'type': data.type };
-    let res = { questionlist: [], counter: 0 };
+    let res = { 'questionlist': [], 'counter': 0 };
     try {
         let qureyRes = await thDB.findData(targetCol, query);
         res.questionlist = qureyRes;
@@ -167,7 +167,8 @@ exports.uploadNewQuestion = async function (data) {
         }
         return res;
     } catch (e) {
-        throw e;
+        res.err = e.message;
+        return res;
     }
 }
 
@@ -183,6 +184,7 @@ exports.deleteQuestion = async function (data) {
     let targetCol = ["singlechoice", "multiplechoice", "truefalse", "gapfilling", "subjective"];
     let targetList = [[], [], [], [], []];
     let res = { 'ifSuccess': false, 'err': '' };
+    // 待删除题目分类
     data.deletelist.forEach(element => {
         switch (element.type) {
             case "sc":
@@ -203,6 +205,7 @@ exports.deleteQuestion = async function (data) {
         }
     })
     try {
+        // 删除失败题目数
         let failDelSum = 0;
         let logSum = 0;
         for (let i = 0; i < 5; i++) {
@@ -234,6 +237,7 @@ exports.deleteQuestion = async function (data) {
         }
         return res;
     } catch (e) {
-        throw e;
+        res.err = e.message;
+        return res;
     }
 }

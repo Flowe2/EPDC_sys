@@ -10,7 +10,7 @@ const syslog = require('../controller/syslog');
 
 // 用户登录处理
 async function login(data) {
-    let arr = { "ifPass": false, "token": '' };
+    let res = { "ifPass": false, "token": '' };
     let targetUser;
     // 预处理查询参数
     const targetCol = 'userlist';
@@ -24,9 +24,9 @@ async function login(data) {
             console.log("=== ~ res: user exist");
         } else {
             console.log("=== ! need to sign up");
-            arr.token = undefined;
-            arr.err = 'need to sign up';
-            return arr;
+            res.token = undefined;
+            res.err = 'need to sign up';
+            return res;
         }
     } catch (e) {
         throw e;
@@ -53,23 +53,23 @@ async function login(data) {
             await syslog.addSyslog(logData)
             // 预处理给JWT的data
             data = { 'account': data.uemail, 'role': false };
-            arr.ifPass = true;
-            arr.token = jwtutil.generateToken(data);
-            arr.timeStamp = Math.floor(Date.now() / 1000);
-            // console.log(arr);
-            return arr;
+            res.ifPass = true;
+            res.token = jwtutil.generateToken(data);
+            res.timeStamp = Math.floor(Date.now() / 1000);
+            // console.log(res);
+            return res;
         }
         else {
             console.log("=== ! error password");
-            arr.token = undefined;
-            arr.err = 'error password';
-            return arr;
+            res.token = undefined;
+            res.err = 'error password';
+            return res;
         }
     } else {
         console.log("=== ! waiting for review");
-        arr.token = undefined;
-        arr.err = 'waiting for review';
-        return arr;
+        res.token = undefined;
+        res.err = 'waiting for review';
+        return res;
     }
 }
 

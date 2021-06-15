@@ -11,7 +11,9 @@
     <el-container class="as_container">
       <el-main class="as_main" v-loading="fullscreenLoading">
         <el-space wrap alignment="flex-start">
-          <el-card :class="modifyCardVisible[0] ? 'as_card' : 'as_card_fold'">
+          <el-card
+            :class="modifyCardVisible[0] ? 'as_card_small' : 'as_card_fold'"
+          >
             <template #header>
               <div class="as_card_header">
                 <i class="el-icon-edit"></i>
@@ -64,7 +66,9 @@
               </div>
             </el-collapse-transition>
           </el-card>
-          <el-card :class="modifyCardVisible[1] ? 'as_card' : 'as_card_fold'">
+          <el-card
+            :class="modifyCardVisible[1] ? 'as_card_large' : 'as_card_fold'"
+          >
             <template #header>
               <div class="as_card_header">
                 <i class="el-icon-picture-outline"></i>
@@ -82,16 +86,89 @@
               </div>
             </template>
             <el-collapse-transition>
-              <div v-show="modifyCardVisible[1]">主页图片管理card</div>
+              <el-table
+                :data="displayList"
+                style="width: 100%"
+                v-show="modifyCardVisible[1]"
+              >
+                <el-table-column label="序号" type="index"> </el-table-column>
+                <el-table-column label="名称" show-overflow-tooltip>
+                  <template #default="scope">
+                    <el-popover effect="light" trigger="hover" placement="top">
+                      <template #default>
+                        <el-image :src="scope.row.path"></el-image>
+                      </template>
+                      <template #reference>
+                        <div class="name-wrapper">
+                          <el-tag size="medium">{{ scope.row.name }}</el-tag>
+                        </div>
+                      </template>
+                    </el-popover>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="handle" width="100">
+                  <template #header>
+                    <el-popover placement="bottom-end" :width="400" trigger="click">
+                      <template #reference>
+                        <el-button
+                          type="success"
+                          size="mini"
+                          round
+                          >新增</el-button
+                        >
+                      </template>
+                      <el-upload
+                        class="upload-demo"
+                        action="https://jsonplaceholder.typicode.com/posts/"
+                        :on-preview="handlePreview"
+                        :on-remove="handleRemove"
+                        :before-remove="beforeRemove"
+                        multiple
+                        :limit="3"
+                        :on-exceed="handleExceed"
+                        :file-list="fileList"
+                        ><el-button size="small" type="primary"
+                          >点击上传</el-button
+                        >
+                        <template #tip>
+                          <div class="el-upload__tip">
+                            只能上传 jpg/png 文件，且不超过 500kb
+                          </div>
+                        </template></el-upload
+                      ></el-popover
+                    >
+                  </template>
+                  <template #default="scope">
+                    <el-popconfirm
+                      confirmButtonText="确定"
+                      confirmButtonType="danger"
+                      cancelButtonText="不了"
+                      @confirm="delSysPic(scope.row)"
+                      icon="el-icon-info"
+                      iconColor="red"
+                      :title="'确定删除背景 ' + scope.row.name + ' 吗?'"
+                    >
+                      <template #reference>
+                        <el-button
+                          type="danger"
+                          size="mini"
+                          round
+                          :disabled="delPicBtnDisalbed"
+                          >删除</el-button
+                        >
+                      </template></el-popconfirm
+                    >
+                  </template>
+                </el-table-column>
+              </el-table>
             </el-collapse-transition>
           </el-card>
         </el-space></el-main
       >
-      <el-divider content-position="right"
-        ><i class="el-icon-more-outline"></i
-      ></el-divider>
-      <el-footer></el-footer>
     </el-container>
+    <el-divider content-position="right"
+      ><i class="el-icon-more-outline"></i
+    ></el-divider>
   </div>
 </template>
 
@@ -101,7 +178,7 @@ export default {
   data() {
     return {
       fullscreenLoading: false,
-      modifyCardVisible: [true, true],
+      modifyCardVisible: [false, false],
       modifyApwd: {
         oldPwd: "",
         newPwd: "",
@@ -133,6 +210,7 @@ export default {
           },
         ],
       },
+      displayList: [],
     };
   },
   methods: {
@@ -163,6 +241,14 @@ export default {
       } else {
         return callback(new Error("请再次输入新密码, 不能为空"));
       }
+    },
+
+    // 新增背景
+    addSysPic: function () {},
+    // 删除背景
+    delSysPic: function (row) {
+      console.log(row._id);
+      this.postDelCertainPic(row._id);
     },
 
     // 重置表单按钮
@@ -219,7 +305,27 @@ export default {
       });
     },
 
-    // axois - 上传修改密码
+    // axios - 拉取背景列表
+    getBgkListDetail: function () {
+      this.axios({
+        method: "POST",
+        url: "/admin/manage/bgklistdetail",
+        data: {
+          atoken: localStorage.getItem("atoken"),
+        },
+      })
+        .then((response) => {
+          // 返回: { pics: [{ "name": "01.jpg", "path": "/images/loginbkg/01.jpg" }, {...}], counter: n}
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          this.displayList = res.pics;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    // axios - 上传修改密码
     postNewPwd: function () {
       this.axios({
         method: "POST",
@@ -258,9 +364,49 @@ export default {
           console.log(err);
         });
     },
+
+    // axios - 删除指定背景图片
+    postDelCertainPic: function (targetpicID) {
+      this.axios({
+        method: "POST",
+        url: "/admin/manage/delcertainpic",
+        data: {
+          atoken: localStorage.getItem("atoken"),
+          deltarget: targetpicID,
+        },
+      })
+        .then((response) => {
+          // 处理上传结果
+          // 返回:  {"ifSuccess": "true / false",
+          //        "err": "undefined / err message"}
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          if (res.ifSuccess == true) {
+            this.$message({
+              type: "success",
+              message: "删除背景成功!",
+            });
+          } else {
+            this.$message({
+              type: "error",
+              message: "删除背景失败!\n" + res.err,
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
-  computed: {},
-  mounted() {},
+  computed: {
+    delPicBtnDisalbed: function () {
+      return this.displayList.length > 1 ? false : true;
+    },
+  },
+  mounted() {
+    // 拉取系统背景列表
+    this.getBgkListDetail();
+  },
 };
 </script>
 
@@ -274,11 +420,15 @@ export default {
 }
 
 .as_container {
-  height: calc(100% - 60px);
+  height: 80%;
 }
 
-.as_card {
+.as_card_small {
   width: 340px;
+}
+
+.as_card_large {
+  width: 510px;
 }
 
 .as_card_fold {

@@ -5,27 +5,110 @@ const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
 const thDB = require('../utils/theMongoDB');
+const { ObjectID } = require('mongodb');
+// 文件及路径操作
+const fs = require('fs');
+const path = require('path');
 
-// 获取系统背景图片路径
-exports.getBkglist = async function (data) {
-    let arr = { 'paths': [], counter: 0};
+// 仅获取系统背景图片路径列表
+exports.getBkglist = async function () {
+    let res = { 'paths': [], 'counter': 0 };
     // 预处理查询参数
     const targetCol = 'loginbkg';
     const query = {};
-    const options = { projection: { 'path': 1 } };
+    const options = { projection: { '_id': 0, 'path': 1 } };
     try {
-        res = await thDB.findData(targetCol, query, options);
-        if (res.length == 0) {
+        queryRes = await thDB.findData(targetCol, query, options);
+        if (queryRes.length == 0) {
             console.log('=== ! res: no any background pics, plz contact admin');
         } else {
-            res.forEach(v => {
-                arr.paths.push(v.path);
+            queryRes.forEach(v => {
+                res.paths.push(v.path);
             });
-            arr.counter = res.length;
+            res.counter = queryRes.length;
         }
-        return arr;
+        return res;
     } catch (e) {
         throw e;
+    }
+}
+
+// 获取系统背景图片详情
+exports.getBkglistDetail = async function () {
+    let res = { 'pics': [], 'counter': 0 };
+    // 预处理查询参数
+    const targetCol = 'loginbkg';
+    const query = {};
+    const options = { projection: { '_id': 1, 'name': 1, 'path': 1 } };
+    try {
+        let queryRes = await thDB.findData(targetCol, query, options);
+        if (queryRes.length == 0) {
+            console.log('=== ! res: no any background pics, plz contact admin');
+        } else {
+            res.pics = queryRes
+            res.counter = queryRes.length;
+        }
+        return res;
+    } catch (e) {
+        throw e;
+    }
+}
+
+// 新增背景资源
+exports.addOneBkgPic = async function (col) {
+    let res = { ifSuccess: false, err: '' };
+    // 预处理查询参数
+    const targetCol = col;
+    const insertDoc = { 'name': "", "type": "", "buffer": "", "relate": "" };
+    try {
+        let queryRes = await thDB.insertOneData(targetCol, insertDoc);
+        if (queryRes == 1) {
+            console.log("=== ~ res: insert 1 backgroud pic seccess");
+            res.ifSuccess = true;
+            res.err = undefined;
+        } else {
+            console.log("=== ! err");
+            res.err = '遇到一些意外';
+        }
+        return res;
+    } catch (e) {
+        res.err = e.message;
+        return res;
+    }
+}
+
+// 删除指定图片资源
+exports.delOneBkgPic = async function (col, deltarget) {
+    let res = { ifSuccess: false, err: '' };
+    // 预处理查询参数
+    const targetCol = col;
+    const query = { _id: ObjectID(deltarget) };
+    // 删除数据库对应数据, 并返回删除的文档
+    try {
+        let queryRes = await thDB.deleteWithReturn(targetCol, query);
+        if (queryRes) {
+            // 根据删除结果已出
+            let picPath = queryRes.path;
+            let dirPath = __dirname.split("\\");
+            dirPath.splice(-1, 1, 'public')
+            dirPath = dirPath.join("\\");
+            picPath = path.join(dirPath, picPath);
+            fs.unlink(picPath, (e) => {
+                if (e) {
+                    res.err = e.message
+                } else {
+                    console.log("=== ~ delete system background pic: " + queryRes.name + " success");
+                }
+            });
+            res.ifSuccess = true;
+            res.err = undefined;
+        } else {
+            res.err = 'No match';
+        }
+        return res;
+    } catch (e) {
+        res.err = e.message;
+        return res;
     }
 }
 

@@ -8,7 +8,7 @@ const thDB = require('../utils/theMongoDB');
 
 // 实时用户名查重处理
 exports.realtimeCheck = async function (data) {
-    let arr = { 'ifAvailable': false};
+    let res = { 'ifAvailable': false};
     // 预处理查询参数
     const targetCol = 'userlist';
     const query = { '_id': data.uemail };
@@ -17,11 +17,11 @@ exports.realtimeCheck = async function (data) {
         targetUser = await thDB.findData(targetCol, query, options);
         if (targetUser.length == 0) {
             console.log('=== ~ res: uemail has not been signed yet');
-            arr.ifAvailable = true;
+            res.ifAvailable = true;
         } else {
             console.log("=== ! user already exists");
         }
-        return arr;
+        return res;
     } catch (e) {
         throw e;
     }
@@ -29,7 +29,7 @@ exports.realtimeCheck = async function (data) {
 
 // 用户注册处理
 exports.signup = async function (data) {
-    let arr = { 'ifSuccess': false, 'err': '' };
+    let res = { 'ifSuccess': false, 'err': '' };
     // 预处理查询参数
     const targetCol = 'userlist';
     const insertDoc = {
@@ -44,14 +44,14 @@ exports.signup = async function (data) {
     try {
         let insertRes = await thDB.insertOneData(targetCol, insertDoc);
         if (insertRes == 1) {
-            console.log("=== ~ res: insert seccess");
-            arr.ifSuccess = true;
-            arr.err = undefined;
+            console.log("=== ~ res: insert 1 unchecked user seccess");
+            res.ifSuccess = true;
+            res.err = undefined;
         } else {
             console.log("=== ! err");
-            arr.err = '遇到一些意外';
+            res.err = '遇到一些意外';
         }
-        return arr;
+        return res;
     } catch (e) {
         throw e;
     }

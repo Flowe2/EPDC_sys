@@ -1,6 +1,8 @@
 const { ObjectID, ObjectId } = require('bson');
 const JWT = require('./theJWT');
 const jwtutil = new JWT();
+const fs = require("fs");
+const path = require('path');
 const theDB = require('./theMongoDB');
 
 // 测试用户数据
@@ -319,7 +321,6 @@ const theDB = require('./theMongoDB');
 
 
 // 系统背景图片测试-存 [OK]
-// const fs = require("fs");
 // const filepath = "C:\\Users\\Flowe2\\Desktop\\05.jpg";
 // let outpath = "/images/loginbkg";
 // let base64buffer;
@@ -354,21 +355,44 @@ const theDB = require('./theMongoDB');
 
 
 // 系统背景图片测试-取 [OK]
-const targetCol = "loginbkg";
-const query = {
-}
-let bkgs = {paths: [], counter: 0};
-theDB.initDb().then(() => {
-        theDB.findData(targetCol, query)
-            .catch(console.dir)
-            .then((res) => {
-                console.log(typeof (res));
-                console.log(res);
-                res.forEach(v => {
-                    bkgs.paths.push(v.path);
-                });
-                bkgs.counter = res.length;
-                theDB.closeDb();
-                console.log(bkgs);
-            });
-    });
+// const targetCol = "loginbkg";
+// const query = {
+// }
+// let bkgs = { 'paths': [], 'counter': 0 };
+// theDB.initDb().then(() => {
+//         theDB.findData(targetCol, query)
+//             .catch(console.dir)
+//             .then((res) => {
+//                 console.log(typeof (res));
+//                 console.log(res);
+//                 res.forEach(v => {
+//                     bkgs.paths.push(v.path);
+//                 });
+//                 bkgs.counter = res.length;
+//                 theDB.closeDb();
+//                 console.log(bkgs);
+//             });
+//     });
+
+
+// 系统背景图片测试-删 [OK]
+// const targetCol = "test";
+// const query = {
+//     '_id': ObjectID('60c86b423b5200008e005db2')
+// }
+// theDB.initDb().then(() => {
+//         theDB.deleteWithReturn(targetCol, query)
+//             .catch(console.dir)
+//             .then((res) => {
+//                 console.log(typeof (res));
+//                 console.log(res);
+//                 theDB.closeDb();
+//             });
+//     });
+// let target = '/images/loginbkg/spider-man.jpg';
+// let test = __dirname.split("\\");
+// test.splice(-1, 1, 'public')
+// test = test.join("\\");
+// console.log(test);
+// console.log(path.join(test, target));
+// fs.unlinkSync(path.join(test, target));

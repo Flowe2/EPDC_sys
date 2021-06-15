@@ -138,52 +138,34 @@
       </el-table-column>
       <el-table-column label="操作" width="300">
         <template #default="scope">
-          <el-popover placement="left" :width="200" trigger="click">
-            <p>
-              <el-alert
-                title="确认通过?"
-                type="success"
-                :closable="false"
-                center
-                show-icon
-              ></el-alert>
-            </p>
-            <div style="text-align: center">
-              <el-button
-                type="success"
-                size="mini"
-                @click="handlePass(scope.row)"
-                >确定</el-button
-              >
-            </div>
+          <el-popconfirm
+            confirmButtonText="确定"
+            confirmButtonType="success"
+            cancelButtonText="不了"
+            @confirm="handlePass(scope.row)"
+            icon="el-icon-info"
+            iconColor="green"
+            :title="'确定通过 ' + scope.row.uemail + ' 的注册申请吗?'"
+          >
             <template #reference>
               <el-button size="mini" type="success" @click="visible = false"
                 >通 过</el-button
               >
             </template>
-          </el-popover>
-          <el-popover placement="left" :width="200" trigger="click">
-            <p>
-              <el-alert
-                title="确认删除?"
-                type="error"
-                :closable="false"
-                center
-                show-icon
-              ></el-alert>
-            </p>
-            <div style="text-align: center">
-              <el-button
-                type="danger"
-                size="mini"
-                @click="handleRefuse(scope.row)"
-                >确定</el-button
-              >
-            </div>
+          </el-popconfirm>
+          <el-popconfirm
+            confirmButtonText="确定"
+            confirmButtonType="danger"
+            cancelButtonText="不了"
+            @confirm="handleRefuse(scope.row)"
+            icon="el-icon-info"
+            iconColor="red"
+            :title="'确定拒绝 ' + scope.row.uemail + ' 的注册申请吗?'"
+          >
             <template #reference>
               <el-button size="mini" type="danger">拒 绝</el-button>
             </template>
-          </el-popover>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>

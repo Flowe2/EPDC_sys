@@ -11,7 +11,7 @@ const syslog = require('../controller/syslog');
 
 // 注册管理 - 查询处理
 exports.checkingList = async function (data) {
-    let res = { userlist: [], counter: 0 };
+    let res = { 'userlist': [], 'counter': 0 };
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -39,7 +39,7 @@ exports.checkingList = async function (data) {
 
 // 注册管理 - 通过注册
 exports.toPassApply = async function (data) {
-    let res = { userlist: [], counter: 0 };
+    let res = { 'userlist': [], 'counter': 0 };
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -85,12 +85,12 @@ exports.toRefuseApply = async function (data) {
     const targetCol = 'userlist';
     const query = { _id: data.uemail };
     try {
-        let temp = await thDB.deleteOneData(targetCol, query);
-        if (temp === 1) {
+        let queryRes = await thDB.deleteWithReturn(targetCol, query);
+        if (queryRes) {
             const logData = {
                 'role': verifyRes.payload.role,
                 'who': verifyRes.payload.account,
-                'operation': 'refuse signup [user:' + data.uemail + ']'
+                'operation': 'refuse signup [user:' + queryRes.uemail + ']'
             };
             await syslog.addSyslog(logData);
             res.ifSuccess = true;

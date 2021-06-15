@@ -127,7 +127,23 @@ router.post('/modifyapwd', async (req, res, next) => {
     res.type("json");
     res.json(arr);
 })
-
-
+// admin 拉取系统背景图片详情
+router.post('/bgklistdetail', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - get all background pic");
+    let arr = await addmingsetting.allBkgDetail(data);
+    console.log("=== ~ ready to send");
+    res.type("json");
+    res.json(arr);
+})
+// admin 删除指定背景图片
+router.post('/delcertainpic', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - del certain background pic");
+    let arr = await addmingsetting.delCertainBkgPic(data);
+    console.log("=== ~ ready to send");
+    res.type("json");
+    res.json(arr);
+})
 
 module.exports = router;

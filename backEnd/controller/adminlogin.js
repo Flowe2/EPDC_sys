@@ -10,7 +10,7 @@ const syslog = require('../controller/syslog');
 
 // 管理员登录处理
 async function adminlogin(data) {
-    let arr = { 'ifAPass': false, 'atoken': '' };
+    let res = { 'ifAPass': false, 'atoken': '' };
     let targetAdmin;
     // 预处理查询参数
     const targetCol = 'adminlist';
@@ -24,9 +24,9 @@ async function adminlogin(data) {
             console.log("=== ~ res: admin exist");
         } else {
             console.log("=== ! no such a administrator");
-            arr.atoken = undefined;
-            arr.err = 'no such a administrator';
-            return arr;
+            res.atoken = undefined;
+            res.err = 'no such a administrator';
+            return res;
         }
     } catch (e) {
         throw e;
@@ -52,17 +52,17 @@ async function adminlogin(data) {
         await syslog.addSyslog(logData)
         // 预处理给JWT的data
         data = { 'account': data.account, 'role': true };
-        arr.ifAPass = true;
-        arr.atoken = jwtutil.generateToken(data);
-        arr.timeStamp = Math.floor(Date.now() / 1000);
-        // console.log(arr);
-        return arr;
+        res.ifAPass = true;
+        res.atoken = jwtutil.generateToken(data);
+        res.timeStamp = Math.floor(Date.now() / 1000);
+        // console.log(res);
+        return res;
     }
     else {
         console.log("=== ! error password");
-        arr.atoken = undefined;
-        arr.err = 'error password';
-        return arr;
+        res.atoken = undefined;
+        res.err = 'error password';
+        return res;
     }
 }
 

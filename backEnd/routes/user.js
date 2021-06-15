@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 
+// pirsrc controller集
 const picsrc = require('../controller/picsrc');
 // 系统背景接口
 router.get('/bkglist', async (req, res, next) => {
@@ -12,6 +13,7 @@ router.get('/bkglist', async (req, res, next) => {
   res.json(arr);
 })
 
+// login controller集
 const login = require('../controller/login');
 // 登录接口
 router.post('/login', async (req, res, next) => {
@@ -24,6 +26,7 @@ router.post('/login', async (req, res, next) => {
   res.json(arr);
 })
 
+// signup controller集
 const signup = require('../controller/signup');
 // 注册实时用户查重接口
 router.post('/realtimecheck', async (req, res, next) => {
@@ -35,7 +38,6 @@ router.post('/realtimecheck', async (req, res, next) => {
   res.type("json");
   res.json(arr);
 })
-
 // 注册接口
 router.post('/signup', async (req, res, next) => {
   let data = req.body;
