@@ -10,7 +10,12 @@ var config = {
 
     // FrontEnd info
     frontServer: 'localhost',
-    frontPort: '8080'
+    frontPort: '8080',
+
+    // Background Pic
+    tempPicFolder: '/public/images/upload',
+    bkgPath: '/public/images/loginbkg',
+    quSrc: '/public/images/qusrc',
 };
 
 module.exports = config;

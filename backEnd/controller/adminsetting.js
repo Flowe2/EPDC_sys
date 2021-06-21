@@ -64,7 +64,8 @@ exports.allBkgDetail = async function (data) {
     }
 }
 
-exports.addOneBkgPic = async function () {
+// 新增系统背景图片
+exports.addCertainBkgPic = async function (data) {
     let res = { 'ifSuccess': false, 'err': '' };
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if (verifyRes.pass == true) {
@@ -73,13 +74,13 @@ exports.addOneBkgPic = async function () {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
     }
     try {
-        res = await picsrc.addOneBkgPic('loginbkg');
+        res = await picsrc.addOneBkgPic(data.file);
         if (res.ifSuccess == true) {
             // 成功时插入系统日志
             const logData = {
                 'role': verifyRes.payload.role,
                 'who': verifyRes.payload.account,
-                'operation': 'delete system background [pic: ' + data.deltarget + ']'
+                'operation': 'add system background [pic: ' + data.file.name + ']'
             };
             await syslog.addSyslog(logData);
         }

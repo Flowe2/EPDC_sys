@@ -108,31 +108,50 @@
                 </el-table-column>
                 <el-table-column prop="handle" width="100">
                   <template #header>
-                    <el-popover placement="bottom-end" :width="400" trigger="click">
+                    <el-popover
+                      placement="bottom-end"
+                      :width="400"
+                      trigger="click"
+                    >
                       <template #reference>
-                        <el-button
-                          type="success"
-                          size="mini"
-                          round
+                        <el-button type="success" size="mini" round
                           >新增</el-button
                         >
                       </template>
                       <el-upload
-                        class="upload-demo"
-                        action="https://jsonplaceholder.typicode.com/posts/"
-                        :on-preview="handlePreview"
-                        :on-remove="handleRemove"
-                        :before-remove="beforeRemove"
-                        multiple
+                        class="as_uploadpic"
+                        ref="asUploadpic"
+                        accept=".bmp, .jpg, .jpeg, .png, .gif"
+                        :action="uploadSysBkgPort"
+                        :before-upload="asBeforeUpload"
+                        :multiple="true"
+                        :data="uploadExtendExtraData"
+                        :on-success="asUploadSuccess"
+                        :on-error="asUploadError"
+                        :on-exceed="asUploadExceed"
+                        :file-list="uploadPics"
+                        :auto-upload="false"
                         :limit="3"
-                        :on-exceed="handleExceed"
-                        :file-list="fileList"
-                        ><el-button size="small" type="primary"
-                          >点击上传</el-button
+                        list-type="picture"
+                      >
+                        <template #trigger>
+                          <el-button size="mini" type="primary" round
+                            >选择</el-button
+                          ></template
+                        >
+                        <el-button
+                          size="mini"
+                          type="success"
+                          round
+                          style="margin-left: 10px"
+                          @click="addSysPic"
+                          >上传</el-button
                         >
                         <template #tip>
-                          <div class="el-upload__tip">
-                            只能上传 jpg/png 文件，且不超过 500kb
+                          <div class="as_upload_tip">
+                            仅接受
+                            <strong style="color: #e6a23c">图片类型</strong>
+                            文件, 且大小不超过 5MB, 每次最多上传 3 张
                           </div>
                         </template></el-upload
                       ></el-popover
@@ -169,10 +188,24 @@
     <el-divider content-position="right"
       ><i class="el-icon-more-outline"></i
     ></el-divider>
+
+    <!-- 修改密码后重新登录提示弹出框 -->
+    <el-dialog title="请重新登录" v-model="asModifiedPwdDialog" width="30%">
+      <span>由于当前密码已失效, 请重新登陆</span>
+      <template #footer>
+        <span>
+          <el-button type="primary" @click="asModifiedPwdLogout"
+            >好的</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+const serverHost = "http://localhost:3000";
+
 export default {
   name: "AdminSetting",
   data() {
@@ -210,7 +243,11 @@ export default {
           },
         ],
       },
+      asModifiedPwdDialog: false, // 修改密码后重新登录对话框
       displayList: [],
+      uploadSysBkgPort: serverHost + "/admin/manage/ulsysbkgpic", // 上传背景图片后端接口
+      uploadPics: [], // 上传图片列表
+      uploadExtendExtraData: {}, // 上传附加数据(atoken)
     };
   },
   methods: {
@@ -219,7 +256,6 @@ export default {
       if (value) {
         value = value.trim();
         if ($msgForm.newPwd != $msgForm.oldPwd) {
-          // $msgForm.validateField('newPwdCheck')
           callback();
         } else {
           callback(new Error("请检查新密码, 不能与旧密码相同"));
@@ -243,8 +279,77 @@ export default {
       }
     },
 
-    // 新增背景
-    addSysPic: function () {},
+    // 修改密码成功后, 主动登出
+    asModifiedPwdLogout: function () {
+      localStorage.removeItem("atoken");
+      this.$nextTick(() => {
+        this.$router.push("/admin/login");
+      });
+    },
+
+    // 上传前, 类型&大小检查
+    asBeforeUpload: function (file) {
+      let typeList = new Set(["bmp", "jpg", "jpeg", "png", "gif"]); // 图片类型限制
+      let sizeLimit = 1024 * 1024 * 5; // 大小限制 5MB
+      let targetType = file.type.split("/")[1];
+      if (!typeList.has(targetType)) {
+        this.$message({
+          type: "error",
+          message: "仅限上传图片类型(bmp/jpg/jpge/png/gif)",
+        });
+        return false;
+      } else if (file.size > sizeLimit) {
+        this.$message({
+          type: "error",
+          message: "图片大小最大为5MB",
+        });
+        return false;
+      } else {
+        return true;
+      }
+    },
+    // 超出上传数量限制
+    asUploadExceed: function () {
+      this.$message({
+        type: "info",
+        message: "不支持上传多个文件",
+      });
+    },
+    // 上传成功hook
+    asUploadSuccess: function (response, file, fileList) {
+      if (response.ifSuccess == true) {
+        for (let i = 0; i < fileList.length; i++) {
+          if (fileList[i].name == file.name) {
+            fileList.splice(i, 1);
+          }
+        }
+        this.$message({
+          type: "success",
+          message: "图片 " + file.name + "上传成功",
+        });
+        // 上传成功后重新拉取背景资源列表
+        this.getBgkListDetail();
+      }
+    },
+    // 上传失败hook
+    asUploadError: function (err, file, fileList) {
+      this.$message({
+        type: "error",
+        message: "图片 " + file.name + "上传失败\nerr: " + err,
+      });
+      console.log(fileList);
+    },
+
+    // 上传背景
+    addSysPic: function () {
+      // 附加json数据
+      this.uploadExtendExtraData = {
+        atoken: localStorage.getItem("atoken"),
+      };
+      this.$nextTick(() => {
+        this.$refs["asUploadpic"].submit();
+      });
+    },
     // 删除背景
     delSysPic: function (row) {
       console.log(row._id);
@@ -298,7 +403,7 @@ export default {
             });
         } else {
           this.$message({
-            type: "warning",
+            type: "error",
             message: "修改密码表单验证未通过.",
           });
         }
@@ -353,6 +458,9 @@ export default {
               type: "success",
               message: "修改密码成功!",
             });
+            this.$nextTick(() => {
+              this.asModifiedPwdDialog = true;
+            });
           } else {
             this.$message({
               type: "error",
@@ -386,6 +494,8 @@ export default {
               type: "success",
               message: "删除背景成功!",
             });
+            // 删除后重新拉取背景资源列表
+            this.getBgkListDetail();
           } else {
             this.$message({
               type: "error",

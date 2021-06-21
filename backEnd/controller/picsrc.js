@@ -55,15 +55,25 @@ exports.getBkglistDetail = async function () {
 }
 
 // 新增背景资源
-exports.addOneBkgPic = async function (col) {
+exports.addOneBkgPic = async function (file) {
     let res = { ifSuccess: false, err: '' };
     // 预处理查询参数
-    const targetCol = col;
-    const insertDoc = { 'name': "", "type": "", "buffer": "", "relate": "" };
+    const targetCol = 'loginbkg';
+    const insertDoc = { 'name': file.name, "type": file.type, "path": file.path };
     try {
         let queryRes = await thDB.insertOneData(targetCol, insertDoc);
         if (queryRes == 1) {
-            console.log("=== ~ res: insert 1 backgroud pic seccess");
+            console.log("=== ~ res: insert backgroud pic " + file.name + " seccess");
+            // 移动文件
+            let oldPath = file.tempPath;
+            let newPath = path.join(__dirname, "/../public" + file.path);
+            fs.rename(oldPath, newPath, (e) => {
+                if (e) {
+                    res.err = e.message
+                } else {
+                    console.log("=== ~ move system background pic: " + file.name + " success");
+                }
+            })
             res.ifSuccess = true;
             res.err = undefined;
         } else {

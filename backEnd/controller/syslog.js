@@ -18,7 +18,7 @@ exports.getSyslog = async function (data) {
     // 预处理查询参数
     const targetCol = 'syslog';
     const query = { };
-    const options = { projection: { 'timestamp': 1, 'role': 1, 'who': 1, 'operation': 1 } };
+    const options = { projection: { '_id':0, 'timestamp': 1, 'role': 1, 'who': 1, 'operation': 1 }, sort: { 'timestamp': -1} };
     try {
         res.syslog = await thDB.findData(targetCol, query, options);
         res.counter = res.syslog.length;
