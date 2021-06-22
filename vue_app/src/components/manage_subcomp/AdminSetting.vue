@@ -270,6 +270,14 @@
                           </el-form-item>
                         </el-form>
                       </el-popover>
+                      <el-button
+                        size="small"
+                        circle
+                        icon="el-icon-question"
+                        class="asHelpBtn"
+                        title="API帮助"
+                        @click="apiManual"
+                      ></el-button>
                     </template>
                     <template #default="scope">
                       <el-popconfirm
@@ -622,23 +630,47 @@ export default {
         return "已停用";
       }
     },
+    // Api Manual
+    // 删除提示
+    apiManual: function () {
+      this.$notify({
+        type: "info",
+        title: "API使用手册",
+        offset: 100,
+        dangerouslyUseHTMLString: true,
+        message:
+          "<strong>使用方法</strong>\
+          <p>使用 <code>localStorage.getItem('key', value);</code> 函数, 分别将 token 文件中的 'token'、'timeStamp'、'user'存入浏览器会话缓存</p>\
+          <strong>关于 localStroage</strong>\
+          <p>由于其特性, 请在访问结束后使用 <code>localStorage.removeItem('key');</code> 主动清理</p>",
+        duration: 0,
+      });
+    },
     // 改变api状态
     changeExternalApi: function (row) {
-      console.log(row);
       this.postChangeApi(row);
     },
     // 下载api
     downloadExternalApi: function (row) {
       let a = document.getElementById("downloadExternalApi");
-      let apiFile = new Blob(['{"token": "' + row.token + '"}'], {type: "application/json"});
+      let fileData =
+        '{"token": "' +
+        row.token +
+        '", "timeStamp": ' +
+        new Date(row.expire).getTime() +
+        ', "user": "' +
+        row.name +
+        '"}';
+      let apiFile = new Blob([fileData], { type: "application/json" });
       a.href = URL.createObjectURL(apiFile);
-      a.download = row.name+'.eqm_api';
-      a.dispatchEvent(new MouseEvent('click', {'bubbles': false, 'cancelable': true}));
+      a.download = row.name + ".eqm_api";
+      a.dispatchEvent(
+        new MouseEvent("click", { bubbles: false, cancelable: true })
+      );
     },
     // 删除api
     delExternalApi: function (row) {
-      console.log(row);
-      this.postDelApi(row)
+      this.postDelApi(row);
     },
     // 重置新增api表单按钮
     resetNewApiBtn: function () {
@@ -844,14 +876,18 @@ export default {
           if (res.ifSuccess == true) {
             this.$message({
               type: "success",
-              message: row.status?"停用":"启用" + "api \"" + row.name + "\" 成功!",
+              message: row.status
+                ? "停用"
+                : "启用" + 'api "' + row.name + '" 成功!',
             });
             // 重新拉取接口列表
             this.getAPIList();
           } else {
             this.$message({
               type: "error",
-              message: row.status?"停用":"启用" + "api \"" + row.name + "\" 失败.\n" + res.err,
+              message: row.status
+                ? "停用"
+                : "启用" + 'api "' + row.name + '" 失败.\n' + res.err,
             });
           }
         })
@@ -878,14 +914,14 @@ export default {
           if (res.ifSuccess == true) {
             this.$message({
               type: "success",
-              message: "删除api \"" + row.name + "\" 成功!",
+              message: '删除api "' + row.name + '" 成功!',
             });
             // 重新拉取接口列表
             this.getAPIList();
           } else {
             this.$message({
               type: "error",
-              message: "删除api \"" + row.name + "\" 失败.\n" + res.err,
+              message: '删除api "' + row.name + '" 失败.\n' + res.err,
             });
           }
         })
@@ -1017,6 +1053,12 @@ export default {
 
 .as_upload_tip {
   margin: 5px;
+}
+
+.asHelpBtn {
+  font-size: large;
+  border: 0;
+  padding: 0;
 }
 
 .as_api_description_text {
