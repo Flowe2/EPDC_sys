@@ -4,7 +4,7 @@
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
-const thDB = require('../utils/theMongoDB');
+const DButil = require('../utils/theMongoDB');
 
 // 实时用户名查重处理
 exports.realtimeCheck = async function (data) {
@@ -14,7 +14,7 @@ exports.realtimeCheck = async function (data) {
     const query = { '_id': data.uemail };
     const options = { projection: { '_id': 1 } };
     try {
-        targetUser = await thDB.findData(targetCol, query, options);
+        targetUser = await DButil.findData(targetCol, query, options);
         if (targetUser.length == 0) {
             console.log('=== ~ res: uemail has not been signed yet');
             res.ifAvailable = true;
@@ -23,13 +23,14 @@ exports.realtimeCheck = async function (data) {
         }
         return res;
     } catch (e) {
-        throw e;
+        res = { err: e.message };
+        return res;
     }
 }
 
 // 用户注册处理
 exports.signup = async function (data) {
-    let res = { 'ifSuccess': false, 'err': '' };
+    let res = { 'ifSuccess': false, 'err': null };
     // 预处理查询参数
     const targetCol = 'userlist';
     const insertDoc = {
@@ -42,7 +43,7 @@ exports.signup = async function (data) {
         'lastlog': ''
     };
     try {
-        let insertRes = await thDB.insertOneData(targetCol, insertDoc);
+        let insertRes = await DButil.insertOneData(targetCol, insertDoc);
         if (insertRes == 1) {
             console.log("=== ~ res: insert 1 unchecked user seccess");
             res.ifSuccess = true;
@@ -53,6 +54,7 @@ exports.signup = async function (data) {
         }
         return res;
     } catch (e) {
-        throw e;
+        res = { err: e.message };
+        return res;
     }
 }

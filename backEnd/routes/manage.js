@@ -122,15 +122,6 @@ router.post('/syslog', async (req, res, next) => {
 
 // admingsetting controller集
 const addmingsetting = require('../controller/adminsetting');
-// admin 修改当前管理员密码
-router.post('/modifyapwd', async (req, res, next) => {
-    let data = req.body;
-    console.log("=== ~ receive POST : @ admin - to modify pwd of admin: ", data.modifyform.admin);
-    let arr = await addmingsetting.toModifyAPwd(data);
-    console.log("=== ~ ready to send");
-    res.type("json");
-    res.json(arr);
-})
 // admin 拉取系统背景图片详情
 router.post('/bgklistdetail', async (req, res, next) => {
     let data = req.body;
@@ -157,6 +148,51 @@ router.post('/delcertainpic', async (req, res, next) => {
     let data = req.body;
     console.log("=== ~ receive POST : @ admin - del certain background pic");
     let arr = await addmingsetting.delCertainBkgPic(data);
+    console.log("=== ~ ready to send");
+    res.type("json");
+    res.json(arr);
+})
+// admin 修改当前管理员密码
+router.post('/modifyapwd', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - to modify pwd of admin: ", data.modifyform.admin);
+    let arr = await addmingsetting.toModifyAPwd(data);
+    console.log("=== ~ ready to send");
+    res.type("json");
+    res.json(arr);
+})
+// admin 拉取接口列表
+router.post('/getapis', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - get all apis");
+    let arr = await addmingsetting.getAPIs(data);
+    console.log("=== ~ ready to send");
+    res.type("json");
+    res.json(arr);
+})
+// admin 新增接口
+router.post('/addapi', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - add one api");
+    let arr = await addmingsetting.addAPIs(data);
+    console.log("=== ~ ready to send");
+    res.type("json");
+    res.json(arr);
+})
+// admin 停用接口
+router.post('/changeapi', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - change api status");
+    let arr = await addmingsetting.changeAPIs(data);
+    console.log("=== ~ ready to send");
+    res.type("json");
+    res.json(arr);
+})
+// admin 删除接口
+router.post('/delapi', async (req, res, next) => {
+    let data = req.body;
+    console.log("=== ~ receive POST : @ admin - del one api");
+    let arr = await addmingsetting.delAPIs(data);
     console.log("=== ~ ready to send");
     res.type("json");
     res.json(arr);

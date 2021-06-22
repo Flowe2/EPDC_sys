@@ -4,7 +4,7 @@
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
-const thDB = require('../utils/theMongoDB');
+const DButil = require('../utils/theMongoDB');
 // 系统日志controller
 const syslog = require('../controller/syslog');
 
@@ -18,7 +18,7 @@ async function login(data) {
     const options = { projection: { '_id': 1, 'upwd': 1, 'pass': 1 } };
     // 查询用户
     try {
-        targetUser = await thDB.findData(targetCol, query, options);
+        targetUser = await DButil.findData(targetCol, query, options);
         if (targetUser.length != 0) {
             targetUser = targetUser[0];
             console.log("=== ~ res: user exist");
@@ -29,14 +29,15 @@ async function login(data) {
             return res;
         }
     } catch (e) {
-        throw e;
+        res = { err: e.message };
+        return res;
     }
     if (targetUser.pass == true) {
         if (targetUser.upwd == data.upwd) {
             // 验证通过, 更新lastlog, 生成token
             const updateDoc = { $set: { 'lastlog': jwtutil.timeStamp() } };
             const updateOptions = { upsert: true };
-            await thDB.updateOneData(targetCol, query, updateDoc, updateOptions)
+            await DButil.updateOneData(targetCol, query, updateDoc, updateOptions)
                 .catch(console.dir)
                 .then((res) => {
                     if (res == 1) {
@@ -52,7 +53,7 @@ async function login(data) {
             }
             await syslog.addSyslog(logData)
             // 预处理给JWT的data
-            data = { 'account': data.uemail, 'role': false };
+            data = { 'account': data.uemail, 'role': false, 'expire': '1h' };
             res.ifPass = true;
             res.token = jwtutil.generateToken(data);
             res.timeStamp = Math.floor(Date.now() / 1000);

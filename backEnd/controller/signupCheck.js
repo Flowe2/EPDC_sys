@@ -4,7 +4,7 @@
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
-const thDB = require('../utils/theMongoDB');
+const DButil = require('../utils/theMongoDB');
 // 系统日志controller
 const syslog = require('../controller/syslog');
 
@@ -17,13 +17,15 @@ exports.checkingList = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     const targetCol = 'userlist';
     const query = { 'pass': false };
     const options = { projection: { '_id': 1, 'uname': 1, 'postscript': 1, 'signup': 1 } };
     try {
-        res.userlist = await thDB.findData(targetCol, query, options);
+        res.userlist = await DButil.findData(targetCol, query, options);
         res.userlist.forEach(element => {
             let temp = element._id;
             element._id = undefined;
@@ -45,6 +47,8 @@ exports.toPassApply = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     const targetCol = 'userlist';
@@ -52,7 +56,7 @@ exports.toPassApply = async function (data) {
     const updateDoc = { $set: { 'pass': true } };
     const options = { upsert: true };
     try {
-        let temp = await thDB.updateOneData(targetCol, query, updateDoc, options);
+        let temp = await DButil.updateOneData(targetCol, query, updateDoc, options);
         if (temp === 1) {
             const logData = {
                 'role': verifyRes.payload.role,
@@ -74,18 +78,20 @@ exports.toPassApply = async function (data) {
 
 // 注册管理 - 拒绝注册
 exports.toRefuseApply = async function (data) {
-    let res = { ifSuccess: false, err: '' };
+    let res = { ifSuccess: false, err: null };
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     const targetCol = 'userlist';
     const query = { _id: data.uemail };
     try {
-        let queryRes = await thDB.deleteWithReturn(targetCol, query);
+        let queryRes = await DButil.deleteWithReturn(targetCol, query);
         if (queryRes) {
             const logData = {
                 'role': verifyRes.payload.role,

@@ -5,7 +5,7 @@ const { ObjectId } = require('bson');
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
-const thDB = require('../utils/theMongoDB');
+const DButil = require('../utils/theMongoDB');
 const syslog = require('../controller/syslog');
 
 // 题型判断
@@ -31,7 +31,7 @@ const updateSuggetList = async function (subject, keywords) {
     const query = { 'subject': subject };
     const subjectQueryOptions = { projection: { '_id': 0, 'keywords': 1 } };
     // 查询科目是否存在
-    let updateQuery = await thDB.findData(targetCol, query, subjectQueryOptions);
+    let updateQuery = await DButil.findData(targetCol, query, subjectQueryOptions);
     if (updateQuery.length != 0) {
         // 存在则将新的关键词加入keywords并更新到数据库
         console.log("=== ~ subject exist. ");
@@ -43,7 +43,7 @@ const updateSuggetList = async function (subject, keywords) {
         tempKeywords = Array.from(tempKeywords);
         try {
             const updateDoc = { $push: { "keywords": { $each: tempKeywords } } };
-            let temp = await thDB.updateOneData(targetCol, query, updateDoc);
+            let temp = await DButil.updateOneData(targetCol, query, updateDoc);
             if (temp === 1) {
                 console.log("=== ~ suggestedList update success.");
             } else {
@@ -57,14 +57,15 @@ const updateSuggetList = async function (subject, keywords) {
         console.log("=== ~ no corresponding subject.");
         const insertDoc = { 'subject': subject, 'keywords': keywords };
         try {
-            let insertRes = await thDB.insertOneData(targetCol, insertDoc);
+            let insertRes = await DButil.insertOneData(targetCol, insertDoc);
             if (insertRes == 1) {
                 console.log("=== ~ suggestedList update success.");
             } else {
                 console.log("=== ~ suggestedList update failed.");
             }
         } catch (e) {
-            throw e;
+            res = { err: e.message };
+            return res;
         }
     }
 }
@@ -77,16 +78,19 @@ exports.asyncQuerySubjects = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     const targetCol = 'suggestedsubject';
     const query = {};
     const options = { projection: { '_id': 0, 'subject': 1 } };
     try {
-        res = await thDB.findData(targetCol, query, options);
+        res = await DButil.findData(targetCol, query, options);
         return res;
     } catch (e) {
-        throw e;
+        res = { err: e.message };
+        return res;
     }
 }
 
@@ -98,19 +102,22 @@ exports.asyncQueryKeywords = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     const targetCol = 'suggestedsubject';
     const query = { 'subject': data.subject };
     const options = { projection: { '_id': 0, 'keywords': 1 } };
     try {
-        let queryRes = await thDB.findData(targetCol, query, options);
+        let queryRes = await DButil.findData(targetCol, query, options);
         if (queryRes.length > 0) {
             res.keywords = queryRes[0].keywords;
         }
         return res;
     } catch (e) {
-        throw e;
+        res = { err: e.message };
+        return res;
     }
 }
 
@@ -121,12 +128,14 @@ exports.getQuestionsList = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     let targetCol = questionTypeJudge(data.type);
     const query = { 'type': data.type };
     let res = { 'questionlist': [], 'counter': 0 };
     try {
-        let qureyRes = await thDB.findData(targetCol, query);
+        let qureyRes = await DButil.findData(targetCol, query);
         res.questionlist = qureyRes;
         res.counter = qureyRes.length;
         return res;
@@ -143,13 +152,15 @@ exports.uploadNewQuestion = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     const targetCol = questionTypeJudge(data.newqu.type);
     const insertDoc = data.newqu;
-    let res = { 'ifSuccess': false, 'err': '' };
+    let res = { 'ifSuccess': false, 'err': null };
     try {
-        let insertRes = await thDB.insertOneData(targetCol, insertDoc);
+        let insertRes = await DButil.insertOneData(targetCol, insertDoc);
         if (insertRes == 1) {
             console.log("=== ~ res: insert seccess");
             const logData = {
@@ -179,11 +190,13 @@ exports.deleteQuestion = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     let targetCol = ["singlechoice", "multiplechoice", "truefalse", "gapfilling", "subjective"];
     let targetList = [[], [], [], [], []];
-    let res = { 'ifSuccess': false, 'err': '' };
+    let res = { 'ifSuccess': false, 'err': null };
     // 待删除题目分类
     data.deletelist.forEach(element => {
         switch (element.type) {
@@ -212,7 +225,7 @@ exports.deleteQuestion = async function (data) {
             let delCounter = targetList[i].length;
             if (delCounter > 0) {
                 let query = { _id: { $in: targetList[i] } };
-                let queryRes = await thDB.deleteManyData(targetCol[i], query);
+                let queryRes = await DButil.deleteManyData(targetCol[i], query);
                 if (queryRes == delCounter) {
                     console.log("=== ~ deleted some questions.");
                 } else {

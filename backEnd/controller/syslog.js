@@ -4,7 +4,7 @@
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
-const thDB = require('../utils/theMongoDB');
+const DButil = require('../utils/theMongoDB');
 
 // 获取日志
 exports.getSyslog = async function (data) {
@@ -14,13 +14,15 @@ exports.getSyslog = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     const targetCol = 'syslog';
     const query = { };
     const options = { projection: { '_id':0, 'timestamp': 1, 'role': 1, 'who': 1, 'operation': 1 }, sort: { 'timestamp': -1} };
     try {
-        res.syslog = await thDB.findData(targetCol, query, options);
+        res.syslog = await DButil.findData(targetCol, query, options);
         res.counter = res.syslog.length;
         return res;
     } catch (e) {
@@ -40,13 +42,14 @@ exports.addSyslog = async function (data) {
         'operation': data.operation,
     };
     try {
-        let insertRes = await thDB.insertOneData(targetCol, insertDoc);
+        let insertRes = await DButil.insertOneData(targetCol, insertDoc);
         if (insertRes == 1) {
             console.log("=== ~ res: syslog insert seccess");
         } else {
             console.log("=== ! err: syslog insert failed");
         }
     } catch (e) {
-        throw e;
+        res = { err: e.message };
+        return res;
     }
 }

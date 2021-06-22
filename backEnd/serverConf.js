@@ -8,6 +8,10 @@ var config = {
     dbUser: 'root',
     dbPwd: 'root',
 
+    // public/private key
+    publicKey: '/utils/rsa_public_key.pem',
+    privateKey: '/utils/rsa_private_key.pem',
+
     // FrontEnd info
     frontServer: 'localhost',
     frontPort: '8080',

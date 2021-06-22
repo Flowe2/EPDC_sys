@@ -4,7 +4,7 @@
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
-const thDB = require('../utils/theMongoDB');
+const DButil = require('../utils/theMongoDB');
 const { ObjectID } = require('mongodb');
 // 文件及路径操作
 const fs = require('fs');
@@ -18,7 +18,7 @@ exports.getBkglist = async function () {
     const query = {};
     const options = { projection: { '_id': 0, 'path': 1 } };
     try {
-        queryRes = await thDB.findData(targetCol, query, options);
+        queryRes = await DButil.findData(targetCol, query, options);
         if (queryRes.length == 0) {
             console.log('=== ! res: no any background pics, plz contact admin');
         } else {
@@ -29,7 +29,8 @@ exports.getBkglist = async function () {
         }
         return res;
     } catch (e) {
-        throw e;
+        res = { err: e.message };
+        return res;
     }
 }
 
@@ -41,7 +42,7 @@ exports.getBkglistDetail = async function () {
     const query = {};
     const options = { projection: { '_id': 1, 'name': 1, 'path': 1 } };
     try {
-        let queryRes = await thDB.findData(targetCol, query, options);
+        let queryRes = await DButil.findData(targetCol, query, options);
         if (queryRes.length == 0) {
             console.log('=== ! res: no any background pics, plz contact admin');
         } else {
@@ -50,18 +51,19 @@ exports.getBkglistDetail = async function () {
         }
         return res;
     } catch (e) {
-        throw e;
+        res = { err: e.message };
+        return res;
     }
 }
 
 // 新增背景资源
 exports.addOneBkgPic = async function (file) {
-    let res = { ifSuccess: false, err: '' };
+    let res = { ifSuccess: false, err: null };
     // 预处理查询参数
     const targetCol = 'loginbkg';
     const insertDoc = { 'name': file.name, "type": file.type, "path": file.path };
     try {
-        let queryRes = await thDB.insertOneData(targetCol, insertDoc);
+        let queryRes = await DButil.insertOneData(targetCol, insertDoc);
         if (queryRes == 1) {
             console.log("=== ~ res: insert backgroud pic " + file.name + " seccess");
             // 移动文件
@@ -89,13 +91,13 @@ exports.addOneBkgPic = async function (file) {
 
 // 删除指定图片资源
 exports.delOneBkgPic = async function (col, deltarget) {
-    let res = { ifSuccess: false, err: '' };
+    let res = { ifSuccess: false, err: null, name: ''};
     // 预处理查询参数
     const targetCol = col;
     const query = { _id: ObjectID(deltarget) };
     // 删除数据库对应数据, 并返回删除的文档
     try {
-        let queryRes = await thDB.deleteWithReturn(targetCol, query);
+        let queryRes = await DButil.deleteWithReturn(targetCol, query);
         if (queryRes) {
             // 根据删除结果已出
             let picPath = queryRes.path;
@@ -111,7 +113,7 @@ exports.delOneBkgPic = async function (col, deltarget) {
                 }
             });
             res.ifSuccess = true;
-            res.err = undefined;
+            res.name = queryRes.name;
         } else {
             res.err = 'No match';
         }

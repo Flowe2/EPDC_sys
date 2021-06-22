@@ -5,7 +5,7 @@ const { query } = require('express');
 const JWT = require('../utils/theJWT');
 const jwtutil = new JWT();
 // 数据库操作工具
-const thDB = require('../utils/theMongoDB');
+const DButil = require('../utils/theMongoDB');
 
 // 各题型数量统计
 exports.getQuantityStatistic = async function (data) {
@@ -19,13 +19,15 @@ exports.getQuantityStatistic = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     const targetCol = ["singlechoice", "multiplechoice", "truefalse", "gapfilling", "subjective"];
     const query = {};
     for (let i = 0; i < 5; i++) {
         try {
-            let queryRes = await thDB.countData(targetCol[i], query);
+            let queryRes = await DButil.countData(targetCol[i], query);
             res[i].value = queryRes
         } catch (e) {
             res = { err: e.message };
@@ -42,6 +44,8 @@ exports.getQuantityStatistic = async function (data) {
 //         console.log("=== ~ token verify pass");
 //     } else {
 //         console.log("=== ! token verify failed, err: ", verifyRes.err);
+//         res = { err: verifyRes.err };
+//         return res;
 //     }
 //     // 预处理查询参数
 //     let in30d = new Date();
@@ -51,13 +55,14 @@ exports.getQuantityStatistic = async function (data) {
 //     const query1 = { role: "user", operation: { $regex: "upload new question" }, timestamp: { $gte: in30d } };
 //     const query2 = { role: "user", operation: { $regex: "delete some questions" }, timestamp: { $gte: in30d } };
 //     try {
-//         let queryRes1 = await thDB.countData(targetCol, query1);
-//         let queryRes2 = await thDB.countData(targetCol, query2)
+//         let queryRes1 = await DButil.countData(targetCol, query1);
+//         let queryRes2 = await DButil.countData(targetCol, query2)
 //         res.data.push(queryRes1);
 //         res.data.push(queryRes2);
 //         return res;
 //     } catch (e) {
-//         throw (e);
+//         res = { err: e.message };
+//         return res;
 //     }
 // }
 
@@ -69,6 +74,8 @@ exports.getUserHeatStatistic = async function (data) {
         console.log("=== ~ token verify pass");
     } else {
         console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
     }
     // 预处理查询参数
     let startTime = new Date();
@@ -106,7 +113,7 @@ exports.getUserHeatStatistic = async function (data) {
         count: -1
     }
     try {
-        let queryRes = await thDB.aggregateFind(targetCol, match, group, sort);
+        let queryRes = await DButil.aggregateFind(targetCol, match, group, sort);
         queryRes.forEach(col => {
             res.data.push([col._id, col.count])
         })

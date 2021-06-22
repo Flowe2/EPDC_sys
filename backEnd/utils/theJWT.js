@@ -1,5 +1,9 @@
 const fs = require('fs');
+const path = require('path');
 const jwt = require('jsonwebtoken');
+const config = require('../serverConf');
+const publicKey = path.join(__dirname, "\\..\\", config.publicKey);
+const privateKey = path.join(__dirname, "\\..\\", config.privateKey);
 
 // JWT 类
 function JWT() {
@@ -12,16 +16,16 @@ function JWT() {
         };
         // 秘钥
         console.log("=== ~ payLoad ready");
-        let pri_key = fs.readFileSync(__dirname + '\\rsa_private_key.pem');
+        let pri_key = fs.readFileSync(privateKey);
         // 调用jwt包
-        // 1h 后过期
-        let token = jwt.sign(payLoad, pri_key, { algorithm: 'RS256', expiresIn: '1h' });
+        // expiresIn: 秒数-number形式 60*60即1小时, 天/小时数-带单位的string "2 days"/"7d"/"12h"即2天/7天/12小时, 毫秒数-不带单位string "120"即120ms
+        let token = jwt.sign(payLoad, pri_key, { algorithm: 'RS256', expiresIn: data.expire });
         return token;
     };
     // 校验token
     this.verifyToken = function (token) {
         // 公钥
-        let pub_key = fs.readFileSync(__dirname + '\\rsa_public_key.pem');
+        let pub_key = fs.readFileSync(publicKey);
         let res;
         jwt.verify(token, pub_key, { algorithms: ['RS256'] }, (err, payLoad) => {
             if (err) {
