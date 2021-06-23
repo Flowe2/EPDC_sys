@@ -8,12 +8,12 @@
         v-loading="newQuLoading"
         label-position="left"
         label-width="80px"
-        class="ulForm"
+        class="uqForm"
       >
         <el-form-item label="科目" prop="subject">
           <el-autocomplete
             v-model="newQu.subject"
-            :fetch-suggestions="ulAsyncSubjectQuery"
+            :fetch-suggestions="uqAsyncSubjectQuery"
             placeholder="请输入科目"
             @select="handleSelect"
           ></el-autocomplete>
@@ -121,20 +121,44 @@
         </el-form-item>
         <el-form-item label="题目资源">
           <el-upload
-            action
-            ref="uploadFile"
-            class="ulDragUpload"
-            :http-request="ulHandleUpload"
-            :on-exceed="ulHandleExceed"
-            :before-upload="ulBeforeUpload"
-            :on-preview="ulPictureCardPreview"
-            list-type="picture-card"
-            limit="1"
-            drag
-            accept=".jpg,.jpeg,.png,.gif,.bmp"
+            class="uq_uploadpic"
+            ref="uqUploadpic"
+            accept=".bmp, .jpg, .jpeg, .png, .gif"
+            :action="uqloadQusrcPort"
+            :file-list="uqQusrcs"
+            :multiple="false"
+            :data="uqUploadExtraData"
+            :on-preview="uqPictureCardPreview"
+            :on-exceed="uqUploadExceed"
+            :before-upload="uqBeforeUpload"
+            :on-success="uqUploadSuccess"
+            :on-error="uqUploadError"
+            :on-remove="uqUploadRemove"
+            :auto-upload="false"
+            :limit="1"
+            list-type="picture"
           >
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">拖拽至此<br />或<em>点击上传</em></div>
+            <template #trigger>
+              <el-tooltip placement="top-end">
+                <template #content>
+                  <div class="as_upload_tip">
+                    仅接受<strong style="color: #e6a23c">图片类型</strong>文件,
+                    且大小不超过 5MB<br />每题最多上传 1 张
+                  </div>
+                </template>
+                <el-button size="mini" type="primary" round
+                  >选择图片</el-button
+                ></el-tooltip
+              ></template
+            >
+            <el-button
+              size="mini"
+              type="success"
+              round
+              style="margin-left: 10px"
+              @click="addQusrcPic"
+              >上传图片</el-button
+            >
           </el-upload>
         </el-form-item>
         <el-form-item label="入库时间">
@@ -165,8 +189,8 @@
             size="small"
             filterable
             placeholder="学期"
-            class="ulDatePicker"
-            ref="ulDateSemester"
+            class="uqDatePicker"
+            ref="uqDateSemester"
           >
             <el-option
               v-for="semester in semesters"
@@ -181,8 +205,8 @@
             size="small"
             filterable
             placeholder="场景"
-            class="ulDatePicker"
-            ref="ulDatePeriod"
+            class="uqDatePicker"
+            ref="uqDatePeriod"
           >
             <el-option
               v-for="period in periods"
@@ -198,7 +222,7 @@
             filterable
             placeholder="A/B卷"
             style="width: 90px"
-            ref="ulDateVolume"
+            ref="uqDateVolume"
           >
             <el-option
               v-for="volume in volumes"
@@ -215,7 +239,7 @@
       <el-row :gutter="10" type="flex" justify="end" align="middle">
         <el-col :span="9">
           <el-tooltip :content="dupliCheckRes" placement="top-end">
-            <el-button type="info" class="ulDupChkTag">
+            <el-button type="info" class="uqDupChkTag">
               {{ dupliCheckRes }}
             </el-button>
           </el-tooltip>
@@ -245,14 +269,16 @@
       </el-row>
     </el-header>
 
-    <el-dialog title="题目资源预览" v-model="dialogVisible" width="440px">
-      <img :src="dialogImageUrl" alt="" style="width: 400px; height: 400px" />
+    <el-dialog title="上传资源预览" v-model="uqUploadPreviewVisible" width="440px">
+      <el-image :src="uqUploadPreviewUrl" alt="" fit="scale-down" style="width: 400px; height: 400px"></el-image>
     </el-dialog>
   </el-container>
 </template>
 
 <script>
 import _ from "lodash";
+
+const serverHost = "http://localhost:3000";
 
 export default {
   name: "UploadQuestion",
@@ -312,8 +338,11 @@ export default {
           label: "B卷",
         },
       ],
-      uploadsrcs: [],
-      dialogVisible: false, // 题目资源预览标志
+      uqloadQusrcPort: serverHost + "/user/qubank/ulqusrcpic", // 上传题目资源后端接口
+      uqUploadExtraData: {}, // 上传附加数据(token)
+      uqQusrcs: [],
+      uqUploadPreviewUrl: "",
+      uqUploadPreviewVisible: false, // 题目资源预览标志
       newQu: {
         // 新题
         subject: "",
@@ -358,7 +387,7 @@ export default {
       dupliCheckRes: "上传前请先预查重", // 预查重结果
     };
   },
-  props: ["ulDrawer"],
+  props: ["uqDrawer"],
   methods: {
     // 时间戳工具函数
     getNowTimeStmp: function () {
@@ -425,89 +454,84 @@ export default {
     },
 
     // upload部分 - 图片预览
-    ulPictureCardPreview: function (file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
+    uqPictureCardPreview: function (file) {
+      this.uqUploadPreviewUrl = file.url;
+      this.uqUploadPreviewVisible = true;
     },
     // upload部分 - 超出数量限制操作
-    ulHandleExceed: function (file, newfile) {
+    uqUploadExceed: function () {
       this.$message({
-        message: "仅能上传一张图片, 请先删除上一张",
-        type: "error",
+        type: "info",
+        message: "每题最多对应3张图片资源",
       });
-      console.log(file);
-      console.log(newfile);
     },
     // upload部分 - 格式及大小检查
-    ulBeforeUpload: function (file) {
-      const typeList = [
-        "image/jpg",
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/bmp",
-      ];
-      let isJPG = false;
-      typeList.forEach((type) => {
-        if (file.type === type) {
-          isJPG = true;
-        }
-      });
-      // 限制大小为10MB
-      let isLt2M = file.size / 1024 / 1024 < 10;
-      if (!isJPG) {
-        this.$message.error("只能是图片格式!(.jpg/.jpeg/.png/.gif/.bmp)");
-      } else if (!isLt2M) {
-        this.$message.error("题目资源大小不能超过 10MB!");
-      } else {
-        this.$message.success("题目资源格式及大小检查通过.");
-      }
-      return isJPG && isLt2M;
-    },
-    // upload部分 - 自定义上传操作
-    ulHandleUpload: function (file) {
-      this.uploadsrcs.push(file.file);
-      console.log(this.uploadsrcs[0]);
-      this.axios({
-        method: "POST",
-        url: "/user/qubank/uploadsrc",
-        data: {
-          token: localStorage.getItem("token"),
-          src: this.uploadsrcs[0],
-        },
-      })
-        .then((response) => {
-          // 处理上传图片结果
-          // 返回:  {"ifSuccess": "true / false",
-          //        "srcid": "...",
-          //        "err": "undefined / err message"}
-          let res = JSON.stringify(response.data);
-          res = JSON.parse(res);
-          console.log(res);
-          // if (res.ifSuccess == true) {
-          //   this.newQu.payload.src = res.srcid;
-          //   alert("上传题目成功");
-          // } else {
-          //   alert(res.err);
-        })
-        .catch((err) => {
-          console.log(err);
+    uqBeforeUpload: function (file) {
+      let typeList = new Set(["bmp", "jpg", "jpeg", "png", "gif"]); // 图片类型限制
+      let sizeLimit = 1024 * 1024 * 5; // 大小限制 5MB
+      let targetType = file.type.split("/")[1];
+      if (!typeList.has(targetType)) {
+        this.$message({
+          type: "error",
+          message: "仅限上传图片类型(bmp/jpg/jpge/png/gif)",
         });
+        return false;
+      } else if (file.size > sizeLimit) {
+        this.$message({
+          type: "error",
+          message: "图片大小最大为5MB",
+        });
+        return false;
+      } else {
+        return true;
+      }
+    },
+    // upload部分 - 上传按钮
+    addQusrcPic: function () {
+      this.uqUploadExtraData = {
+        token: localStorage.getItem("token"),
+      };
+      this.$nextTick(() => {
+        this.$refs["uqUploadpic"].submit();
+      });
+    },
+    // upload部分 - 上传成功hook
+    uqUploadSuccess: function (response, file) {
+      console.log(response);
+      if (response.ifSuccess == true) {
+        this.$message({
+          type: "success",
+          message: "图片 " + file.name + "上传成功",
+        });
+        this.newQu.payload.src = response.base64pic;
+      }
+    },
+    // upload - 上传失败 hook
+    uqUploadError: function (err, file) {
+      this.$message({
+        type: "error",
+        message: "图片 " + file.name + "上传失败\nerr: " + err,
+      });
+    },
+    // upload部分 - 移除已上传文件
+    uqUploadRemove: function () {
+      this.uqUploadExtraData = {};
+      this.newQu.payload.src = "";
     },
 
     // 最近使用时间picker
     setLastUseTime: function (param) {
       if (param == "year") {
         setTimeout(() => {
-          this.$refs.ulDateSemester.focus();
+          this.$refs.uqDateSemester.focus();
         }, 500);
       } else if (param == "semester") {
         setTimeout(() => {
-          this.$refs.ulDatePeriod.focus();
+          this.$refs.uqDatePeriod.focus();
         }, 500);
       } else if (param == "period") {
         setTimeout(() => {
-          this.$refs.ulDateVolume.focus();
+          this.$refs.uqDateVolume.focus();
         }, 500);
       } else {
         this.newQu.lastUseTime =
@@ -607,11 +631,12 @@ export default {
         this.newQu.payload.options = [];
         this.newQu.payload.answer = [];
         this.newQu.lastUseTime = "";
+        this.uqUploadExtraData = {};
       });
     },
 
     // 输入科目建议
-    ulAsyncSubjectQuery: _.debounce(function (queryString, cb) {
+    uqAsyncSubjectQuery: _.debounce(function (queryString, cb) {
       let results = [];
       if (queryString) {
         results = this.subjectsList.filter((v) => {
@@ -715,6 +740,7 @@ export default {
 
     // axios - 上传题目
     postNewQuestion: function () {
+      this.newQu.additionTime = new Date(this.newQu.additionTime);
       this.axios({
         method: "POST",
         url: "/user/qubank/uploadquestion",
@@ -769,7 +795,7 @@ export default {
 </script>
 
 <style scoped>
-.ulForm {
+.uqForm {
   width: calc(100% - 70px);
   height: 100%;
   margin: 0 20px;
@@ -819,11 +845,11 @@ export default {
   margin: 0;
 }
 
-.ulDatePicker {
+.uqDatePicker {
   width: 100px;
 }
 
-.ulDupChkTag {
+.uqDupChkTag {
   width: 100%;
   text-align: right;
   overflow: hidden;

@@ -76,7 +76,21 @@
                 <i class="el-icon-paperclip"></i>
                 题目资源
               </template>
-              {{ props.row.payload.src }}
+              <el-popover v-if="props.row.payload.src" title="题目资源预览" :width="400" placement="left-start" trigger="hover">
+                <template #reference>
+                  <el-button
+                    type="primary"
+                    size="mini"
+                    round
+                    @click="qdQusrcPreview()"
+                    >查看</el-button
+                  >
+                </template>
+                <el-image :src="props.row.payload.src" alt="" fit="scale-down" style="width: 400px; height: 400px"></el-image>
+              </el-popover>
+              <el-button v-else disabled type="info" size="mini" round
+                >无对应资源</el-button
+              >
             </el-descriptions-item>
             <el-descriptions-item>
               <template #label>
@@ -148,7 +162,7 @@
       >
         <template #default="props"
           ><span>{{
-            props.row.additionTime.split(" ", 1).toString()
+            new Date(props.row.additionTime).toLocaleDateString()
           }}</span></template
         >
       </el-table-column>
@@ -288,7 +302,7 @@ export default {
       this.$emit("toTempList", "add", JSON.parse(JSON.stringify(val)));
     },
 
-    // axios - 获取单选题列表
+    // axios - 获取对应题型题目列表
     getSingleChoiceList: function () {
       this.$emit("loading", true);
       this.axios({

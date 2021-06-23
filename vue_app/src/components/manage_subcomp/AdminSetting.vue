@@ -70,7 +70,7 @@
                         :action="uploadSysBkgPort"
                         :before-upload="asBeforeUpload"
                         :multiple="true"
-                        :data="uploadExtendExtraData"
+                        :data="asUploadExtraData"
                         :on-success="asUploadSuccess"
                         :on-error="asUploadError"
                         :on-exceed="asUploadExceed"
@@ -419,7 +419,7 @@ export default {
       displayBkgList: [], //
       uploadSysBkgPort: serverHost + "/admin/manage/ulsysbkgpic", // 上传背景图片后端接口
       uploadPics: [], // 上传图片列表
-      uploadExtendExtraData: {}, // 上传附加数据(atoken)
+      asUploadExtraData: {}, // 上传附加数据(atoken)
       displayAPIList: [], // 接口列表
       asApiDisabledDate: (time) => {
         return time.getTime() < Date.now();
@@ -565,7 +565,7 @@ export default {
     asUploadExceed: function () {
       this.$message({
         type: "info",
-        message: "不支持上传多个文件",
+        message: "不支持上传3个以上文件",
       });
     },
     // 上传成功hook
@@ -595,7 +595,7 @@ export default {
     // 上传背景
     addSysPic: function () {
       // 附加json数据
-      this.uploadExtendExtraData = {
+      this.asUploadExtraData = {
         atoken: localStorage.getItem("atoken"),
       };
       this.$nextTick(() => {

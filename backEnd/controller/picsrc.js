@@ -89,9 +89,9 @@ exports.addOneBkgPic = async function (file) {
     }
 }
 
-// 删除指定图片资源
+// 删除指定背景资源
 exports.delOneBkgPic = async function (col, deltarget) {
-    let res = { ifSuccess: false, err: null, name: ''};
+    let res = { ifSuccess: false, err: null, name: '' };
     // 预处理查询参数
     const targetCol = col;
     const query = { _id: ObjectID(deltarget) };
@@ -124,5 +124,24 @@ exports.delOneBkgPic = async function (col, deltarget) {
     }
 }
 
-// 获取题目图片资源
-
+// 新增转换题目图片资源
+exports.addQusrcToBase64 = async function (file) {
+    console.log(file);
+    let res = { 'ifSuccess': false, "base64pic": null, 'err': null };
+    let fileData = fs.readFileSync(file.path, 'binary');
+    if (fileData) {
+        let picBuffer = Buffer.from(fileData, 'binary');
+        res.ifSuccess = true;
+        res.base64pic = 'data: ' + file.mimetype + ';base64,' + picBuffer.toString('base64');
+    } else {
+        res.err = "read file failed...";
+    }
+    // 转换完成后删除临时文件
+    let delRes = fs.unlinkSync(file.path);
+    if (delRes) {
+        console.log("=== ~ delete tempory qusrc pic: " + file.name);
+    } else {
+        res.err = delRes;
+    }
+    return res
+}

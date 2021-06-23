@@ -10,7 +10,6 @@ const config = require('./serverConf');
 const frontServer = config.frontServer + ':' + config.frontPort;
 const tempPicFolder = path.join(__dirname, config.tempPicFolder);
 const bkgPath = path.join(__dirname, config.bkgPath);
-const quSrc = path.join(__dirname, config.quSrc);
 
 // routers
 const userRouter = require('./routes/user');
@@ -25,15 +24,14 @@ const app = express();
 let createFolder = function (folder) {
   try {
       fs.accessSync(folder); // 打开文件夹
-      console.log("=== ~ background pic folder '" + folder + "' exists.");
+      console.log("=== ~ folder '" + folder + "' exists.");
   } catch (e) {
       fs.mkdirSync(folder); // 创建文件夹
-      console.log("=== ~ background pic folder '" + folder + "' founded.");
+      console.log("=== ~ folder '" + folder + "' founded.");
   }
 };
 createFolder(tempPicFolder);
 createFolder(bkgPath);
-createFolder(quSrc);
 
 app.use(cors({  
     origin:['http://'+frontServer],

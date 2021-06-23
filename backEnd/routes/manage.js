@@ -133,7 +133,7 @@ router.post('/bgklistdetail', async (req, res, next) => {
 })
 // admin 上传背景图片
 router.post('/ulsysbkgpic', upload.any(), async (req, res, next) => {
-    // upload 会将图片暂存至 tempPicFolder, 然后将路径存入数据库时, 再将对应图片移动至loginbkg
+    // upload 会将图片暂存至 tempPicFolder, 再将对应转base64, 然后将路径存入数据库时 
     let data = { atoken: req.body.atoken, file: {} };
     let file = req.files[0]
     data.file = { name: file.filename, type: file.mimetype, path: path.join("/images/loginbkg/", file.filename), tempPath: file.path };

@@ -157,6 +157,7 @@ exports.getAPIs = async function (data) {
 }
 // 新增接口
 exports.addAPIs = async function (data) {
+    let res = { 'ifSuccess': false, 'err': null };
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -177,7 +178,6 @@ exports.addAPIs = async function (data) {
             'expire': Math.ceil((new Date(data.newapi.expire).getTime() - Date.now()) / 1000) // 处理过期时间, 转化为时间差(number类型, 单位秒)
         }),
     }
-    let res = { 'ifSuccess': false, 'err': null };
     try {
         let insertRes = await DButil.insertOneData(targetCol, insertDoc);
         if (insertRes == 1) {
@@ -203,7 +203,6 @@ exports.addAPIs = async function (data) {
 }
 // 停用与恢复接口
 exports.changeAPIs = async function (data) {
-    console.log(data);
     let res = { 'ifSuccess': false, 'err': null };
     let verifyRes = jwtutil.verifyToken(data.atoken);
     if (verifyRes.pass == true) {

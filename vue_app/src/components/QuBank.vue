@@ -7,7 +7,7 @@
             <el-button
               class="qHeaderBtn qHeaderUpNDel"
               icon="el-icon-upload"
-              @click="ulDrawer = true"
+              @click="uqDrawer = true"
               >上 传</el-button
             >
           </el-tooltip></el-col
@@ -262,7 +262,7 @@
     </el-drawer>
 
     <!-- 上传界面 -->
-    <el-drawer v-model="ulDrawer" class="ulDrawer" direction="ltr" size="40%">
+    <el-drawer v-model="uqDrawer" class="uqDrawer" direction="ltr" size="40%">
       <template #title
         ><span>上 传 界 面</span
         ><el-button
@@ -271,13 +271,13 @@
           icon="el-icon-question"
           class="drawerHelpBtn"
           title="上传提示"
-          @click="ulHelpShow"
+          @click="uqHelpShow"
         ></el-button
       ></template>
       <el-divider content-position="left"
         ><i class="el-icon-more-outline"></i
       ></el-divider>
-      <UploadQuestion :ulDrawer="ulDrawer"></UploadQuestion>
+      <UploadQuestion :uqDrawer="uqDrawer"></UploadQuestion>
     </el-drawer>
 
     <!-- 删除界面 -->
@@ -388,7 +388,7 @@ export default {
       composeCounterExp: 50, // 预期题目数量 - default=50
       maxCounter: 50, // 自定义预计题目数量
       cpDrawer: false, // 组卷drawer
-      ulDrawer: false, // 上传drawer
+      uqDrawer: false, // 上传drawer
       dtDrawer: false, // 删除drawer
       chartAffixVisible: false, // 固钉状态
       cpChart: "",
@@ -621,7 +621,7 @@ export default {
     },
 
     // 上传界面帮助
-    ulHelpShow: function () {
+    uqHelpShow: function () {
       this.$notify({
         type: "info",
         title: "上传提示",

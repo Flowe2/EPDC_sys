@@ -1,19 +1,25 @@
 // addr: ip:port/user/qubank
 const express = require('express');
 const router = express.Router();
+const path = require('path');
+
+// multer上传目录
+const multer = require('multer');
+const config = require('../serverConf');
+const tempPath = path.join(__dirname, '/..' + config.tempPicFolder);
+
+let storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, tempPath.toString());
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now().toString() + '.' + file.originalname.split('.').reverse()[0]);
+    }
+})
+const upload = multer({ storage: storage });
 
 // 题库管理 controller集
 const questionsManage = require('../controller/questionsManage');
-
-// 懒加载题目src
-// router.post('/lazypullsrc', async (req, res, next) => {
-//     let data = req.body;
-//     console.log("=== ~ receive POST : @ user - lazy pull qustion src");
-//     let arr = await questionsManage.getQuestionsSrc(data);
-//     console.log("=== ~ ready to send");
-//     res.type("json");
-//     res.json(arr);
-// })
 
 // 拉取建议科目接口
 router.post('/suggestedsubjects', async (req, res, next) => {
@@ -56,18 +62,20 @@ router.post('/uploadquestion', async (req, res, next) => {
 })
 
 // 上传新题目src接口
-router.post('/uploadsrc', async (req, res, next) => {
-    let data = req.body;
+router.post('/ulqusrcpic',  upload.any(), async (req, res, next) => {
+    // upload 会将图片暂存至 tempPicFolder, 然后将路径存入数据库时, 再将对应图片移动至loginbkg
+    let data = { token: req.body.token, file: req.files[0] };
     console.log("=== ~ receive POST : @ user - upload quesion src");
-    console.log(data);
-    // let arr = await questionsManage.uploadQuestionSrc(data);
+    let arr = await questionsManage.addCertainQusrcPic(data);
     console.log("=== ~ ready to send");
-    res.json({msg: 'add new question src'});
+    res.type("json");
+    res.json(arr);
 })
 
+// 删除题目接口
 router.post('/deletequestion', async (req, res, next) => {
     let data = req.body;
-    console.log("=== ~ receive POST : @ user - upload quesion src");
+    console.log("=== ~ receive POST : @ user - delete questions");
     let arr = await questionsManage.deleteQuestion(data);
     console.log("=== ~ ready to send");
     res.type("json");

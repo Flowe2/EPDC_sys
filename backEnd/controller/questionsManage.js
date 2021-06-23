@@ -7,6 +7,8 @@ const jwtutil = new JWT();
 // 数据库操作工具
 const DButil = require('../utils/theMongoDB');
 const syslog = require('../controller/syslog');
+// pirsrc controller集
+const picsrc = require('../controller/picsrc');
 
 // 题型判断
 const questionTypeJudge = function (type) {
@@ -123,6 +125,7 @@ exports.asyncQueryKeywords = async function (data) {
 
 // 查询题目列表
 exports.getQuestionsList = async function (data) {
+    let res = { 'questionlist': [], 'counter': 0 };
     let verifyRes = jwtutil.verifyToken(data.token);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -133,7 +136,6 @@ exports.getQuestionsList = async function (data) {
     }
     let targetCol = questionTypeJudge(data.type);
     const query = { 'type': data.type };
-    let res = { 'questionlist': [], 'counter': 0 };
     try {
         let qureyRes = await DButil.findData(targetCol, query);
         res.questionlist = qureyRes;
@@ -145,8 +147,35 @@ exports.getQuestionsList = async function (data) {
     }
 }
 
+// 上传题目资源
+exports.addCertainQusrcPic = async function (data) {
+    let res = { 'ifSuccess': false, "base64pic": null, 'err': null };
+    let verifyRes = jwtutil.verifyToken(data.token);
+    if (verifyRes.pass == true) {
+        console.log("=== ~ token verify pass");
+    } else {
+        console.log("=== ! token verify failed, err: ", verifyRes.err);
+        res = { err: verifyRes.err };
+        return res;
+    }
+    try {
+        res = await picsrc.addQusrcToBase64(data.file);
+        if (res.base64pic) {
+            console.log("=== ~ res: pic convert to base64 seccess");
+        } else {
+            console.log("=== ! err");
+            res.err = '图片转换时遇到一些意外';
+        }
+        return res;
+    } catch (e) {
+        res.err = e.message;
+        return res;
+    }
+}
+
 // 上传题目
 exports.uploadNewQuestion = async function (data) {
+    let res = { 'ifSuccess': false, 'err': null };
     let verifyRes = jwtutil.verifyToken(data.token);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -158,7 +187,6 @@ exports.uploadNewQuestion = async function (data) {
     // 预处理查询参数
     const targetCol = questionTypeJudge(data.newqu.type);
     const insertDoc = data.newqu;
-    let res = { 'ifSuccess': false, 'err': null };
     try {
         let insertRes = await DButil.insertOneData(targetCol, insertDoc);
         if (insertRes == 1) {
@@ -185,6 +213,7 @@ exports.uploadNewQuestion = async function (data) {
 
 // 删除题目
 exports.deleteQuestion = async function (data) {
+    let res = { 'ifSuccess': false, 'err': null };
     let verifyRes = jwtutil.verifyToken(data.token);
     if (verifyRes.pass == true) {
         console.log("=== ~ token verify pass");
@@ -196,7 +225,6 @@ exports.deleteQuestion = async function (data) {
     // 预处理查询参数
     let targetCol = ["singlechoice", "multiplechoice", "truefalse", "gapfilling", "subjective"];
     let targetList = [[], [], [], [], []];
-    let res = { 'ifSuccess': false, 'err': null };
     // 待删除题目分类
     data.deletelist.forEach(element => {
         switch (element.type) {
