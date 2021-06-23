@@ -39,7 +39,7 @@
           ><el-button
             type="primary"
             :disabled="cpBtnDisabled"
-            @click="cpToGivePoint"
+            @click="setExpectPointVisible = true"
             >赋分值</el-button
           ></el-col
         >
@@ -57,10 +57,13 @@
               :value="item.value"
             >
             </el-option></el-select
-          >&nbsp;<el-button type="success" :disabled="cpBtnDisabled"
+          >&nbsp;<el-button
+            type="success"
+            :disabled="cpBtnDisabled"
+            @click="downloadComposedPaper"
             >生成试卷</el-button
-          ></el-col
-        >
+          ><a href="" id="downloadComposedPaper" v-show="false"></a>
+        </el-col>
       </el-row>
     </el-header>
     <el-steps :active="composeCounter == 0 ? 0 : cpChecked ? 2 : 1" simple>
@@ -94,12 +97,13 @@
               style="width: 100%"
               @selection-change="handleSelectionChange"
             >
-              <el-table-column type="selection" width="55"> </el-table-column>
+              <el-table-column type="selection" align="center" width="50">
+              </el-table-column>
               <el-table-column
                 type="index"
                 label="序号"
-                width="50"
                 align="center"
+                width="50"
               >
               </el-table-column>
               <el-table-column label="题面" show-overflow-tooltip>
@@ -154,15 +158,60 @@
               </el-table-column>
               <el-table-column
                 prop="perpoint"
-                :label="'总分值' + element.point"
+                :label="'总分: ' + element.point * element.data.length"
                 width="150"
-                >{{ element.point / element.data.length }}</el-table-column
+                align="center"
+                >{{ element.point }}</el-table-column
               >
             </el-table>
           </el-collapse-item>
         </template>
       </draggable>
     </el-main>
+    <el-dialog
+      title="设置题目分值"
+      v-model="setExpectPointVisible"
+      :width="400"
+    >
+      <el-descriptions :column="1" size="medium" border>
+        <el-descriptions-item label="总分">
+          {{ sumPoint }}
+        </el-descriptions-item>
+        <el-descriptions-item
+          v-for="(type, index) in setExpectPointForm"
+          :key="index"
+        >
+          <template #label>
+            {{ type.name }}
+          </template>
+          <div v-if="type.num">
+            <el-space size="medium">
+              <el-input-number
+                size="mini"
+                :min="0"
+                :step="0.5"
+                v-model="type.perpoint"
+              ></el-input-number>
+              <span>*</span>
+              <el-tag type="info" effect="plain"> {{ type.num }} </el-tag>
+              <span>=</span
+              ><el-tag type="info" effect="plain">
+                {{ type.perpoint * type.num }}
+              </el-tag>
+            </el-space>
+          </div>
+          <div v-else>{{ "没有对应题型, 该部分0分" }}</div>
+        </el-descriptions-item>
+      </el-descriptions>
+      <span style="width: 100%; height: 100%; margin-top: 20px">
+        <el-button
+          style="position: absolute; right: 10px; bottom: 10px"
+          type="primary"
+          @click="cpSetPoints"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -228,7 +277,15 @@ export default {
           data: [],
           point: 0,
         },
-      ],
+      ], // 可拖动展示列表
+      setExpectPointVisible: false,
+      setExpectPointForm: [
+        { name: "单选题", type: "sc", num: 0, perpoint: 0 },
+        { name: "多选题", type: "mc", num: 0, perpoint: 0 },
+        { name: "判断题", type: "tf", num: 0, perpoint: 0 },
+        { name: "填空题", type: "gf", num: 0, perpoint: 0 },
+        { name: "主观题", type: "sj", num: 0, perpoint: 0 },
+      ], // 设置分值
       activeQuestionType: [],
       collapseComponentData: {
         modelValue: this.activeQuestionType,
@@ -289,7 +346,23 @@ export default {
     },
 
     // 赋分值
-    cpSetPoints: function () {},
+    cpSetPoints: function () {
+      // 关闭赋分dialog
+      this.setExpectPointVisible = false;
+      this.displayList.forEach((element) => {
+        if (element.name == "sc") {
+          element.point = this.setExpectPointForm[0].perpoint;
+        } else if (element.name == "mc") {
+          element.point = this.setExpectPointForm[1].perpoint;
+        } else if (element.name == "tf") {
+          element.point = this.setExpectPointForm[2].perpoint;
+        } else if (element.name == "gf") {
+          element.point = this.setExpectPointForm[3].perpoint;
+        } else {
+          element.point = this.setExpectPointForm[4].perpoint;
+        }
+      });
+    },
 
     // table题型分类
     classifyTableData: function (type) {
@@ -306,21 +379,62 @@ export default {
           return this.compList_sj ? this.compList_sj : [];
       }
     },
+    //题型转文字
+    typeToString: function (type) {
+      switch (type) {
+        case "sc":
+          return "单选";
+        case "mc":
+          return "多选";
+        case "tf":
+          return "判断";
+        case "gf":
+          return "填空";
+        case "sj":
+          return "主观";
+      }
+    },
+
+    // 生成试卷文件
+    downloadComposedPaper: function () {
+      let a = document.getElementById("downloadComposedPaper");
+      let fileData ;
+      let apiFile = new Blob([fileData], { type: "application/json" });
+      a.href = URL.createObjectURL(apiFile);
+      a.download = Date.now() + ".eqm_paper";
+      a.dispatchEvent(
+        new MouseEvent("click", { bubbles: false, cancelable: true })
+      );
+    },
   },
-  mounted() {
-    this.cpInit();
-    this.displayList.forEach((element) => {
-      element.data = this.classifyTableData(element.name);
-    });
+  computed: {
+    sumPoint: function () {
+      let sum = 0;
+      this.setExpectPointForm.forEach((type) => {
+        sum += type.perpoint * type.num;
+      });
+      return sum;
+    },
   },
-  computed: {},
   watch: {
     composeCounter: function () {
       this.cpInit();
       this.displayList.forEach((element) => {
         element.data = this.classifyTableData(element.name);
       });
+      this.setExpectPointForm.forEach((element) => {
+        element.num = this.classifyTableData(element.type).length;
+      });
     },
+  },
+  mounted() {
+    this.cpInit();
+    this.displayList.forEach((element) => {
+      element.data = this.classifyTableData(element.name);
+    });
+    this.setExpectPointForm.forEach((element) => {
+      element.num = this.classifyTableData(element.type).length;
+    });
   },
 };
 </script>
