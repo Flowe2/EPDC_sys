@@ -159,7 +159,6 @@
         </el-form-item>
       </el-form>
       <span style="width: 100%; height: 100%; margin-top: 20px">
-        <el-button @click="setLimitCheck">test</el-button>
         <el-button
           style="position: absolute; right: 10px; bottom: 10px"
           type="primary"
@@ -258,6 +257,9 @@
         :compList_gf="compList_gf"
         :compList_sj="compList_sj"
         @chartAffix="chartAffix"
+        @toTempList="toTempList"
+        @delSomeFromCP="delFromTarget"
+        @delAllFromCP="delFromTarget"
       ></ComposedPaper>
     </el-drawer>
 
@@ -306,7 +308,7 @@
         :deleteCounter="deleteCounter"
         :deleteList="deleteList"
         @toTempList="toTempList"
-        @delOneFromDQ="delFromTarget"
+        @delSomeFromDQ="delFromTarget"
         @delAllFromDQ="delFromTarget"
       ></DeleteQuestion>
     </el-drawer>
@@ -497,7 +499,7 @@ export default {
     DeleteQuestion,
   },
   methods: {
-    // 加入到组卷或删除
+    // 加入到待加入或待删除
     toTempList: function (opt, tempList) {
       if (opt == "add") {
         this.tempAddList = tempList;
@@ -523,7 +525,7 @@ export default {
       }
     },
 
-    // 加入组卷/删除
+    // 加入组卷队列/删除删除
     addToTarget: function (target) {
       if (target == "add") {
         if (this.setLimitNum == 0) {
@@ -557,7 +559,7 @@ export default {
       this.bannedList = this.concatSet();
     },
 
-    // 组卷/删除移除
+    // 从组卷队列/删除队列移除
     delFromTarget: function (target) {
       // let templist = this.tempDelList;
       if (target == "add") {
@@ -680,7 +682,9 @@ export default {
           "<strong>选题提示</strong>\
           <p>选题提示按钮右上角会显示已选题目数量, 单击可开关可视化饼图提示</p>\
           <strong>清空 和 移除</strong>\
-          <p>勾选题目点击移除可将其移除预组卷列表, 也可使用清空重置待预组卷列表</p>",
+          <p>勾选题目点击移除可将其移除预组卷列表, 也可使用清空重置待预组卷列表</p>\
+          <strong>数据延迟</strong>\
+          <p>如果遇到数据延迟, 重新打开一次组卷界面即可</p>",
         duration: 5000,
       });
     },

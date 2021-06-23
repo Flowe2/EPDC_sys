@@ -48,7 +48,7 @@ export default {
   width:100%;
   height:100%;
   min-width: 1000px;
-  z-index:-10;
+  z-index: 1;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;

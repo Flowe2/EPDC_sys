@@ -13,12 +13,18 @@
           </el-badge></el-col
         >
         <el-col :span="2.5"
-          ><el-button type="primary" :disabled="cpBtnDisabled"
+          ><el-button
+            type="primary"
+            :disabled="cpBtnDisabled"
+            @click="delSomeFromCP"
             >移除</el-button
           ></el-col
         >
         <el-col :span="2.5"
-          ><el-button type="primary" :disabled="cpBtnDisabled"
+          ><el-button
+            type="primary"
+            :disabled="cpBtnDisabled"
+            @click="delAllFromCP"
             >清空</el-button
           ></el-col
         >
@@ -26,14 +32,14 @@
           ><el-button
             type="primary"
             :disabled="cpBtnDisabled"
-            @click="cpCheckedCpCheck"
+            @click="cpToCheckPaper"
             >查重</el-button
           ></el-col
         ><el-col :span="2.5"
           ><el-button
             type="primary"
             :disabled="cpBtnDisabled"
-            @click="cpCheckedCpCheck"
+            @click="cpToGivePoint"
             >赋分值</el-button
           ></el-col
         >
@@ -71,7 +77,10 @@
         item-key="id"
       >
         <template #item="{ element }">
-          <el-collapse-item :name="element.name">
+          <el-collapse-item
+            :name="element.name"
+            :disabled="!element.data.length"
+          >
             <template #title>
               <i :class="element.icon"></i>&nbsp;
               <el-button type="info" size="mini" round plain disabled>{{
@@ -80,7 +89,76 @@
               >&nbsp;
               <span class="cpCollapseTitle">{{ element.title }}</span>
             </template>
-            <div>table</div>
+            <el-table
+              :data="element.data"
+              style="width: 100%"
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column type="selection" width="55"> </el-table-column>
+              <el-table-column
+                type="index"
+                label="序号"
+                width="50"
+                align="center"
+              >
+              </el-table-column>
+              <el-table-column label="题面" show-overflow-tooltip>
+                <template #default="scope">
+                  <el-popover
+                    trigger="click"
+                    placement="right-start"
+                    width="340px"
+                  >
+                    <template #default>
+                      <el-descriptions
+                        title="题目详情"
+                        :column="1"
+                        size="small"
+                        border
+                      >
+                        <el-descriptions-item>
+                          <template #label> 题目内容 </template>
+                          <span class="cp_qu_description_text">{{
+                            scope.row.question
+                          }}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item>
+                          <template #label> 所属科目 </template>
+                          <span class="cp_qu_description_text">{{
+                            scope.row.subject
+                          }}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item>
+                          <template #label> 入库时间 </template>
+                          <span class="cp_qu_description_text">{{
+                            scope.row.additionTime
+                          }}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item>
+                          <template #label> 上次使用 </template>
+                          <span class="cp_qu_description_text">{{
+                            scope.row.lastUseTime
+                              ? scope.row.lastUseTime
+                              : "未使用"
+                          }}</span>
+                        </el-descriptions-item>
+                      </el-descriptions>
+                    </template>
+                    <template #reference>
+                      <div>
+                        {{ scope.row.question }}
+                      </div>
+                    </template>
+                  </el-popover>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="perpoint"
+                :label="'总分值' + element.point"
+                width="150"
+                >{{ element.point / element.data.length }}</el-table-column
+              >
+            </el-table>
           </el-collapse-item>
         </template>
       </draggable>
@@ -120,30 +198,35 @@ export default {
           title: "单选题 SINGLE CHOICE",
           icon: "iconfont icon-danxuankuang",
           data: [],
+          point: 0,
         },
         {
           name: "mc",
           title: "多选题 MULTIPLE CHOICE",
           icon: "iconfont icon-duoxuankuang",
           data: [],
+          point: 0,
         },
         {
           name: "tf",
           title: "判断题 TRUE OF FALSE",
           icon: "iconfont icon-panduan",
           data: [],
+          point: 0,
         },
         {
           name: "gf",
           title: "填空题 GAP FILLING",
           icon: "iconfont icon-tiankongti",
           data: [],
+          point: 0,
         },
         {
           name: "sj",
           title: "主观题 SUBJECTIVE",
           icon: "iconfont icon-zhuguanti",
           data: [],
+          point: 0,
         },
       ],
       activeQuestionType: [],
@@ -153,6 +236,7 @@ export default {
     };
   },
   props: [
+    "cpDrawer",
     "composeCounter",
     "composeList",
     "compList_sc",
@@ -174,16 +258,30 @@ export default {
     showPieSwitch: function () {
       this.cpChartVisible = !this.cpChartVisible;
       if (this.cpChartVisible == true) {
-        console.log("to show");
+        // console.log("to show");
         this.$emit("chartAffix", true);
       } else {
-        console.log("to close");
+        // console.log("to close");
         this.$emit("chartAffix", false);
       }
     },
 
+    // 暂存至tempList
+    handleSelectionChange: function (val) {
+      // 传入的为对象, JSON.toStringfy后在JSON.parse解析
+      this.$emit("toTempList", "del", JSON.parse(JSON.stringify(val)));
+    },
+    // 移除所选
+    delSomeFromCP: function () {
+      this.$emit("delSomeFromCP", "add");
+    },
+    // 移除所有
+    delAllFromCP: function () {
+      this.$emit("delAllFromCP", "addAll");
+    },
+
     // 组卷查重
-    cpCheckedCpCheck: function () {
+    cpToCheckPaper: function () {
       this.cpChecked == true;
       this.composeList.forEach((qu) => {
         this.cpCheckRes.push({ _id: qu._id, dup: Math.random() * 100 + "%" });
@@ -191,17 +289,37 @@ export default {
     },
 
     // 赋分值
-    cpSetPoints: function () {
+    cpSetPoints: function () {},
 
+    // table题型分类
+    classifyTableData: function (type) {
+      switch (type) {
+        case "sc":
+          return this.compList_sc ? this.compList_sc : [];
+        case "mc":
+          return this.compList_mc ? this.compList_mc : [];
+        case "tf":
+          return this.compList_tf ? this.compList_tf : [];
+        case "gf":
+          return this.compList_gf ? this.compList_gf : [];
+        case "sj":
+          return this.compList_sj ? this.compList_sj : [];
+      }
     },
   },
   mounted() {
     this.cpInit();
+    this.displayList.forEach((element) => {
+      element.data = this.classifyTableData(element.name);
+    });
   },
   computed: {},
   watch: {
     composeCounter: function () {
       this.cpInit();
+      this.displayList.forEach((element) => {
+        element.data = this.classifyTableData(element.name);
+      });
     },
   },
 };
@@ -228,6 +346,10 @@ export default {
 }
 
 .cpCollapseTitle {
+  font-weight: bold;
+}
+
+.cp_qu_description_text {
   font-weight: bold;
 }
 </style>

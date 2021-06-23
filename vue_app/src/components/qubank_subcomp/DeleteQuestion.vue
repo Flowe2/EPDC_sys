@@ -20,7 +20,7 @@
           <el-button
             type="primary"
             :disabled="tableBtnDisabled"
-            @click="delOneFromDQ"
+            @click="delSomeFromDQ"
             >移除</el-button
           >
         </el-col>
@@ -117,8 +117,8 @@ export default {
       this.$emit("toTempList", "del", JSON.parse(JSON.stringify(val)));
     },
     // 移除所选
-    delOneFromDQ: function () {
-      this.$emit("delOneFromDQ", "del");
+    delSomeFromDQ: function () {
+      this.$emit("delSomeFromDQ", "del");
     },
     // 移除所有
     delAllFromDQ: function () {
@@ -175,7 +175,7 @@ export default {
           // console.log(res);
           if (res.ifSuccess == true) {
             // 删除成功移除所选
-            this.delOneFromDQ();
+            this.delSomeFromDQ();
             alert("删除题目成功");
             this.reload();
           } else {
