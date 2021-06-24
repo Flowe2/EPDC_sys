@@ -1,0 +1,28 @@
+{
+    "total_score": "number", // 题目总分
+    "question_sum": "number", // 题目总数
+    "including_type": [
+        { "type": "type1", "perpoint": "number", "sum": "number"}, // 每类题目的类型, 分数, 总数量, 试卷题目顺序也同这个array
+        {}
+    ],
+    "type1": [
+        {
+            "subject": "...", // 科目
+            "question": "...", // 题目内容, 题面, 留空处以"(__)"填充
+            "payload": {
+                "src": "", // base64图片资源, 无则为空字符串
+                "options": [ // 选项, 有则分别A、B、C、D甚至E、F, 无则[], 长度为0
+                    "...",
+                    "...",
+                    "...",
+                    "..."
+                ],
+                "answer": [
+                    "C"
+                ] // 答案
+            }
+        },
+        {}
+    ],
+    "type2": []
+}

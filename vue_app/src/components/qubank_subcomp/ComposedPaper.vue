@@ -168,49 +168,45 @@
         </template>
       </draggable>
     </el-main>
-    <el-dialog
-      title="设置题目分值"
-      v-model="setExpectPointVisible"
-      :width="400"
-    >
-      <el-descriptions :column="1" size="medium" border>
-        <el-descriptions-item label="总分">
-          {{ sumPoint }}
-        </el-descriptions-item>
-        <el-descriptions-item
-          v-for="(type, index) in setExpectPointForm"
-          :key="index"
-        >
-          <template #label>
-            {{ type.name }}
-          </template>
-          <div v-if="type.num">
-            <el-space size="medium">
-              <el-input-number
-                size="mini"
-                :min="0"
-                :step="0.5"
-                v-model="type.perpoint"
-              ></el-input-number>
-              <span>*</span>
-              <el-tag type="info" effect="plain"> {{ type.num }} </el-tag>
-              <span>=</span
-              ><el-tag type="info" effect="plain">
-                {{ type.perpoint * type.num }}
-              </el-tag>
-            </el-space>
-          </div>
-          <div v-else>{{ "没有对应题型, 该部分0分" }}</div>
-        </el-descriptions-item>
-      </el-descriptions>
-      <span style="width: 100%; height: 100%; margin-top: 20px">
+    <el-dialog title="设置题目分值" v-model="setExpectPointVisible" :width="400"
+      ><el-space direction="vertical" size="large">
+        <el-descriptions :column="1" size="medium" border>
+          <el-descriptions-item label="总分">
+            {{ sumPoint }}
+          </el-descriptions-item>
+          <el-descriptions-item
+            v-for="(type, index) in setExpectPointForm"
+            :key="index"
+          >
+            <template #label>
+              {{ type.name }}
+            </template>
+            <div v-if="type.num">
+              <el-space size="medium">
+                <el-input-number
+                  size="mini"
+                  :min="0"
+                  :step="0.5"
+                  v-model="type.perpoint"
+                ></el-input-number>
+                <span>*</span>
+                <el-tag type="info" effect="plain"> {{ type.num }} </el-tag>
+                <span>=</span
+                ><el-tag type="info" effect="plain">
+                  {{ type.perpoint * type.num }}
+                </el-tag>
+              </el-space>
+            </div>
+            <div v-else>{{ "没有对应题型, 该部分0分" }}</div>
+          </el-descriptions-item>
+        </el-descriptions>
         <el-button
-          style="position: absolute; right: 10px; bottom: 10px"
+          size="small"
           type="primary"
           @click="cpSetPoints"
           >确 定</el-button
-        >
-      </span>
+        ></el-space
+      >
     </el-dialog>
   </el-container>
 </template>
@@ -398,13 +394,61 @@ export default {
     // 生成试卷文件
     downloadComposedPaper: function () {
       let a = document.getElementById("downloadComposedPaper");
-      let fileData ;
-      let apiFile = new Blob([fileData], { type: "application/json" });
-      a.href = URL.createObjectURL(apiFile);
-      a.download = Date.now() + ".eqm_paper";
-      a.dispatchEvent(
-        new MouseEvent("click", { bubbles: false, cancelable: true })
-      );
+      let fileData;
+      if (this.cpType == "json") {
+        // 处理数据
+        let including_type = [];
+        let questions = [];
+        this.displayList.forEach((element) => {
+          if (element.data.length) {
+            including_type.push({
+              type: element.name,
+              perpoint: element.point,
+              sum: element.data.length,
+            });
+            questions.push(element.data);
+          }
+        });
+        console.log(including_type);
+        for (let i = 0; i < questions.length; i++) {
+          questions[i].forEach((qu) => {
+            delete qu._id;
+            delete qu.type;
+            delete qu.keywords;
+            delete qu.additionTime;
+            delete qu.lastUseTime;
+          });
+        }
+        let questionString = "";
+        for (let i = 0; i < questions.length; i++) {
+          questionString += (
+            '"' + including_type[i].type + '": ' + JSON.stringify(questions[i]) + ((i < questions.length-1)?', ':''));
+        }
+        console.log(questionString);
+        fileData =
+          '{ "total_score": ' +
+          this.sumPoint +
+          ',  "question_sum": ' +
+          this.composeCounter +
+          ',  "including_type": ' +
+          JSON.stringify(including_type) +
+          ",  " +
+          questionString +
+          " }";
+        // 生成文件
+        let apiFile = new Blob([fileData], { type: "application/json" });
+        // 提供下载
+        a.href = URL.createObjectURL(apiFile);
+        a.download = Date.now() + ".eqm_paper";
+        a.dispatchEvent(
+          new MouseEvent("click", { bubbles: false, cancelable: true })
+        );
+      } else if (this.cpType == "word") {
+        this.$message({
+          message: "该功能构建中, 请期待",
+          type: "error",
+        });
+      }
     },
   },
   computed: {
