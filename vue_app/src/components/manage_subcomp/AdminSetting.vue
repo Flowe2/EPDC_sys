@@ -789,10 +789,45 @@ export default {
         },
       })
         .then((response) => {
-          // 返回: { pics: [{ "name": "01.jpg", "path": "/images/loginbkg/01.jpg" }, {...}], counter: n}
+          // 返回: { pics: [{ "_id": "pic id", "name": "01.jpg", "path": "/images/loginbkg/01.jpg" }, {...}], counter: n}
           let res = JSON.stringify(response.data);
           res = JSON.parse(res);
           this.displayBkgList = res.pics;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+    // axios - 删除指定背景图片
+    postDelCertainPic: function (targetpicID) {
+      this.axios({
+        method: "POST",
+        url: "/admin/manage/delcertainpic",
+        data: {
+          atoken: localStorage.getItem("atoken"),
+          deltarget: targetpicID,
+        },
+      })
+        .then((response) => {
+          // 处理上传结果
+          // 返回:  {"ifSuccess": "true / false",
+          //        "err": "undefined / err message"}
+          let res = JSON.stringify(response.data);
+          res = JSON.parse(res);
+          if (res.ifSuccess == true) {
+            this.$message({
+              type: "success",
+              message: "删除背景 " + res.name + " 成功!",
+            });
+            // 删除后重新拉取背景资源列表
+            this.getBgkListDetail();
+          } else {
+            this.$message({
+              type: "error",
+              message: "删除背景失败!\n" + res.err,
+            });
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -965,41 +1000,6 @@ export default {
             this.$message({
               type: "error",
               message: "修改密码失败!\n" + res.err,
-            });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-
-    // axios - 删除指定背景图片
-    postDelCertainPic: function (targetpicID) {
-      this.axios({
-        method: "POST",
-        url: "/admin/manage/delcertainpic",
-        data: {
-          atoken: localStorage.getItem("atoken"),
-          deltarget: targetpicID,
-        },
-      })
-        .then((response) => {
-          // 处理上传结果
-          // 返回:  {"ifSuccess": "true / false",
-          //        "err": "undefined / err message"}
-          let res = JSON.stringify(response.data);
-          res = JSON.parse(res);
-          if (res.ifSuccess == true) {
-            this.$message({
-              type: "success",
-              message: "删除背景 " + res.name + " 成功!",
-            });
-            // 删除后重新拉取背景资源列表
-            this.getBgkListDetail();
-          } else {
-            this.$message({
-              type: "error",
-              message: "删除背景失败!\n" + res.err,
             });
           }
         })

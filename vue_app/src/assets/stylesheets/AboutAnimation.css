@@ -3,7 +3,7 @@
       transform: translateY(100%);
     }
   }
-  
+  /* whole system developed by [github.com/Flowe2] */
   @keyframes smoke {
     30% {
       transform: scale(2);

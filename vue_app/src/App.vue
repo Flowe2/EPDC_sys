@@ -7,6 +7,7 @@ export default {
   name: "App",
   data() {
     return {
+      // U2FsdGVkX18gWlsS5niNFgmMcBO9MJqS+u+pVsoXe0A9MrKCvYAmB9HjraWJypyR/mWEsCejz6W2sO4hiG2JZr7v23kLVpUj
       isRouterAlive: true,
       // el-date-picker - 快捷选项
       dateRanges: [

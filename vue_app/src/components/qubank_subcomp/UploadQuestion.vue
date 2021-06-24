@@ -506,7 +506,7 @@ export default {
         this.newQu.payload.src = response.base64pic;
       }
     },
-    // upload - 上传失败 hook
+    // upload部分 - 上传失败 hook
     uqUploadError: function (err, file) {
       this.$message({
         type: "error",
