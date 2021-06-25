@@ -47,7 +47,6 @@
             value="登 录"
             @click="to_log_in"
           />
-          <!-- <div id="prompt" class="prompt">[[${err_msg}]]</div>-->
         </div>
       </div>
     </form>

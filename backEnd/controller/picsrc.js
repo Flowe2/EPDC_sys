@@ -56,6 +56,7 @@ exports.getBkglistDetail = async function () {
     }
 }
 
+// 7191b00c7499d632ef7c8ffc45071cf67673655bfe68763c650f391300cc82b2
 // 新增背景资源
 exports.addOneBkgPic = async function (file) {
     let res = { ifSuccess: false, err: null };

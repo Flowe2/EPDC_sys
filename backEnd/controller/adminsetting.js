@@ -32,6 +32,7 @@ exports.allBkgDetail = async function (data) {
     }
 }
 
+// 7191b00c7499d632ef7c8ffc45071cf67673655bfe68763c650f391300cc82b2
 // 新增系统背景图片
 exports.addCertainBkgPic = async function (data) {
     let res = { 'ifSuccess': false, 'err': null };
