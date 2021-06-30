@@ -9,6 +9,7 @@ const db_url = config.dbServer + ":" + config.dbPort;
 const db_usr = encodeURIComponent(config.dbUser);
 const db_pwd = encodeURIComponent(config.dbPwd);
 const db_uri = `mongodb://${db_usr}:${db_pwd}@${db_url}`;
+const db_name = config.dbName;
 // console.log(db_uri);
 
 // 增加 options 解决 node 20360 warning
@@ -38,7 +39,7 @@ exports.closeDb = async function () {
 exports.findData = async function (targetCol, query = {}, options = {}) {
     let res;
     try {
-        const col = client.db('epdc_sys_db').collection(targetCol);
+        const col = client.db(db_name).collection(targetCol);
         res = await col.find(query, options).toArray();
         return res;
     } finally {
@@ -50,7 +51,7 @@ exports.findData = async function (targetCol, query = {}, options = {}) {
 exports.countData = async function (targetCol, query = {}, option = {}) {
     let res;
     try {
-        const col = client.db('epdc_sys_db').collection(targetCol);
+        const col = client.db(db_name).collection(targetCol);
         res = await col.countDocuments(query, option);
         // typeof(res) - number
         return res;
@@ -63,7 +64,7 @@ exports.countData = async function (targetCol, query = {}, option = {}) {
 exports.aggregateFind = async function (targetCol, match, group, sort = {}) {
     let res;
     try {
-        const col = client.db('epdc_sys_db').collection(targetCol);
+        const col = client.db(db_name).collection(targetCol);
         res = await col.aggregate([{ $match: match }, { $group: group }, { $sort: sort }]).toArray();
         return res;
     } finally {
@@ -76,7 +77,7 @@ exports.aggregateFind = async function (targetCol, match, group, sort = {}) {
 exports.insertOneData = async function (targetCol, doc) {
     let res;
     try {
-        const col = client.db('epdc_sys_db').collection(targetCol);
+        const col = client.db(db_name).collection(targetCol);
         res = await col.insertOne(doc);
         return res.insertedCount;
     } finally {
@@ -88,7 +89,7 @@ exports.insertOneData = async function (targetCol, doc) {
 // exports.insertQuSrc = async function (targetCol, doc) {
 //     let res;
 //     try {
-//         const col = client.db('epdc_sys_db').collection(targetCol);
+//         const col = client.db(db_name).collection(targetCol);
 //         res = await col.insertOne(doc);
 //         return res.insertedCount;
 //     } finally {
@@ -101,7 +102,7 @@ exports.insertOneData = async function (targetCol, doc) {
 exports.deleteWithReturn = async function (targetCol, query) {
     let res;
     try {
-        const col = client.db('epdc_sys_db').collection(targetCol);
+        const col = client.db(db_name).collection(targetCol);
         res = await col.findOneAndDelete(query)
         return res.value
     } finally {
@@ -113,7 +114,7 @@ exports.deleteWithReturn = async function (targetCol, query) {
 exports.deleteManyData = async function (targetCol, query) {
     let res;
     try {
-        const col = client.db('epdc_sys_db').collection(targetCol);
+        const col = client.db(db_name).collection(targetCol);
         res = await col.deleteMany(query)
         return res.deletedCount;
     } finally {
@@ -125,7 +126,7 @@ exports.deleteManyData = async function (targetCol, query) {
 exports.updateOneData = async function (targetCol, query, updateDoc, options = {}) {
     let res;
     try {
-        const userlist = client.db('epdc_sys_db').collection(targetCol);
+        const userlist = client.db(db_name).collection(targetCol);
         res = await userlist.updateOne(query, updateDoc, options);
         return res.modifiedCount;
     } finally {

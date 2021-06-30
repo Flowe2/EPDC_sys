@@ -5,8 +5,9 @@ var config = {
     // MongoDB info
     dbServer: 'localhost',
     dbPort: '27017',
-    dbUser: 'root',
-    dbPwd: 'root',
+    dbUser: 'eqm_sys_db',
+    dbPwd: 'Ahua@1999',
+    dbName: 'eqm_sys_db',
 
     // public/private key
     publicKey: '/utils/rsa_public_key.pem',
