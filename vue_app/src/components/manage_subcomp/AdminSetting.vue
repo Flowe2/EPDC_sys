@@ -40,7 +40,7 @@
                   <template #default="scope">
                     <el-popover effect="light" trigger="hover" placement="top">
                       <template #default>
-                        <el-image :src="serverHost + scope.row.path"></el-image>
+                        <el-image :src="scope.row.path"></el-image>
                       </template>
                       <template #reference>
                         <div class="name-wrapper">
@@ -408,12 +408,11 @@
 </template>
 
 <script>
-const serverHost = process.env.VUE_APP_API;
-
 export default {
   name: "AdminSetting",
   data() {
     return {
+      serverHost: ()=>{return process.env.VUE_APP_API};
       fullscreenLoading: false,
       cardVisible: [false, false, false],
       displayBkgList: [], //
@@ -794,7 +793,7 @@ export default {
           res = JSON.parse(res);
           this.displayBkgList = res.pics;
           this.displayBkgList.forEach(pic => {
-            pic.path = serverHost + pic.path;
+            pic.path = this.serverHost + pic.path;
           });
         })
         .catch((err) => {

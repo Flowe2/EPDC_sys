@@ -76,7 +76,13 @@
                 <i class="el-icon-paperclip"></i>
                 题目资源
               </template>
-              <el-popover v-if="props.row.payload.src" title="题目资源预览" :width="400" placement="left-start" trigger="hover">
+              <el-popover
+                v-if="props.row.payload.src"
+                title="题目资源预览"
+                :width="400"
+                placement="left-start"
+                trigger="hover"
+              >
                 <template #reference>
                   <el-button
                     type="primary"
@@ -86,7 +92,12 @@
                     >查看</el-button
                   >
                 </template>
-                <el-image :src="serverHost + props.row.payload.src" alt="" fit="scale-down" style="width: 400px; height: 400px"></el-image>
+                <el-image
+                  :src="props.row.payload.src"
+                  alt=""
+                  fit="scale-down"
+                  style="width: 400px; height: 400px"
+                ></el-image>
               </el-popover>
               <el-button v-else disabled type="info" size="mini" round
                 >无对应资源</el-button
@@ -191,12 +202,11 @@
 </template>
 
 <script>
-const serverHost = process.env.VUE_APP_API;
-
 export default {
   inject: ["reload", "frontendSearch", "frontendDateSort", "frontendDateSift"], //注入刷新依赖
   data() {
     return {
+      serverHost: ()=>{return process.env.VUE_APP_API};
       targetType: "sc", // 初始进入初始化, 停在单选题题库界面
       showOptions: true,
       qudisplayCounter: 0,
@@ -325,7 +335,7 @@ export default {
           // console.log(res);
           this.qudisplayList = res.questionlist;
           this.qudisplayList.forEach(qu => {
-            qu.payload.src = serverHost + qu.payload.src;
+            qu.payload.src = this.serverHost + qu.payload.src;
           });
           this.qudisplayCounter = res.counter;
           this.$nextTick(() => {
