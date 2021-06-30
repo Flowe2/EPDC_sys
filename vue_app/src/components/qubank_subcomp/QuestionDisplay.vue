@@ -86,7 +86,7 @@
                     >查看</el-button
                   >
                 </template>
-                <el-image :src="props.row.payload.src" alt="" fit="scale-down" style="width: 400px; height: 400px"></el-image>
+                <el-image :src="serverHost + props.row.payload.src" alt="" fit="scale-down" style="width: 400px; height: 400px"></el-image>
               </el-popover>
               <el-button v-else disabled type="info" size="mini" round
                 >无对应资源</el-button
@@ -191,6 +191,8 @@
 </template>
 
 <script>
+const serverHost = process.env.VUE_APP_API;
+
 export default {
   inject: ["reload", "frontendSearch", "frontendDateSort", "frontendDateSift"], //注入刷新依赖
   data() {

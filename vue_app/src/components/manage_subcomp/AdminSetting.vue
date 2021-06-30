@@ -40,7 +40,7 @@
                   <template #default="scope">
                     <el-popover effect="light" trigger="hover" placement="top">
                       <template #default>
-                        <el-image :src="scope.row.path"></el-image>
+                        <el-image :src="serverHost + scope.row.path"></el-image>
                       </template>
                       <template #reference>
                         <div class="name-wrapper">
@@ -408,7 +408,7 @@
 </template>
 
 <script>
-const serverHost = "http://localhost:3000";
+const serverHost = process.env.VUE_APP_API;
 
 export default {
   name: "AdminSetting",

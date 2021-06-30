@@ -1,24 +1,24 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-import User from '@/views/User.vue';
-import Admin from '@/views/Admin.vue';
+import User from '../views/User.vue';
+import Admin from '../views/Admin.vue';
 
-import UserLogin from '@/components/UserLogin.vue';
-import AdminLogin from '@/components/AdminLogin.vue';
+import UserLogin from '../components/UserLogin.vue';
+import AdminLogin from '../components/AdminLogin.vue';
 
-import QuBank from '@/components/QuBank.vue';
-import QuestionDisplay from '@/components/qubank_subcomp/QuestionDisplay.vue';// 题目展示(所有题型)
-import ComposeHistory from '@/components/qubank_subcomp/ComposeHistory.vue';    // 组卷功能
+import QuBank from '../components/QuBank.vue';
+import QuestionDisplay from '../components/qubank_subcomp/QuestionDisplay.vue';// 题目展示(所有题型)
+import ComposeHistory from '../components/qubank_subcomp/ComposeHistory.vue';    // 组卷功能
 
-import Manage from '@/components/Manage.vue';
-import UserMaintain from '@/components/manage_subcomp/UserMaintain.vue';      // 账号维护
-import SignupCheck from '@/components/manage_subcomp/SignupCheck.vue';        // 注册管理
-import SystemLog from '@/components/manage_subcomp/SystemLog.vue';            // 系统日志
-import QuestionStatistics from '@/components/manage_subcomp/QuestionStatistics.vue';// 题库统计展示
-import AdminSetting from '@/components/manage_subcomp/AdminSetting.vue';      // 系统设置
+import Manage from '../components/Manage.vue';
+import UserMaintain from '../components/manage_subcomp/UserMaintain.vue';      // 账号维护
+import SignupCheck from '../components/manage_subcomp/SignupCheck.vue';        // 注册管理
+import SystemLog from '../components/manage_subcomp/SystemLog.vue';            // 系统日志
+import QuestionStatistics from '../components/manage_subcomp/QuestionStatistics.vue';// 题库统计展示
+import AdminSetting from '../components/manage_subcomp/AdminSetting.vue';      // 系统设置
 
-import About from '@/views/About.vue';                                        // About
-import NotFound from '@/views/NotFound.vue';                                  // 404
+import About from '../views/About.vue';                                        // About
+import NotFound from '../views/NotFound.vue';                                  // 404
 
 const routes = [
   {
