@@ -410,13 +410,17 @@
 <script>
 export default {
   name: "AdminSetting",
+  setup() {
+    return {
+      serverHost: 'process.env.VUE_APP_API'
+    }
+  },
   data() {
     return {
-      serverHost: ()=>{return process.env.VUE_APP_API},
       fullscreenLoading: false,
       cardVisible: [false, false, false],
       displayBkgList: [], //
-      uploadSysBkgPort: serverHost + "/admin/manage/ulsysbkgpic", // 上传背景图片后端接口
+      uploadSysBkgPort: ()=> { return this.serverHost + "/admin/manage/ulsysbkgpic" }, // 上传背景图片后端接口
       uploadPics: [], // 上传图片列表
       asUploadExtraData: {}, // 上传附加数据(atoken)
       displayAPIList: [], // 接口列表

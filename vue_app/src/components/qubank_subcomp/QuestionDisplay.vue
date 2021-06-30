@@ -203,10 +203,15 @@
 
 <script>
 export default {
+  name: "QuestionDisplay",
   inject: ["reload", "frontendSearch", "frontendDateSort", "frontendDateSift"], //注入刷新依赖
+  setup() {
+    return {
+      serverHost: 'process.env.VUE_APP_API'
+    }
+  },
   data() {
     return {
-      serverHost: ()=>{return process.env.VUE_APP_API},
       targetType: "sc", // 初始进入初始化, 停在单选题题库界面
       showOptions: true,
       qudisplayCounter: 0,

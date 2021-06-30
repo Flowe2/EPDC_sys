@@ -281,9 +281,13 @@ import _ from "lodash";
 export default {
   name: "UploadQuestion",
   inject: ["reload"], //注入刷新依赖
+  setup() {
+    return {
+      serverHost: 'process.env.VUE_APP_API'
+    }
+  },
   data() {
     return {
-      serverHost: ()=>{return process.env.VUE_APP_API},
       newQuLoading: false, // newQu表单加载标志
       optionInputVisible: false, // 选项输入显示标志
       optionInputValue: "", // 选项输入临时值
