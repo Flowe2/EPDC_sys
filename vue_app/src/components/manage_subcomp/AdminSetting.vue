@@ -854,7 +854,7 @@ export default {
         });
     },
 
-    // axois - 新增接口
+    // axios - 新增接口
     postAddNewApi: function () {
       this.axios({
         method: "POST",
@@ -891,7 +891,7 @@ export default {
           console.log(err);
         });
     },
-    // axois - 启用/停用接口
+    // axios - 启用/停用接口
     postChangeApi: function (row) {
       this.axios({
         method: "POST",
@@ -930,7 +930,7 @@ export default {
           console.log(err);
         });
     },
-    // axois - 删除接口
+    // axios - 删除接口
     postDelApi: function (row) {
       this.axios({
         method: "POST",
