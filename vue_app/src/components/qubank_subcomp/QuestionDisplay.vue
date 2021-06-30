@@ -206,7 +206,7 @@ export default {
   inject: ["reload", "frontendSearch", "frontendDateSort", "frontendDateSift"], //注入刷新依赖
   data() {
     return {
-      serverHost: ()=>{return process.env.VUE_APP_API};
+      serverHost: ()=>{return process.env.VUE_APP_API},
       targetType: "sc", // 初始进入初始化, 停在单选题题库界面
       showOptions: true,
       qudisplayCounter: 0,

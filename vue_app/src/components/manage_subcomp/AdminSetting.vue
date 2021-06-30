@@ -412,7 +412,7 @@ export default {
   name: "AdminSetting",
   data() {
     return {
-      serverHost: ()=>{return process.env.VUE_APP_API};
+      serverHost: ()=>{return process.env.VUE_APP_API},
       fullscreenLoading: false,
       cardVisible: [false, false, false],
       displayBkgList: [], //
