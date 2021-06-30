@@ -270,7 +270,7 @@
     </el-header>
 
     <el-dialog title="上传资源预览" v-model="uqUploadPreviewVisible" width="440px">
-      <el-image :src="serverHost + uqUploadPreviewUrl" alt="" fit="scale-down" style="width: 400px; height: 400px"></el-image>
+      <el-image :src="uqUploadPreviewUrl" alt="" fit="scale-down" style="width: 400px; height: 400px"></el-image>
     </el-dialog>
   </el-container>
 </template>

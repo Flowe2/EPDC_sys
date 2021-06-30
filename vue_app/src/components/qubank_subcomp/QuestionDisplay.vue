@@ -324,6 +324,9 @@ export default {
           res = JSON.parse(res);
           // console.log(res);
           this.qudisplayList = res.questionlist;
+          this.qudisplayList.forEach(qu => {
+            qu.payload.src = serverHost + qu.payload.src;
+          });
           this.qudisplayCounter = res.counter;
           this.$nextTick(() => {
             this.displayList = this.qudisplayList;

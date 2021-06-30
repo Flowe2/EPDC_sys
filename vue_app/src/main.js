@@ -16,7 +16,7 @@ createApp(App)
     .mount('#app');
     
 axios.defaults.baseURL = process.env.VUE_APP_API;
-console.log(process.env.VUE_APP_API);
+// console.log(process.env.VUE_APP_API);
 
 // vue-router 全局前置守卫
 router.beforeEach(function (to, from, next) {

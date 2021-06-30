@@ -33,17 +33,14 @@ let createFolder = function (folder) {
 createFolder(tempPicFolder);
 createFolder(bkgPath);
 
-app.use(cors({  
-    origin:['http://'+frontServer],
-    methods:['GET','POST'],
-}));
+app.use(cors());
 //跨域问题 - cors 中间件
-app.all('*',function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://'+frontServer);
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-　next();　
-});
+// app.all('*',function (req, res, next) {
+//   res.header('Access-Control-Allow-Origin', 'http://'+frontServer);
+//   res.header('Access-Control-Allow-Headers', 'Content-Type');
+//   res.header('Access-Control-Allow-Methods', 'POST, GET');
+// 　next();　
+// });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

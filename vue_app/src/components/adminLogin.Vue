@@ -59,8 +59,8 @@ export default {
   data() {
     return {
       a_login: {
-        account: "admin",
-        apwd: "666666",
+        account: "",
+        apwd: "",
       },
     };
   },

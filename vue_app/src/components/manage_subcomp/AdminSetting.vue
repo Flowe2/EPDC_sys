@@ -793,6 +793,9 @@ export default {
           let res = JSON.stringify(response.data);
           res = JSON.parse(res);
           this.displayBkgList = res.pics;
+          this.displayBkgList.forEach(pic => {
+            pic.path = serverHost + pic.path;
+          });
         })
         .catch((err) => {
           console.log(err);

@@ -14,7 +14,7 @@ var config = {
     privateKey: '/utils/rsa_private_key.pem',
 
     // FrontEnd info
-    frontServer: 'localhost',
+    frontServer: 'www.flowe2.icu',
     frontPort: '8080',
 
     // Pic Folders
