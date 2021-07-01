@@ -184,6 +184,11 @@ import _ from "lodash";
 
 export default {
   name: "UserLogin",
+  setup() {
+    return {
+      serverHost: process.env.VUE_APP_API
+    }
+  },
   data() {
     return {
       u_login: {
@@ -267,7 +272,9 @@ export default {
         // res: { paths: ['/images/loginbkg/**.**', '...'], counter: n}
         let res = JSON.stringify(response.data);
         res = JSON.parse(res);
-        this.pic_list = res.paths;
+        res.paths.forEach(path => {
+          this.pic_list.push(this.serverHost + path)
+        });
       });
     },
 
