@@ -207,7 +207,7 @@ export default {
   inject: ["reload", "frontendSearch", "frontendDateSort", "frontendDateSift"], //注入刷新依赖
   setup() {
     return {
-      serverHost: 'process.env.VUE_APP_API'
+      serverHost: process.env.VUE_APP_API
     }
   },
   data() {

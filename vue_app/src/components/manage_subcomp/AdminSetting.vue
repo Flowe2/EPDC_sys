@@ -412,7 +412,7 @@ export default {
   name: "AdminSetting",
   setup() {
     return {
-      serverHost: 'process.env.VUE_APP_API'
+      serverHost: process.env.VUE_APP_API
     }
   },
   data() {
